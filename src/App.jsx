@@ -2,17 +2,13 @@ import React, { useState, useRef } from 'react';
 import ARVisualizer from './components/ARVisualizer'; // Assuming you have this component
 
 // --- 1. Import all local images from your assets folder ---
-import hospital02 from './assets/Hospital_02.jpg';
-import hotel01 from './assets/Hotel-Flooring_01.jpg';
-import office01 from './assets/Office-Flooring_01.jpg';
+// import Auditorium from './assets/Auditorium-Flooring_01.jpg';
+import Hospital from './assets/Hospital_02.jpg';
 import office02 from './assets/Office-Flooring_02.jpg';
-import office03 from './assets/Office-Flooring_03.jpg';
-import residential01 from './assets/Residential-Flooring_01.jpg';
 import residential03 from './assets/Residential-Flooring_03.jpg';
-import school01 from './assets/School-Flooring_01.jpg';
-import school02 from './assets/School-Flooring_02.jpg';
 import school03 from './assets/School-Flooring_03.jpg';
 import superMarket01 from './assets/Super-Market-Flooring_01.jpg';
+import Sports from './assets/Sports-Flooring_01.jpg';
 
 function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -34,21 +30,18 @@ function App() {
     "Transport Flooring",
     "Hospital Flooring",
     "Auditorium Flooring",
-    "Hotel/ Hospitality Flooring"
+    "Hotel/ Hospitality Flooring",
+    "Luxury Vinyl Tile"
   ];
 
   // --- 2. Update demoRooms to use the imported local images ---
   const demoRooms = [
-    { id: 1, name: 'Hospital Room', img: hospital02 },
-    { id: 2, name: 'Hotel Lounge', img: hotel01 },
-    { id: 3, name: 'Office Space 1', img: office01 },
-    { id: 4, name: 'Office Space 2', img: office02 },
-    { id: 5, name: 'Office Space 3', img: office03 },
-    { id: 6, name: 'Residential 1', img: residential01 },
-    { id: 7, name: 'Residential 2', img: residential03 },
-    { id: 8, name: 'Classroom 1', img: school01 },
-    { id: 9, name: 'Classroom 2', img: school02 },
-    { id: 10, name: 'Classroom 3', img: school03 },
+    // { id: 1, name: 'Hospital Room', img: Auditorium },
+    { id: 2, name: 'Hospital', img: Hospital },
+    { id: 4, name: 'Office Space', img: office02 },
+    { id: 7, name: 'Residential', img: residential03 },
+    { id: 8, name: 'Sports', img: Sports },
+    { id: 10, name: 'School-Flooring', img: school03 },
     { id: 11, name: 'Supermarket', img: superMarket01 },
   ];
 
@@ -79,44 +72,50 @@ function App() {
   };
 
   return (
-    <div className="relative max-w-[1300px] mx-auto px-6 py-12 font-sans text-gray-800 bg-white min-h-screen flex flex-col">
+    <div className="relative max-w-[1300px] mx-auto px-4 sm:px-6 py-12 font-sans text-gray-800 bg-white min-h-screen flex flex-col overflow-x-hidden">
       
       {/* Top Left Logo */}
-      <div className="absolute top-8 left-6 md:top-12 md:left-6 z-50">
+      {/* <div className="absolute top-4 left-4 sm:top-8 sm:left-6 md:top-12 md:left-6 z-50">
         <img 
           src="https://www.wonderfloor.co.in/assets/img/logo/logo.png" 
           alt="Wonderfloor Logo" 
-          className="h-10 md:h-12 object-contain"
+          className="h-8 sm:h-10 md:h-12 object-contain"
         />
-      </div>
+      </div> */}
       
-      {/* Top Section: Perfectly Aligned Side-by-Side */}
-      <div className="flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-20 mt-20 md:mt-24 mb-24 w-full">
+      {/* Top Section: Responsive Stack to Side-by-Side */}
+      {/* CHANGED: Swapped lg:items-center for lg:items-start to pull left content up */}
+      <div className="flex flex-col lg:flex-row items-center lg:items-start justify-between gap-8 lg:gap-16 mt-16 sm:mt-20 md:mt-24 mb-16 sm:mb-24 w-full">
         
         {/* Left Column - Heading & Controls */}
-        <div className="w-full lg:w-[400px] flex flex-col gap-6 shrink-0">
+        {/* CHANGED: Added lg:-mt-2 to nudge it precisely into alignment with the inner box */}
+        <div className="w-full lg:w-[450px] flex flex-col gap-6 shrink-0 mt-8 lg:mt-0 lg:-mt-2">
           
-          <h1 className="text-[32px] font-bold text-[#0f172a] mb-2 tracking-tight">
+          <h1 className="text-[36px] sm:text-[40px] lg:text-[46px] font-bold text-[#202938] mb-2 tracking-tight text-center lg:text-left leading-tight">
             See products in your room
           </h1>
 
-          <ul className="text-[15px] text-gray-600 space-y-4 font-medium mb-2">
-            <li className="flex items-center gap-3">
-              <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+          <ul className="text-[15px] sm:text-[16px] text-gray-600 space-y-4 font-medium mb-2">
+            <li className="flex items-center gap-3 justify-center lg:justify-start">
+              <svg className="w-6 h-6 text-gray-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
               Upload a picture of your room
             </li>
-            <li className="flex items-center gap-3">
-              <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
+            <li className="flex items-center gap-3 justify-center lg:justify-start">
+              <svg className="w-6 h-6 text-gray-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
               Try our products in your room
             </li>
           </ul>
           
-          {/* Primary Upload Button */}
+          {/* UPDATED Primary Upload Button */}
           <button 
             onClick={handleUploadClick}
-            className="bg-[#0b5c58] hover:bg-[#084844] text-white font-semibold py-3.5 px-6 rounded text-[15px] transition duration-200 w-full lg:w-[320px] flex items-center justify-center gap-2 shadow-sm"
+            className="cursor-pointer bg-[#0c5bc6] hover:bg-[#09479e] text-white font-bold py-3.5 px-6 rounded-[8px] border-[2.5px] border-[#4b8cf3] text-[17px] tracking-wide transition duration-200 w-full lg:w-[340px] flex items-center justify-center gap-2 shadow-sm"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+            {/* Custom Camera Icon with Plus Sign */}
+            <svg className="w-[26px] h-[26px]" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M4 4h3v2H5v13h14V9h-2V7h3a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z" />
+              <path d="M12 20a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11zm0-2a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zM9 2h2v3H9V2zM7 4V2h2v2H7z" />
+            </svg>
             Upload
           </button>
           
@@ -129,61 +128,61 @@ function App() {
           />
 
           {/* Secondary QR Button */}
-          <button className="bg-white border border-gray-200 hover:bg-gray-50 text-gray-500 py-3.5 px-6 rounded text-[13px] font-medium transition duration-200 w-full lg:w-[320px] flex items-center justify-center gap-3">
-            <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
-            Or scan a QR code to upload pictures
-          </button>
+          {/* <button className="cursor-pointer bg-white border border-gray-200 hover:bg-gray-50 text-gray-500 py-3.5 px-6 rounded-md text-[14px] sm:text-[15px] font-medium transition duration-200 w-full lg:w-[340px] flex items-center justify-center gap-3">
+            <svg className="w-4 h-4 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+            <span className="truncate">Or scan a QR code to upload pictures</span>
+          </button> */}
         </div>
 
         {/* Right Column - Mock UI Graphic */}
-        <div className="flex-1 w-full bg-[#6a6a6a] h-[340px] rounded relative overflow-hidden flex shadow-sm select-none">
+        <div className="hidden lg:flex flex-1 w-full bg-[#6a6a6a] h-[400px] rounded-none relative overflow-hidden shadow-sm select-none">
           {/* Inner Light Gray Wall */}
-          <div className="absolute top-10 left-10 right-10 bottom-16 bg-[#e6e6e6] rounded-t-lg"></div>
+          <div className="absolute top-12 left-12 right-12 bottom-20 bg-[#e6e6e6] rounded-none"></div>
           
           {/* Floor */}
-          <div className="absolute bottom-0 left-0 right-0 h-16 bg-[#555555]"></div>
+          <div className="absolute bottom-0 left-0 right-0 h-20 bg-[#555555]"></div>
           
-          {/* Left White Drawer Element */}
-          <div className="absolute bottom-16 left-32 w-48 h-20 bg-white flex justify-center pt-2 shadow-sm border border-gray-100">
-             <div className="w-10 h-3 bg-[#cbd5e1] rounded-full"></div>
+          {/* Left White Drawer Element (Scaled up) */}
+          <div className="absolute bottom-20 left-36 w-56 h-24 bg-white flex justify-center pt-3 shadow-sm border border-gray-100">
+             <div className="w-12 h-3.5 bg-[#cbd5e1] rounded-full"></div>
              {/* Checkmark Circle */}
-             <div className="absolute bottom-4 right-10 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white shadow-sm">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>
+             <div className="absolute bottom-4 right-12 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white shadow-sm">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>
              </div>
           </div>
 
-          {/* Right Brown Boxes Element */}
-          <div className="absolute bottom-16 right-20 w-40 h-24 bg-[#b48d66] flex flex-wrap border-t border-l border-[#9c7956]">
+          {/* Right Brown Boxes Element (Scaled up) */}
+          <div className="absolute bottom-20 right-24 w-48 h-32 bg-[#b48d66] flex flex-wrap border-t border-l border-[#9c7956]">
             {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="w-1/2 h-1/2 border-r border-b border-[#9c7956] flex items-center pl-2 relative">
-                <div className="w-1.5 h-1.5 rounded-full bg-white/60"></div>
+              <div key={i} className="w-1/2 h-1/2 border-r border-b border-[#9c7956] flex items-center pl-3 relative">
+                <div className="w-2 h-2 rounded-full bg-white/60"></div>
                 {/* Overlay Checkmark on bottom right box */}
                 {i === 4 && (
-                  <div className="absolute -bottom-2 -right-2 w-6 h-6 bg-white border-2 border-blue-200 rounded-full flex items-center justify-center">
-                    <div className="w-2.5 h-2.5 border-2 border-blue-400 rounded-sm"></div>
+                  <div className="absolute -bottom-3 -right-3 w-8 h-8 bg-white border-2 border-blue-200 rounded-full flex items-center justify-center">
+                    <div className="w-3.5 h-3.5 border-2 border-blue-400 rounded-sm"></div>
                   </div>
                 )}
               </div>
             ))}
           </div>
 
-          {/* Top floating White Search/Filter Box */}
-          <div className="absolute top-16 left-32 w-56 h-12 bg-white flex items-center px-4 shadow-sm border border-gray-100">
-            <div className="w-20 h-1.5 bg-gray-200 rounded-full"></div>
+          {/* Top floating White Search/Filter Box (Scaled up) */}
+          <div className="absolute top-20 left-36 w-64 h-14 bg-white flex items-center px-5 shadow-sm border border-gray-100">
+            <div className="w-24 h-2 bg-gray-200 rounded-full"></div>
             {/* Outline Circle */}
-            <div className="absolute top-3 -right-3 w-6 h-6 bg-white border-2 border-blue-200 rounded-full flex items-center justify-center shadow-sm">
-               <div className="w-2.5 h-2.5 border-2 border-blue-400 rounded-sm"></div>
+            <div className="absolute top-3 -right-4 w-8 h-8 bg-white border-2 border-blue-200 rounded-full flex items-center justify-center shadow-sm">
+               <div className="w-3 h-3 border-2 border-blue-400 rounded-sm"></div>
             </div>
           </div>
 
-          {/* Left Side Floating Menu Overlay */}
-          <div className="absolute left-16 top-12 w-[60px] bg-[#e2e2e2] rounded-lg shadow-lg flex flex-col items-center py-3 gap-3 z-10 border border-gray-300">
-             <div className="w-10 h-10 border-[3px] border-[#fc6c3f] bg-[#9cbdb9] rounded-sm"></div>
-             <div className="w-10 h-10 bg-[#557e87] rounded-sm relative">
+          {/* Left Side Floating Menu Overlay (Scaled up) */}
+          <div className="absolute left-16 top-16 w-[70px] bg-[#e2e2e2] rounded-lg shadow-lg flex flex-col items-center py-4 gap-4 z-10 border border-gray-300">
+             <div className="w-12 h-12 border-[3px] border-[#fc6c3f] bg-[#9cbdb9] rounded-sm relative"></div>
+             <div className="w-12 h-12 bg-[#557e87] rounded-sm relative">
                 {/* Pointer Hand Icon */}
-                <svg className="absolute -bottom-4 -right-4 w-8 h-8 text-white drop-shadow-md z-20" fill="currentColor" viewBox="0 0 24 24"><path d="M13.5 21a.5.5 0 01-.5-.5v-4.79l-2.15 2.15a.5.5 0 01-.7 0l-1.41-1.42a.5.5 0 010-.7l6.06-6.06a.5.5 0 01.7 0l6.06 6.06a.5.5 0 010 .7l-1.41 1.41a.5.5 0 01-.7 0L17.5 15.71V20.5a.5.5 0 01-.5.5h-3.5zM4 10.5a6.5 6.5 0 1113 0H4z" /></svg>
+                <svg className="absolute -bottom-5 -right-5 w-10 h-10 text-white drop-shadow-md z-20" fill="currentColor" viewBox="0 0 24 24"><path d="M13.5 21a.5.5 0 01-.5-.5v-4.79l-2.15 2.15a.5.5 0 01-.7 0l-1.41-1.42a.5.5 0 010-.7l6.06-6.06a.5.5 0 01.7 0l6.06 6.06a.5.5 0 010 .7l-1.41 1.41a.5.5 0 01-.7 0L17.5 15.71V20.5a.5.5 0 01-.5.5h-3.5zM4 10.5a6.5 6.5 0 1113 0H4z" /></svg>
              </div>
-             <div className="w-10 h-10 bg-white rounded-sm shadow-inner"></div>
+             <div className="w-12 h-12 bg-white rounded-sm shadow-inner"></div>
           </div>
         </div>
       </div>
@@ -193,15 +192,16 @@ function App() {
         
         {/* === HEADER & DROPDOWN CONTAINER === */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-6 relative z-30 gap-4">
-          <h3 className="text-[16px] font-bold text-gray-800">
+          
+          <h3 className="text-[18px] sm:text-[20px] font-bold text-gray-400">
             Don't have a picture? Try our demo rooms instead
           </h3>
           
           {/* USER INDUSTRY DROPDOWN */}
-          <div className="relative">
+          <div className="relative w-full sm:w-auto">
             <button 
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className="flex items-center gap-2 bg-[#6a6a6a] text-white px-5 py-2.5 rounded text-[13px] font-bold tracking-wide transition-colors hover:bg-gray-600 uppercase"
+              className="cursor-pointer flex items-center justify-between sm:justify-center gap-2 bg-[#6a6a6a] text-white px-5 py-3 sm:py-2.5 rounded text-[13px] font-bold tracking-wide transition-colors hover:bg-gray-600 uppercase w-full sm:w-auto"
             >
               {selectedIndustry}
               <svg className={`w-4 h-4 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -211,7 +211,7 @@ function App() {
 
             {/* Dropdown Menu */}
             {isDropdownOpen && (
-              <div className="absolute right-0 top-full mt-2 w-64 bg-white shadow-[0_10px_40px_rgba(0,0,0,0.15)] border-t-[3px] border-[#fc6c3f] py-2 z-50 rounded-b">
+              <div className="absolute right-0 top-full mt-2 w-full sm:w-64 bg-white shadow-[0_10px_40px_rgba(0,0,0,0.15)] border-t-[3px] border-[#fc6c3f] py-2 z-50 rounded-b max-h-[300px] overflow-y-auto">
                 {industries.map((industry, index) => (
                   <button
                     key={index}
@@ -219,7 +219,7 @@ function App() {
                       setSelectedIndustry(industry);
                       setIsDropdownOpen(false);
                     }}
-                    className={`w-full text-left px-5 py-2.5 text-[15px] transition-colors ${
+                    className={`cursor-pointer w-full text-left px-5 py-2.5 text-[15px] transition-colors ${
                       selectedIndustry === industry || (selectedIndustry === 'USER INDUSTRY' && index === 0)
                         ? 'text-[#fc6c3f]' 
                         : 'text-gray-600 hover:text-[#fc6c3f] hover:bg-gray-50'
@@ -241,14 +241,13 @@ function App() {
               className="cursor-pointer group flex flex-col gap-3"
               onClick={() => handleDemoRoomClick(room.img)}
             >
-              <div className="overflow-hidden rounded-lg bg-gray-100">
+              <div className="overflow-hidden rounded-none bg-gray-100">
                 <img 
                   src={room.img} 
                   alt={room.name} 
                   className="w-full h-[200px] object-cover hover:opacity-90 transition-opacity duration-200" 
                 />
               </div>
-              {/* Green text styling applied here */}
               <p className="text-[12px] text-[#0b5c58] font-bold uppercase tracking-wider px-1">
                 {room.name}
               </p>
