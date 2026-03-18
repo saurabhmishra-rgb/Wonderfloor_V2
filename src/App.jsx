@@ -1,16 +1,29 @@
 import React, { useState, useRef } from 'react';
 import ARVisualizer from './components/ARVisualizer'; // Assuming you have this component
 
+// --- 1. Import all local images from your assets folder ---
+import hospital02 from './assets/Hospital_02.jpg';
+import hotel01 from './assets/Hotel-Flooring_01.jpg';
+import office01 from './assets/Office-Flooring_01.jpg';
+import office02 from './assets/Office-Flooring_02.jpg';
+import office03 from './assets/Office-Flooring_03.jpg';
+import residential01 from './assets/Residential-Flooring_01.jpg';
+import residential03 from './assets/Residential-Flooring_03.jpg';
+import school01 from './assets/School-Flooring_01.jpg';
+import school02 from './assets/School-Flooring_02.jpg';
+import school03 from './assets/School-Flooring_03.jpg';
+import superMarket01 from './assets/Super-Market-Flooring_01.jpg';
+
 function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRoomImage, setSelectedRoomImage] = useState(null);
   const fileInputRef = useRef(null);
 
-  // --- New State for Dropdown ---
+  // --- Dropdown State ---
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedIndustry, setSelectedIndustry] = useState('USER INDUSTRY');
 
-  // --- Data from first image ---
+  // --- Industry Data ---
   const industries = [
     "Industrial Flooring",
     "Office Flooring",
@@ -24,19 +37,19 @@ function App() {
     "Hotel/ Hospitality Flooring"
   ];
 
+  // --- 2. Update demoRooms to use the imported local images ---
   const demoRooms = [
-    { id: 1, name: 'Kitchen', img: 'https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&w=600&q=80' },
-    { id: 2, name: 'Bathroom', img: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=600&q=80' },
-    { id: 3, name: 'Living Room', img: 'https://images.unsplash.com/photo-1595846519845-68e298c2edd8?auto=format&fit=crop&w=600&q=80' },
-    { id: 4, name: 'Bedroom', img: 'https://images.unsplash.com/photo-1540518614846-7eded433c457?auto=format&fit=crop&w=600&q=80' },
-    { id: 5, name: 'Living Room', img: 'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=600&q=80' },
-    { id: 6, name: 'Outdoor Modern House', img: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=600&q=80' },
-    { id: 7, name: 'Dining Room', img: 'https://images.unsplash.com/photo-1617806118233-18e1c12e4023?auto=format&fit=crop&w=600&q=80' },
-    { id: 8, name: 'Living Room', img: 'https://images.unsplash.com/photo-1583847268964-b28ce8f30000?auto=format&fit=crop&w=600&q=80' },
-    { id: 9, name: 'Modern Kitchen', img: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=600&q=80' },
-    { id: 10, name: 'Outdoor Deck', img: 'https://images.unsplash.com/photo-1599696848652-f0ff23bc911f?auto=format&fit=crop&w=600&q=80' },
-    { id: 11, name: 'Rustic Kitchen', img: 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=600&q=80' },
-    { id: 12, name: 'Living Room', img: 'https://images.unsplash.com/photo-1560185127-6ed189bf02f4?auto=format&fit=crop&w=600&q=80' },
+    { id: 1, name: 'Hospital Room', img: hospital02 },
+    { id: 2, name: 'Hotel Lounge', img: hotel01 },
+    { id: 3, name: 'Office Space 1', img: office01 },
+    { id: 4, name: 'Office Space 2', img: office02 },
+    { id: 5, name: 'Office Space 3', img: office03 },
+    { id: 6, name: 'Residential 1', img: residential01 },
+    { id: 7, name: 'Residential 2', img: residential03 },
+    { id: 8, name: 'Classroom 1', img: school01 },
+    { id: 9, name: 'Classroom 2', img: school02 },
+    { id: 10, name: 'Classroom 3', img: school03 },
+    { id: 11, name: 'Supermarket', img: superMarket01 },
   ];
 
   const handleUploadClick = () => fileInputRef.current.click();
@@ -49,17 +62,19 @@ function App() {
     }
   };
 
+  // --- 3. Updated Demo Click Handler (No proxy needed for local files) ---
   const handleDemoRoomClick = async (imgUrl) => {
     try {
-      const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(imgUrl)}`;
-      const response = await fetch(proxyUrl);
+      // Fetch the local asset directly
+      const response = await fetch(imgUrl);
       const blob = await response.blob();
       const file = new File([blob], "demo_room.jpg", { type: "image/jpeg" });
+      
       setSelectedRoomImage({ previewUrl: imgUrl, isDemo: true, rawFile: file });
       setIsModalOpen(true);
     } catch (error) {
       console.error("Failed to load demo image:", error);
-      alert("Could not load the demo room. The network request failed.");
+      alert("Could not load the demo room. Check if the image path is correct.");
     }
   };
 
@@ -120,7 +135,7 @@ function App() {
           </button>
         </div>
 
-        {/* Right Column - Exact CSS Graphic mimicking the new Roomvo screenshot */}
+        {/* Right Column - Mock UI Graphic */}
         <div className="flex-1 w-full bg-[#6a6a6a] h-[340px] rounded relative overflow-hidden flex shadow-sm select-none">
           {/* Inner Light Gray Wall */}
           <div className="absolute top-10 left-10 right-10 bottom-16 bg-[#e6e6e6] rounded-t-lg"></div>
@@ -203,7 +218,6 @@ function App() {
                     onClick={() => {
                       setSelectedIndustry(industry);
                       setIsDropdownOpen(false);
-                      // Add logic here if you want to filter demoRooms based on selection
                     }}
                     className={`w-full text-left px-5 py-2.5 text-[15px] transition-colors ${
                       selectedIndustry === industry || (selectedIndustry === 'USER INDUSTRY' && index === 0)
@@ -234,7 +248,8 @@ function App() {
                   className="w-full h-[200px] object-cover hover:opacity-90 transition-opacity duration-200" 
                 />
               </div>
-              <p className="text-[12px] text-gray-500 font-semibold uppercase tracking-wider px-1">
+              {/* Green text styling applied here */}
+              <p className="text-[12px] text-[#0b5c58] font-bold uppercase tracking-wider px-1">
                 {room.name}
               </p>
             </div>
