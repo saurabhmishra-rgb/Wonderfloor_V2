@@ -1,23 +1,40 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import ARVisualizer from './components/ARVisualizer'; 
 
 // --- 1. Import all local images from your assets folder ---
-// Note: Ensure exact capitalization matches your actual files to avoid live deployment errors
 import Hospital from './assets/Hospital_02.jpg';
 import office02 from './assets/Office-Flooring_02.jpg';
 import residential03 from './assets/Residential-Flooring_03.jpg';
 import school03 from './assets/School-Flooring_03.jpg';
 import superMarket01 from './assets/Super-Market-Flooring_01.jpg';
-import Sports from './assets/Sports-Flooring_01.jpg';
+
 
 function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRoomImage, setSelectedRoomImage] = useState(null);
+  
   const fileInputRef = useRef(null);
+  const dropdownRef = useRef(null); // Added a reference for the dropdown container
 
   // --- Dropdown State ---
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedIndustry, setSelectedIndustry] = useState('USER INDUSTRY');
+
+  // --- Click Outside to Close Logic ---
+  useEffect(() => {
+    function handleClickOutside(event) {
+      // If the dropdown is open AND the click happened outside of the dropdownRef element
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    }
+    // Bind the event listener
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      // Unbind the event listener on clean up
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [dropdownRef]);
 
   // --- Industry Data ---
   const industries = [
@@ -39,7 +56,7 @@ function App() {
     { id: 2, name: 'Hospital', img: Hospital },
     { id: 4, name: 'Office Space', img: office02 },
     { id: 7, name: 'Residential', img: residential03 },
-    { id: 8, name: 'Sports', img: Sports },
+    // { id: 8, name: 'Sports', img: Sports },
     { id: 10, name: 'School-Flooring', img: school03 },
     { id: 11, name: 'Supermarket', img: superMarket01 },
   ];
@@ -177,7 +194,7 @@ function App() {
           </h3>
           
           {/* USER INDUSTRY DROPDOWN */}
-          <div className="relative w-full sm:w-auto">
+          <div className="relative w-full sm:w-auto" ref={dropdownRef}>
             <button 
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
               className="cursor-pointer flex items-center justify-between sm:justify-center gap-2 bg-[#6a6a6a] text-white px-5 py-3 sm:py-2.5 rounded text-[13px] font-bold tracking-wide transition-colors hover:bg-gray-600 uppercase w-full sm:w-auto"
@@ -233,6 +250,15 @@ function App() {
             </div>
           ))}
         </div>
+      </div>
+
+      {/* ================= NEW FOOTER LOGO ================= */}
+      <div className="w-full flex justify-center items-center py-10 mt-auto">
+        <img 
+          src="https://www.wonderfloor.co.in/assets/img/logo/logo.png" 
+          alt="Wonderfloor Logo" 
+          className="h-10 object-contain opacity-90 hover:opacity-100 transition-opacity"
+        />
       </div>
 
       {/* AR Modal Overlay */}

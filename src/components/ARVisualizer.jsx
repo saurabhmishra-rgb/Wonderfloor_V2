@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 
 const ARVisualizer = ({ closeModal, initialImage }) => {
   // --- Original Mock Data Restored ---
@@ -15,13 +15,59 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
   // --- State ---
   const [selectedProduct, setSelectedProduct] = useState(mockProducts[0]);
   const [processedImage, setProcessedImage] = useState(null);
-  const [sliderPosition, setSliderPosition] = useState(50);
   const [isProcessing, setIsProcessing] = useState(false);
+  
+  // --- Zoom & Pan State ---
+  const [zoomScale, setZoomScale] = useState(1);
+  const [pan, setPan] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const imageContainerRef = useRef(null);
+
+  // --- Mouse Scroll Zoom Logic ---
+  useEffect(() => {
+    const container = imageContainerRef.current;
+    if (!container) return;
+
+    const handleWheel = (e) => {
+      e.preventDefault(); // Prevents the whole page from scrolling when zooming
+      setZoomScale(prev => {
+        // e.deltaY detects scroll wheel movement
+        const newScale = prev - (e.deltaY * 0.002);
+        const clampedScale = Math.min(Math.max(1, newScale), 5); // Allow up to 5x zoom
+        
+        // Reset pan position back to center when zoomed all the way out
+        if (clampedScale === 1) setPan({ x: 0, y: 0 });
+        
+        return clampedScale;
+      });
+    };
+
+    container.addEventListener('wheel', handleWheel, { passive: false });
+    return () => container.removeEventListener('wheel', handleWheel);
+  }, []);
+
+  // --- Click & Drag Pan Logic ---
+  const handleMouseDown = (e) => {
+    if (zoomScale > 1) {
+      setIsDragging(true);
+      setDragStart({ x: e.clientX - pan.x, y: e.clientY - pan.y });
+    }
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isDragging) return;
+    setPan({
+      x: e.clientX - dragStart.x,
+      y: e.clientY - dragStart.y
+    });
+  };
+
+  const handleMouseUpOrLeave = () => setIsDragging(false);
 
   // --- API Logic ---
   const handleTileSelection = async (product) => {
     setSelectedProduct(product);
-
     if (!initialImage?.rawFile) return;
 
     setIsProcessing(true);
@@ -30,22 +76,14 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
     formData.append('tileName', product.name);
 
     try {
-      const response = await fetch('http://localhost:5000/api/process-room', {
+      const response = await fetch('https://ethereal-1700-vision-ai-backend.hf.space/api/process-room', {
         method: 'POST',
         body: formData,
       });
 
       const data = await response.json();
-      if (response.ok) {
-        let finalUrl = data.processedUrl;
-        if (!finalUrl && data.processedPath) {
-          const filename = data.processedPath.split(/[\\/]/).pop();
-          finalUrl = `http://localhost:5000/uploads/${filename}`;
-        }
-        if (finalUrl) {
-          setProcessedImage(`${finalUrl}?t=${new Date().getTime()}`);
-          setSliderPosition(50);
-        }
+      if (response.ok && data.processedUrl) {
+        setProcessedImage(data.processedUrl); 
       } else {
         console.error("AI Engine Error:", data.error);
       }
@@ -57,13 +95,13 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-[#f9fafb] flex flex-col md:flex-row z-50 overflow-hidden font-sans text-gray-800">
+    <div className="fixed inset-0 bg-[#f9fafb] flex z-50 overflow-hidden font-sans text-gray-800">
       
-      {/* ================= LEFT SIDEBAR (Turns into Bottom Scroll on Mobile) ================= */}
-      <div className="w-full md:w-[320px] bg-white border-t md:border-t-0 md:border-r border-gray-200 flex flex-col shadow-sm z-20 shrink-0 h-[170px] md:h-full order-2 md:order-1">
+      {/* ================= LEFT SIDEBAR ================= */}
+      <div className="w-[320px] bg-white border-r border-gray-200 flex flex-col shadow-sm z-20 shrink-0 h-full">
         
-        {/* Logo Section (Hidden on mobile, moved to Top Action Bar) */}
-        <div className="hidden md:flex p-5 justify-between items-center border-b border-gray-100">
+        {/* Logo Section */}
+        <div className="p-5 flex justify-between items-center border-b border-gray-100">
           <img 
             src="https://www.wonderfloor.co.in/assets/img/logo/logo.png" 
             alt="Wonderfloor Logo" 
@@ -74,8 +112,8 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
           </button>
         </div>
 
-        {/* Categories Section (Hidden on small mobile to save space) */}
-        <div className="hidden sm:block px-5 pt-4 pb-4">
+        {/* Categories Section */}
+        <div className="px-5 pt-4 pb-4">
           <div className="flex flex-wrap gap-2">
             <button className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 border border-gray-300 rounded text-sm font-medium text-gray-700">
               <div className="w-4 h-4 bg-gray-500 rounded-full flex items-center justify-center text-white">
@@ -86,8 +124,8 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
           </div>
         </div>
 
-        {/* Search & Filters (Hidden on small mobile) */}
-        <div className="hidden md:flex px-5 pb-4 gap-2">
+        {/* Search & Filters */}
+        <div className="px-5 pb-4 flex gap-2">
           <button className="w-10 h-10 flex items-center justify-center border border-gray-300 rounded text-gray-500 hover:bg-gray-50">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
           </button>
@@ -99,145 +137,153 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
             <button className="w-10 h-10 flex items-center justify-center bg-gray-700 text-white">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
             </button>
+            <button className="w-10 h-10 flex items-center justify-center bg-white text-gray-500">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+            </button>
           </div>
         </div>
 
-        {/* Product List (Horizontal scroll on mobile, Vertical on desktop) */}
-        <div className="flex-1 overflow-x-auto md:overflow-x-hidden md:overflow-y-auto px-4 py-3 md:px-5 md:pb-5 flex flex-row md:flex-col gap-3 custom-scrollbar items-center md:items-stretch">
+        {/* Product List */}
+        <div className="flex-1 overflow-y-auto px-5 pb-5 flex flex-col gap-3 custom-scrollbar">
           {mockProducts.map((prod) => (
             <div 
               key={prod.id} 
               onClick={() => handleTileSelection(prod)}
-              className={`flex flex-col md:flex-row min-w-[130px] md:min-w-0 gap-2 md:gap-4 p-2 md:p-3 border rounded-lg cursor-pointer transition-all relative ${
+              className={`flex gap-4 p-3 border rounded-lg cursor-pointer transition-all relative ${
                 selectedProduct.name === prod.name ? 'border-[#0b5e5e] shadow-sm bg-[#0b5e5e]/5' : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
               }`}
             >
-              <div className="relative shrink-0 w-full md:w-auto flex justify-center">
-                <img src={prod.img} alt={prod.name} className="w-full md:w-20 h-20 md:h-20 object-cover rounded shadow-sm bg-gray-100" />
-                <button className="absolute top-1 right-1 bg-black/30 hover:bg-black/50 p-1 rounded-full text-white backdrop-blur-sm transition-colors md:block">
+              <div className="relative shrink-0">
+                <img src={prod.img} alt={prod.name} className="w-20 h-20 object-cover rounded shadow-sm bg-gray-100" />
+                <button className="absolute top-1 right-1 bg-black/30 hover:bg-black/50 p-1 rounded-full text-white backdrop-blur-sm transition-colors">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="white" stroke="none"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
                 </button>
               </div>
-              <div className="flex flex-col justify-center min-w-0 text-center md:text-left">
-                <span className="text-[10px] md:text-[11px] text-gray-500 uppercase tracking-wide">Wonderfloor</span>
+              <div className="flex flex-col justify-center min-w-0">
+                <span className="text-[11px] text-gray-500 uppercase tracking-wide">Wonderfloor</span>
                 <span className="font-bold text-sm text-gray-900 truncate mt-0.5">{prod.name}</span>
-                <span className="text-xs text-gray-500 mt-1 hidden md:block">Size: {prod.size}</span>
+                <span className="text-xs text-gray-500 mt-1">Size: {prod.size}</span>
               </div>
             </div>
           ))}
         </div>
       </div>
 
-      {/* ================= RIGHT MAIN AREA (Top on Mobile) ================= */}
-      <div className="flex-1 flex flex-col bg-gray-50 overflow-hidden relative order-1 md:order-2">
+      {/* ================= RIGHT MAIN AREA ================= */}
+      <div className="flex-1 flex flex-col bg-[#e5e7eb] h-full overflow-hidden relative">
         
         {/* Top Action Bar */}
-        <div className="h-[50px] md:h-[60px] bg-white border-b border-gray-200 flex justify-between items-center px-3 md:px-4 shadow-sm z-10 shrink-0 relative">
+        <div className="h-[60px] bg-white border-b border-gray-200 flex justify-between items-center px-4 shadow-sm z-10 shrink-0">
           
-          {/* Left: Exit */}
-          <button onClick={closeModal} className="flex items-center gap-1 md:gap-2 text-gray-600 hover:text-black text-sm font-medium px-2 md:border-r md:border-gray-200 md:pr-6 h-full transition-colors">
+          <button onClick={closeModal} className="flex items-center gap-2 text-gray-600 hover:text-black text-sm font-medium px-2 border-r border-gray-200 pr-6 h-full transition-colors">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-            <span className="hidden sm:inline">Exit</span>
+            Exit
           </button>
 
-          {/* Mobile Center Logo */}
-          <img 
-            src="https://www.wonderfloor.co.in/assets/img/logo/logo.png" 
-            alt="Wonderfloor Logo" 
-            className="h-6 md:hidden absolute left-1/2 -translate-x-1/2 object-contain" 
-          />
-
-          {/* Center Tools (Hidden on smaller screens) */}
-          <div className="hidden lg:flex items-center gap-6 text-sm text-gray-600 font-medium">
+          <div className="flex items-center gap-6 text-sm text-gray-600 font-medium">
             <button className="flex items-center gap-2 hover:text-black transition-colors"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M16 3h5v5M4 20L20 4M21 16v5h-5M15 15l6 6M4 4l5 5"></path></svg> Compare</button>
-            <button className="flex items-center gap-2 hover:text-black transition-colors"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg> Zoom</button>
+            <button className="flex items-center gap-2 hover:text-black transition-colors cursor-default">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg> 
+              Zoom {zoomScale > 1 ? `(${zoomScale.toFixed(1)}x)` : ''}
+            </button>
             <button className="flex items-center gap-2 hover:text-black transition-colors"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg> Share</button>
             <button className="flex items-center gap-2 hover:text-black transition-colors"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg> Download</button>
           </div>
 
-          {/* Right Actions */}
-          <div className="flex items-center gap-2 md:gap-4 md:border-l md:border-gray-200 md:pl-6 h-full">
-            <button className="bg-[#0b5e5e] text-white px-3 py-1.5 md:px-4 md:py-2 rounded-md text-xs md:text-sm font-medium hover:bg-[#084747] flex items-center gap-1.5 md:gap-2 shadow-sm transition-colors">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="md:w-4 md:h-4"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-              <span className="hidden sm:inline">Change Room</span>
+          <div className="flex items-center gap-4 border-l border-gray-200 pl-6 h-full">
+            <button className="bg-[#0b5e5e] text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-[#084747] flex items-center gap-2 shadow-sm transition-colors">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+              Change Room
             </button>
-            <button className="text-gray-600 hover:text-black text-sm font-medium flex items-center gap-1 transition-colors px-2">
-              <span className="hidden md:inline">Menu</span>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="md:w-4 md:h-4"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
+            <button className="text-gray-600 hover:text-black text-sm font-medium flex items-center gap-1 transition-colors">
+              Menu
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
             </button>
           </div>
         </div>
 
-        {/* ================= IMAGE VIEWER AREA ================= */}
-        <div className="flex-1 relative overflow-hidden flex items-center justify-center p-3 md:p-6 md:pb-2">
-          
-          {isProcessing && (
-            <div className="absolute inset-0 bg-white/40 backdrop-blur-sm flex flex-col justify-center items-center z-40">
-              <div className="w-10 h-10 md:w-12 md:h-12 border-4 border-gray-200 border-t-[#0b5e5e] rounded-full animate-spin mb-4"></div>
-              <p className="text-[#0b5e5e] font-bold text-sm md:text-lg drop-shadow-md">Applying Wonderfloor...</p>
-            </div>
-          )}
-
-          <div className="relative w-full h-full flex items-center justify-center shadow-md bg-white rounded-md overflow-hidden border border-gray-200">
+        {/* ================= NEW: UNIFIED IMAGE & FOOTER WRAPPER ================= */}
+        {/* WIDER: Padding reduced (p-2 md:px-3) so the container stretches left and right! */}
+        <div className="flex-1 relative flex items-center justify-center p-2 md:px-3 md:py-4 overflow-hidden">
             
-            {/* Base Image */}
-            <img 
-              src={processedImage || initialImage?.previewUrl || 'https://images.unsplash.com/photo-1595844730298-b960fa25fa48?auto=format&fit=crop&w=1200&q=80'} 
-              alt="Room view" 
-              className="w-full h-full object-contain pointer-events-none"
-            />
-
-            {/* Before/After Slider */}
-            {processedImage && (
-              <>
-                <img 
-                  src={initialImage?.previewUrl} 
-                  alt="Original" 
-                  className="absolute w-full h-full object-contain pointer-events-none top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
-                  style={{ clipPath: `polygon(0 0, ${sliderPosition}% 0, ${sliderPosition}% 100%, 0 100%)` }}
-                />
+            {/* WIDER: max-w changed to 98% to let it stretch almost completely to the edges */}
+            <div 
+              className="relative flex flex-col bg-white shadow-xl rounded-md overflow-hidden max-w-[98%]"
+              style={{ 
+                aspectRatio: '4/3', 
+                maxHeight: '100%' 
+              }}
+            >
+                
+                {/* 1. Zoomable Image Section */}
                 <div 
-                  className="absolute top-0 bottom-0 w-[2px] bg-white flex items-center justify-center z-20 pointer-events-none"
-                  style={{ left: `${sliderPosition}%`, transform: 'translateX(-50%)' }}
+                  ref={imageContainerRef}
+                  className="flex-1 relative overflow-hidden bg-gray-200"
+                  onMouseDown={handleMouseDown}
+                  onMouseMove={handleMouseMove}
+                  onMouseUp={handleMouseUpOrLeave}
+                  onMouseLeave={handleMouseUpOrLeave}
+                  // CURSOR LOGIC: Zoom-in glass at standard size. Grab hand when zoomed. Closed hand when dragging.
+                  style={{ cursor: zoomScale > 1 ? (isDragging ? 'grabbing' : 'grab') : 'zoom-in' }}
                 >
-                  <div className="w-10 h-10 md:w-8 md:h-8 bg-white rounded-full shadow-[0_0_10px_rgba(0,0,0,0.3)] flex items-center justify-center text-[#0b5e5e]">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M15 18l-6-6 6-6" /><path d="M9 18l6-6-6-6" className="rotate-180 origin-center" /></svg>
-                  </div>
+                    
+                    {isProcessing && (
+                      <div className="absolute inset-0 bg-white/50 backdrop-blur-sm flex flex-col justify-center items-center z-40">
+                        <div className="w-12 h-12 border-4 border-[#0b5e5e]/20 border-t-[#0b5e5e] rounded-full animate-spin mb-4"></div>
+                        <p className="text-[#0b5e5e] font-bold text-lg drop-shadow-md">Applying Wonderfloor...</p>
+                      </div>
+                    )}
+
+                    <img 
+                      src={processedImage || initialImage?.previewUrl || 'https://images.unsplash.com/photo-1595844730298-b960fa25fa48?auto=format&fit=crop&w=1200&q=80'} 
+                      alt="Room view" 
+                      draggable="false" // FIX: Prevents the browser from accidentally "dragging" the raw image file
+                      className="w-full h-full object-cover select-none" // select-none prevents highlighting issues
+                      style={{ 
+                        transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoomScale})`,
+                        transformOrigin: 'center center',
+                        // Smooth zoom transition, but instant when dragging
+                        transition: isDragging ? 'none' : 'transform 0.1s ease-out' 
+                      }}
+                    />
                 </div>
-                <input 
-                  type="range" min="0" max="100" value={sliderPosition}
-                  onChange={(e) => setSliderPosition(e.target.value)}
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-ew-resize z-30"
-                />
-              </>
-            )}
-          </div>
-        </div>
 
-        {/* ================= STATIC BOTTOM CONTROL BAR ================= */}
-        <div className="h-[50px] md:h-[70px] bg-white border border-gray-200 px-4 md:px-6 mx-3 md:mx-6 mb-3 md:mb-6 mt-0 flex items-center justify-center md:justify-between rounded-md shadow-sm shrink-0 z-10">
-          
-          {/* Selected Product Info (Hidden on mobile) */}
-          <div className="hidden md:flex items-center gap-4">
-            <img src={selectedProduct.img} alt="Current" className="w-10 h-10 object-cover rounded shadow-sm border border-gray-200" />
-            <div className="flex flex-col">
-              <span className="text-[10px] text-gray-500 uppercase tracking-wider">Wonderfloor</span>
-              <span className="text-sm font-bold text-gray-900">{selectedProduct.name}</span>
+                {/* 2. Attached Footer Bar */}
+                <div className="h-[60px] md:h-[70px] bg-white border-t border-gray-200 px-4 md:px-6 shrink-0 flex items-center justify-between z-20 relative">
+                    
+                    {/* Selected Product */}
+                    <div className="flex items-center gap-3">
+                      <img src={selectedProduct.img} alt="Current" className="w-10 h-10 object-cover rounded shadow-sm border border-gray-200" />
+                      <div className="flex flex-col">
+                        <span className="text-[10px] text-gray-500 uppercase tracking-wider">Wonderfloor</span>
+                        <span className="text-sm font-bold text-gray-900">{selectedProduct.name}</span>
+                      </div>
+                    </div>
+
+                    {/* Centered Footer Logo */}
+                    <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center opacity-80 pointer-events-none hidden sm:flex">
+                      <span className="text-[9px] font-semibold text-gray-400 mb-0.5 tracking-wider uppercase">Powered by</span>
+                      <img src="https://www.wonderfloor.co.in/assets/img/logo/logo.png" alt="Wonderfloor Logo" className="h-3 object-contain" />
+                    </div>
+
+                    {/* Controls */}
+                    <div className="flex items-center gap-4 md:gap-6">
+                      <button 
+                        onClick={() => { setZoomScale(1); setPan({x:0, y:0}); }} 
+                        className="flex items-center gap-2 text-gray-600 hover:text-black transition-colors cursor-pointer"
+                      >
+                        <span className="text-sm font-medium">Reset</span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><polyline points="3 3 3 8 8 8"></polyline></svg>
+                      </button>
+                      <div className="w-[1px] h-6 bg-gray-300"></div>
+                      <button className="flex items-center gap-2 text-gray-600 hover:text-black transition-colors cursor-pointer">
+                        <span className="text-sm font-medium">Rotate</span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21.5 2v6h-6M2.13 15.57a9 9 0 1 0 3.87-11.23l-3.5 3.5"></path></svg>
+                      </button>
+                    </div>
+
+                </div>
             </div>
-          </div>
-
-          {/* Controls (Centered on mobile) */}
-          <div className="flex w-full md:w-auto items-center justify-center md:justify-end gap-8 md:gap-6">
-            <button className="flex items-center gap-2 text-gray-600 hover:text-black transition-colors">
-              <span className="text-sm font-medium">Reset</span>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><polyline points="3 3 3 8 8 8"></polyline></svg>
-            </button>
-            <div className="w-[1px] h-6 bg-gray-300"></div>
-            <button className="flex items-center gap-2 text-gray-600 hover:text-black transition-colors">
-              <span className="text-sm font-medium">Rotate</span>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21.5 2v6h-6M2.13 15.57a9 9 0 1 0 3.87-11.23l-3.5 3.5"></path></svg>
-            </button>
-          </div>
 
         </div>
 
