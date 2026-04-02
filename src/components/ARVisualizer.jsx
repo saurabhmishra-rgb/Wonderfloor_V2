@@ -8,6 +8,7 @@ import floorCedar from '../assets/image3.jpeg';
 import floorCalla from '../assets/image4.jpeg';
 import floorTansy from '../assets/image5.jpeg';
 import floorPoppy from '../assets/image6.jpeg';
+import wonderfloorimage from '../assets/wonderfloor_image.jpg';
 
 // const BACKEND_URL = 'http://127.0.0.1:8000';
 const BACKEND_URL = 'https://wonderfloor-backend-1.onrender.com';
@@ -15,25 +16,26 @@ const BACKEND_URL = 'https://wonderfloor-backend-1.onrender.com';
 const ARVisualizer = ({ closeModal, initialImage }) => {
   // 2. USE THE IMPORTED VARIABLES FOR THE `img` PROPERTY
   const mockProducts = [
-    { id: 1, name: 'Acton',  size: '6cm x 36cm',  img: floorActon },
-    { id: 2, name: 'Holmes', size: '6cm x 36cm',  img: floorHolmes },
-    { id: 3, name: 'Cedar',  size: '6cm x 36cm',  img: floorCedar },
+    { id: 1, name: 'Acton', size: '30cm x 30cm', img: floorActon },
+    { id: 2, name: 'Holmes', size: '30cm x 30cm', img: floorHolmes },
+    { id: 3, name: 'Cedar', size: '30cm x 30cm', img: floorCedar },
     // { id: 4, name: 'Faye', size: '6cm x 36cm', img: floorFaye },
-    { id: 5, name: 'Calla',  size: '6cm x 136cm', img: floorCalla },
-    { id: 6, name: 'Tansy',  size: '6cm x 36cm',  img: floorTansy },
-    { id: 7, name: 'Poppy1', size: '6cm x 36cm',  img: floorPoppy },
+    { id: 5, name: 'Calla', size: '30cm x 30cm', img: floorCalla },
+    { id: 6, name: 'Tansy', size: '30cm x 30cm', img: floorTansy },
+    { id: 7, name: 'Poppy1', size: '30cm x 30cm', img: floorPoppy },
+    { id: 8, name: 'wonderfloorImage', size: '30cm x 30cm', img: wonderfloorimage },
     // { id: 8, name: 'Alchimia', size: 'Custom Size', img: floorAlchimia, description: 'glossy white marble ceramic tile with grey veining' }
   ];
 
   const [selectedProduct, setSelectedProduct] = useState(mockProducts[0]);
-  const [processedImage, setProcessedImage]   = useState(null);
-  const [isProcessing, setIsProcessing]       = useState(false);
-  const [errorMsg, setErrorMsg]               = useState(null);
+  const [processedImage, setProcessedImage] = useState(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [errorMsg, setErrorMsg] = useState(null);
 
   const [zoomScale, setZoomScale] = useState(1);
-  const [pan, setPan]             = useState({ x: 0, y: 0 });
+  const [pan, setPan] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
-  const [dragStart, setDragStart]   = useState({ x: 0, y: 0 });
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const imageContainerRef = useRef(null);
 
   useEffect(() => {
@@ -51,9 +53,9 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
     return () => container.removeEventListener('wheel', handleWheel);
   }, []);
 
-  const handleMouseDown      = (e) => { if (zoomScale > 1) { setIsDragging(true); setDragStart({ x: e.clientX - pan.x, y: e.clientY - pan.y }); } };
-  const handleMouseMove      = (e) => { if (isDragging) setPan({ x: e.clientX - dragStart.x, y: e.clientY - dragStart.y }); };
-  const handleMouseUpOrLeave = ()  => setIsDragging(false);
+  const handleMouseDown = (e) => { if (zoomScale > 1) { setIsDragging(true); setDragStart({ x: e.clientX - pan.x, y: e.clientY - pan.y }); } };
+  const handleMouseMove = (e) => { if (isDragging) setPan({ x: e.clientX - dragStart.x, y: e.clientY - dragStart.y }); };
+  const handleMouseUpOrLeave = () => setIsDragging(false);
 
   // 3. NEW SIMPLIFIED FUNCTION TO GET LOCAL IMAGE AS BLOB
   const getLocalImageAsBlob = async (imageSrc) => {
@@ -76,11 +78,13 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
       const tileBlob = await getLocalImageAsBlob(product.img);
 
       const formData = new FormData();
-      formData.append('roomImage',   initialImage.rawFile);
+      formData.append('roomImage', initialImage.rawFile);
       // Naming the file with the product name is critical, 
       // as your Python backend uses this filename to generate the prompt!
-      formData.append('floorImage',  tileBlob, `${product.name}.jpg`); 
-      formData.append('instructions', product.description || "");
+      formData.append('floorImage', tileBlob, `${product.name}.jpg`);
+      // Pass the explicit tile dimension to help the AI scale the layout correctly
+      const dimensionInstruction = `The flooring tiles have physical dimensions of ${product.size}. Please scale the floor pattern realistically relative to the room perspective. ${product.description || ""}`.trim();
+      formData.append('instructions', dimensionInstruction);
 
       console.log(`Sending request to ${BACKEND_URL}/api/replace-floor...`);
 
@@ -107,7 +111,7 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
   };
 
   const currentSrc =
-    processedImage          ||
+    processedImage ||
     initialImage?.previewUrl ||
     'https://images.unsplash.com/photo-1595844730298-b960fa25fa48?auto=format&fit=crop&w=1200&q=80';
 
@@ -124,8 +128,8 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
           />
           <button onClick={closeModal} className="text-gray-400 hover:text-red-500 transition-colors">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <line x1="18" y1="6"  x2="6"  y2="18" />
-              <line x1="6"  y1="6"  x2="18" y2="18" />
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
             </svg>
           </button>
         </div>
@@ -141,11 +145,10 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
             <div
               key={prod.id}
               onClick={() => handleTileSelection(prod)}
-              className={`flex gap-4 p-3 border rounded-lg cursor-pointer transition-all ${
-                selectedProduct.id === prod.id
-                  ? 'border-[#0b5e5e] shadow-sm bg-[#0b5e5e]/5'
-                  : 'border-gray-200 hover:bg-gray-50'
-              }`}
+              className={`flex gap-4 p-3 border rounded-lg cursor-pointer transition-all ${selectedProduct.id === prod.id
+                ? 'border-[#0b5e5e] shadow-sm bg-[#0b5e5e]/5'
+                : 'border-gray-200 hover:bg-gray-50'
+                }`}
             >
               <img
                 src={prod.img}
@@ -163,7 +166,7 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
 
       {/* ── Right Content Area ── */}
       <div className="flex-1 flex flex-col bg-[#e5e7eb] h-full overflow-hidden relative">
-        
+
         {/* Top Action Bar */}
         <div className="h-[60px] bg-white border-b border-gray-200 flex justify-between items-center px-4 shadow-sm z-10 shrink-0">
           <button onClick={closeModal} className="flex items-center gap-2 text-gray-600 hover:text-black text-sm font-medium px-2 border-r border-gray-200 pr-6 h-full transition-colors">
@@ -174,7 +177,7 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
           <div className="flex items-center gap-6 text-sm text-gray-600 font-medium">
             <button className="flex items-center gap-2 hover:text-black transition-colors"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M16 3h5v5M4 20L20 4M21 16v5h-5M15 15l6 6M4 4l5 5"></path></svg> Compare</button>
             <button className="flex items-center gap-2 hover:text-black transition-colors cursor-default">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg> 
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
               Zoom {zoomScale > 1 ? `(${zoomScale.toFixed(1)}x)` : ''}
             </button>
             <button className="flex items-center gap-2 hover:text-black transition-colors"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg> Share</button>
