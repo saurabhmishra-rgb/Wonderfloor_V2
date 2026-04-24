@@ -7,4 +7,8 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
+  server: {
+    host: '0.0.0.0', // This is the magic line that allows phone connections!
+    port: 5173
+  }
 })
