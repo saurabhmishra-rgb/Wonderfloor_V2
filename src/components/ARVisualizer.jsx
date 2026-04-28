@@ -43,11 +43,17 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
-  const [floorRotation, setFloorRotation] = useState(0); 
-  
+  const [floorRotation, setFloorRotation] = useState(0);
+
+  // Expanded sorting state to handle categories as well
+  const [sortOrder, setSortOrder] = useState(''); // '', 'Prod-A-Z', 'Prod-Z-A', 'Cat-A-Z', 'Cat-Z-A'
+
   // Sidebar states
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [expandedProductCategory, setExpandedProductCategory] = useState('Durofloor'); 
+  const [expandedProductCategory, setExpandedProductCategory] = useState('Durofloor');
+
+  // Quick Selector State for the Footer
+  const [activeFooterCategory, setActiveFooterCategory] = useState(mockProducts[0].accordionCategory);
 
   // Modal States for Product Details
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
@@ -58,26 +64,32 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
 
   // Dropdown States
   const [isShareMenuOpen, setIsShareMenuOpen] = useState(false);
-  const [isDownloadMenuOpen, setIsDownloadMenuOpen] = useState(false); 
-  const [isMenuDropdownOpen, setIsMenuDropdownOpen] = useState(false); 
-  
+  const [isDownloadMenuOpen, setIsDownloadMenuOpen] = useState(false);
+  const [isMenuDropdownOpen, setIsMenuDropdownOpen] = useState(false);
+
   const shareRef = useRef(null);
   const downloadRef = useRef(null);
   const menuRef = useRef(null);
-  
+
   // Toolbar States
-  const [viewMode, setViewMode] = useState('list'); 
+  const [viewMode, setViewMode] = useState('list');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
   // Filter Sidebar States
   const [isFilterMenuOpen, setIsFilterMenuOpen] = useState(false);
-  const [expandedFilterCategory, setExpandedFilterCategory] = useState(null); 
-  const [activeFilters, setActiveFilters] = useState({}); 
+  const [expandedFilterCategory, setExpandedFilterCategory] = useState(null);
+  const [activeFilters, setActiveFilters] = useState({});
 
   const imageContainerRef = useRef(null);
 
   const currentSrc = processedImage || initialImage?.previewUrl || 'https://images.unsplash.com/photo-1595844730298-b960fa25fa48?auto=format&fit=crop&w=1200&q=80';
+
+  useEffect(() => {
+    if (selectedProduct) {
+      setActiveFooterCategory(selectedProduct.accordionCategory);
+    }
+  }, [selectedProduct]);
 
   useEffect(() => {
     const container = imageContainerRef.current;
@@ -96,7 +108,6 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
     return () => container.removeEventListener('wheel', handleWheel);
   }, [isDetailsModalOpen]);
 
-  // Handle clicking outside Dropdowns
   useEffect(() => {
     function handleClickOutside(event) {
       if (shareRef.current && !shareRef.current.contains(event.target)) {
@@ -157,7 +168,7 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
     setIsProcessing(true);
 
     try {
-      const tileBlob = await getRotatedTileBlob(product.img, angle); 
+      const tileBlob = await getRotatedTileBlob(product.img, angle);
       const formData = new FormData();
       formData.append('roomImage', initialImage.rawFile);
       formData.append('floorImage', tileBlob, `${product.name}_rotated.jpg`);
@@ -189,22 +200,22 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
   const handleTileSelection = (product) => {
     setSelectedProduct(product);
     setErrorMsg(null);
-    setFloorRotation(0); 
+    setFloorRotation(0);
     applyFloorOverlay(product, 0);
-    setIsSidebarOpen(false); 
+    setIsSidebarOpen(false);
   };
 
   const handleOpenDetails = (e, product) => {
-    e.stopPropagation(); 
+    e.stopPropagation();
     setDetailsProduct(product);
     setIsDetailsModalOpen(true);
   };
 
   const toggleFavorite = (e, productId) => {
-    e.stopPropagation(); 
-    setFavoriteProducts(prev => 
-      prev.includes(productId) 
-        ? prev.filter(id => id !== productId) 
+    e.stopPropagation();
+    setFavoriteProducts(prev =>
+      prev.includes(productId)
+        ? prev.filter(id => id !== productId)
         : [...prev, productId]
     );
   };
@@ -216,7 +227,7 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
   };
 
   const handleReset = () => {
-    setProcessedImage(null); 
+    setProcessedImage(null);
     setErrorMsg(null);
     setZoomScale(1);
     setPan({ x: 0, y: 0 });
@@ -260,9 +271,10 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
   };
 
   const filterCategories = [
+    { id: 'accordionCategory', label: 'Brand / Category', options: ['Durofloor', 'Siggma', 'Orbit', 'Stoneland Monza', 'Meteor', 'Aventus'] },
     { id: 'colour', label: 'Colour', options: ['Grey', 'Beige', 'Brown', 'Black', 'White'] },
     { id: 'shade', label: 'Shade', options: ['Light', 'Medium', 'Dark'] },
-    { id: 'User Industry', label: 'User Industry', options: ['Industrial Flooring', 'Office Flooring', 'Residential Flooring','School Flooring', 'Sports Flooring'] },
+    { id: 'User Industry', label: 'User Industry', options: ['Industrial Flooring', 'Office Flooring', 'Residential Flooring', 'School Flooring', 'Sports Flooring'] },
     { id: 'Pattern/Layout', label: 'Pattern/Layout', options: ['Harringbone'] },
     { id: 'collection/Style', label: 'Collection/Style', options: ['Wood', 'Stone'] },
   ];
@@ -280,25 +292,37 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
 
   const clearFilters = () => setActiveFilters({});
 
-  // --- UPDATED SEARCH & FILTER LOGIC ---
+  // 1. FILTER AND SORT THE PRODUCTS
   const filteredProducts = mockProducts.filter(prod => {
     const searchLower = searchQuery.trim().toLowerCase();
-    
-    // Check if the search query matches the SKU name, Accordion Category (Siggma, Durofloor, etc), Collection, or Category
-    const matchesSearch = searchLower === '' || 
+
+    const matchesSearch = searchLower === '' ||
       prod.name.toLowerCase().includes(searchLower) ||
       (prod.accordionCategory && prod.accordionCategory.toLowerCase().includes(searchLower)) ||
       (prod.collection && prod.collection.toLowerCase().includes(searchLower)) ||
       (prod.category && prod.category.toLowerCase().includes(searchLower)) ||
       (prod.colour && prod.colour.toLowerCase().includes(searchLower));
 
-    // Check Checkbox Filters
     const matchesFilters = Object.entries(activeFilters).every(([key, selectedValues]) => {
-      if (selectedValues.length === 0) return true; 
-      return selectedValues.includes(prod[key]); 
+      if (selectedValues.length === 0) return true;
+      return selectedValues.includes(prod[key]);
     });
 
     return matchesSearch && matchesFilters;
+  }).sort((a, b) => {
+    if (sortOrder === 'Prod-A-Z') {
+      return a.name.localeCompare(b.name);
+    } else if (sortOrder === 'Prod-Z-A') {
+      return b.name.localeCompare(a.name);
+    }
+    return 0; 
+  });
+
+  // 2. SORT THE CATEGORIES (ACCORDIONS) 
+  const displayCategories = [...productCategories].sort((a, b) => {
+    if (sortOrder === 'Cat-A-Z') return a.localeCompare(b);
+    if (sortOrder === 'Cat-Z-A') return b.localeCompare(a);
+    return 0; // Default: preserve original array order
   });
 
   const totalActiveFiltersCount = Object.values(activeFilters).reduce((acc, curr) => acc + curr.length, 0);
@@ -306,20 +330,22 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
   return (
     <div className="fixed inset-0 bg-[#f9fafb] flex z-50 overflow-hidden font-sans text-gray-800">
 
-      {/* Mobile Backdrop */}
       {isSidebarOpen && (
-        <div 
-          className="fixed inset-0 bg-black/50 z-20 md:hidden transition-opacity"
+        <div
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 md:hidden transition-opacity"
           onClick={() => setIsSidebarOpen(false)}
         />
       )}
 
-      {/* ── Sidebar (Responsive) ── */}
-      <div className={`fixed md:relative bg-white border-r border-gray-200 flex flex-col shadow-xl md:shadow-sm z-30 shrink-0 h-full w-[280px] md:w-[320px] transition-transform duration-300 ease-in-out ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
-        
-        {/* VIEW 1: FILTER MENU */}
+      {/* Sidebar */}
+      <div className={`fixed md:relative bg-white md:border-r border-gray-200 flex flex-col z-50 md:z-30 shrink-0 transition-transform duration-300 ease-in-out
+        bottom-0 left-0 w-full h-[85vh] rounded-t-3xl shadow-[0_-10px_40px_rgba(0,0,0,0.15)]
+        ${isSidebarOpen ? 'translate-y-0' : 'translate-y-full'} 
+        md:w-[320px] md:h-full md:rounded-none md:shadow-sm md:translate-y-0
+      `}>
+
         {isFilterMenuOpen ? (
-          <div className="flex flex-col h-full bg-white absolute inset-0 z-40 animate-fade-in">
+          <div className="flex flex-col h-full bg-white absolute inset-0 z-40 animate-fade-in md:rounded-none rounded-t-3xl overflow-hidden">
             <div className="p-4 md:p-5 flex items-center gap-3 border-b border-gray-100">
               <button onClick={() => setIsFilterMenuOpen(false)} className="text-gray-500 hover:text-black hover:bg-gray-100 p-1.5 rounded-md cursor-pointer transition-colors">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
@@ -331,6 +357,62 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
               <p className="text-sm font-medium text-gray-800 mb-4">
                 {totalActiveFiltersCount === 0 ? "No active filters" : `${totalActiveFiltersCount} active filter${totalActiveFiltersCount > 1 ? 's' : ''}`}
               </p>
+              
+              {/* === UPDATED SORT BY MENU === */}
+              <div className="flex flex-col">
+                <button 
+                  onClick={() => setExpandedFilterCategory(expandedFilterCategory === 'sort' ? null : 'sort')}
+                  className={`flex justify-between items-center py-3 px-2 rounded-md transition-colors cursor-pointer ${expandedFilterCategory === 'sort' ? 'bg-gray-100' : 'hover:bg-gray-50'}`}
+                >
+                  <span className="font-medium text-[15px] text-gray-800 flex items-center gap-2">
+                    Sort By
+                  </span>
+                  <svg className={`w-5 h-5 text-gray-500 transition-transform ${expandedFilterCategory === 'sort' ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                  </svg>
+                </button>
+
+                {expandedFilterCategory === 'sort' && (
+                  <div className="flex flex-col gap-3 py-3 px-2 pl-4">
+                    <label className="flex justify-between items-center cursor-pointer group">
+                      <span className="text-sm text-gray-700 flex items-center gap-2">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-400"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                        Default
+                      </span>
+                      <input type="radio" name="sort" value="" checked={sortOrder === ''} onChange={(e) => setSortOrder(e.target.value)} className="w-4 h-4 text-[#0b5e5e] focus:ring-[#0b5e5e] cursor-pointer accent-[#0b5e5e]" />
+                    </label>
+                    <label className="flex justify-between items-center cursor-pointer group">
+                      <span className="text-sm text-gray-700 flex items-center gap-2">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-400"><path d="M3 3h18v18H3zM15 9h-6m6 3h-6m6 3h-6"></path><path d="M9 4v16"></path></svg>
+                        Product Name (A-Z)
+                      </span>
+                      <input type="radio" name="sort" value="Prod-A-Z" checked={sortOrder === 'Prod-A-Z'} onChange={(e) => setSortOrder(e.target.value)} className="w-4 h-4 text-[#0b5e5e] focus:ring-[#0b5e5e] cursor-pointer accent-[#0b5e5e]" />
+                    </label>
+                    <label className="flex justify-between items-center cursor-pointer group">
+                      <span className="text-sm text-gray-700 flex items-center gap-2">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-400"><path d="M3 3h18v18H3zM15 15h-6m6-3h-6m6-3h-6"></path><path d="M9 4v16"></path></svg>
+                        Product Name (Z-A)
+                      </span>
+                      <input type="radio" name="sort" value="Prod-Z-A" checked={sortOrder === 'Prod-Z-A'} onChange={(e) => setSortOrder(e.target.value)} className="w-4 h-4 text-[#0b5e5e] focus:ring-[#0b5e5e] cursor-pointer accent-[#0b5e5e]" />
+                    </label>
+                    <label className="flex justify-between items-center cursor-pointer group">
+                      <span className="text-sm text-gray-700 flex items-center gap-2">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-400"><path d="M3 3h18v18H3zM15 9h-6m6 3h-6m6 3h-6"></path><path d="M9 4v16"></path></svg>
+                        Category Name (A-Z)
+                      </span>
+                      <input type="radio" name="sort" value="Cat-A-Z" checked={sortOrder === 'Cat-A-Z'} onChange={(e) => setSortOrder(e.target.value)} className="w-4 h-4 text-[#0b5e5e] focus:ring-[#0b5e5e] cursor-pointer accent-[#0b5e5e]" />
+                    </label>
+                    <label className="flex justify-between items-center cursor-pointer group">
+                      <span className="text-sm text-gray-700 flex items-center gap-2">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-400"><path d="M3 3h18v18H3zM15 15h-6m6-3h-6m6-3h-6"></path><path d="M9 4v16"></path></svg>
+                        Category Name (Z-A)
+                      </span>
+                      <input type="radio" name="sort" value="Cat-Z-A" checked={sortOrder === 'Cat-Z-A'} onChange={(e) => setSortOrder(e.target.value)} className="w-4 h-4 text-[#0b5e5e] focus:ring-[#0b5e5e] cursor-pointer accent-[#0b5e5e]" />
+                    </label>
+                  </div>
+                )}
+              </div>
+              {/* <div className="border-t border-gray-200 my-2"></div> */}
 
               <div className="flex flex-col gap-1">
                 {filterCategories.map((category) => {
@@ -339,7 +421,7 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
 
                   return (
                     <div key={category.id} className="flex flex-col">
-                      <button 
+                      <button
                         onClick={() => setExpandedFilterCategory(isExpanded ? null : category.id)}
                         className={`flex justify-between items-center py-3 px-2 rounded-md transition-colors cursor-pointer ${isExpanded ? 'bg-gray-100' : 'hover:bg-gray-50'}`}
                       >
@@ -363,8 +445,8 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
                             return (
                               <label key={option} className="flex justify-between items-center cursor-pointer group">
                                 <span className="text-sm text-gray-700">{option}</span>
-                                <input 
-                                  type="checkbox" 
+                                <input
+                                  type="checkbox"
                                   checked={isChecked}
                                   onChange={() => handleToggleFilter(category.id, option)}
                                   className="w-4 h-4 rounded border-gray-300 text-[#0b5e5e] focus:ring-[#0b5e5e] cursor-pointer accent-[#0b5e5e]"
@@ -381,13 +463,13 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
             </div>
 
             <div className="p-4 border-t border-gray-200 bg-white flex justify-between gap-3 shrink-0">
-              <button 
+              <button
                 onClick={clearFilters}
                 className="flex-1 py-2.5 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
               >
                 Clear filters
               </button>
-              <button 
+              <button
                 onClick={() => setIsFilterMenuOpen(false)}
                 className="flex-1 py-2.5 bg-[#202938] rounded-md text-sm font-medium text-white hover:bg-black transition-colors cursor-pointer"
               >
@@ -396,30 +478,33 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
             </div>
           </div>
         ) : (
-          
-          /* VIEW 2: PRODUCT LIST (Accordion Layout) */
+
           <>
-            <div className="p-4 md:p-5 flex justify-between items-center pb-4">
+            <div className="md:hidden w-full flex justify-center pt-3 pb-1 cursor-pointer touch-none" onClick={() => setIsSidebarOpen(false)}>
+              <div className="w-12 h-1.5 bg-gray-300 rounded-full"></div>
+            </div>
+
+            <div className="p-4 md:p-5 flex justify-between items-center pb-4 pt-2 md:pt-5">
               <img
                 src="https://www.wonderfloor.co.in/assets/img/logo/logo.png"
                 alt="Logo"
                 className="h-8 max-w-[150px] md:max-w-[180px] object-contain"
               />
               <button onClick={() => setIsSidebarOpen(false)} className="md:hidden text-gray-400 hover:text-gray-800 hover:bg-gray-100 p-1.5 rounded-md transition-colors cursor-pointer">
-                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg> 
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
               </button>
             </div>
 
             <div className="px-4 md:px-5 pb-3">
               <div className="flex items-center gap-2">
-                <button 
+                <button
                   onClick={() => setIsSearchOpen(!isSearchOpen)}
                   className="w-10 h-10 border border-gray-300 rounded flex items-center justify-center hover:bg-gray-100 transition-colors text-gray-600 shrink-0 cursor-pointer"
                 >
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                 </button>
 
-                <button 
+                <button
                   onClick={() => setIsFilterMenuOpen(true)}
                   className="flex-1 h-10 border border-gray-300 rounded flex items-center justify-center gap-2 hover:bg-gray-100 transition-colors text-sm font-medium text-gray-700 cursor-pointer relative"
                 >
@@ -465,25 +550,22 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
               </div>
             )}
 
-            {/* Product Rendering with Accordions */}
             <div className="flex-1 overflow-y-auto px-4 md:px-5 pb-5 pt-4 flex flex-col relative">
-              
+
+              {/* RENDER CATEGORIES USING THE NEW 'displayCategories' ARRAY */}
               <div className="flex-1">
-                {productCategories.map(categoryName => {
+                {displayCategories.map(categoryName => {
                   const categoryProducts = filteredProducts.filter(p => p.accordionCategory === categoryName);
                   if (categoryProducts.length === 0) return null;
 
-                  // --- UX IMPROVEMENT: Auto-expand the accordion if the user is currently searching ---
                   const isExpanded = (expandedProductCategory === categoryName) || (searchQuery.trim().length > 0);
 
                   return (
                     <div key={categoryName} className="mb-3">
-                      {/* Accordion Header */}
                       <button
                         onClick={() => setExpandedProductCategory(isExpanded && searchQuery.length === 0 ? null : categoryName)}
-                        className={`w-full flex justify-between items-center py-3 px-4 border rounded-lg transition-all duration-300 cursor-pointer ${
-                          isExpanded ? 'bg-[#0b5e5e] border-[#0b5e5e] text-white shadow-md' : 'bg-white border-gray-200 hover:bg-gray-50 hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)]'
-                        }`}
+                        className={`w-full flex justify-between items-center py-3 px-4 border rounded-lg transition-all duration-300 cursor-pointer ${isExpanded ? 'bg-[#0b5e5e] border-[#0b5e5e] text-white shadow-md' : 'bg-white border-gray-200 hover:bg-gray-50 hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)]'
+                          }`}
                       >
                         <span className="font-bold text-sm tracking-wide">{categoryName}</span>
                         <svg className={`w-5 h-5 transition-transform ${isExpanded ? 'rotate-180 text-white' : 'text-gray-500'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -491,7 +573,6 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
                         </svg>
                       </button>
 
-                      {/* Accordion Body */}
                       {isExpanded && (
                         <div className="pt-3 pb-1">
                           {viewMode === 'list' ? (
@@ -502,15 +583,13 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
                                   <div
                                     key={prod.id}
                                     onClick={() => handleTileSelection(prod)}
-                                    className={`relative flex gap-3 md:gap-4 p-2 md:p-3 border rounded-lg cursor-pointer transition-all duration-300 bg-white ${
-                                      selectedProduct.id === prod.id
-                                        ? 'border-[#0b5e5e] shadow-md bg-[#0b5e5e]/5 transform scale-[1.02]'
-                                        : 'border-gray-200 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:-translate-y-1'
+                                    className={`relative flex gap-3 md:gap-4 p-2 md:p-3 border rounded-lg cursor-pointer transition-all duration-300 bg-white ${selectedProduct.id === prod.id
+                                      ? 'border-[#0b5e5e] shadow-md bg-[#0b5e5e]/5 transform scale-[1.02]'
+                                      : 'border-gray-200 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:-translate-y-1'
                                       }`}
                                   >
-                                    {/* HEART ICON (LIST VIEW) */}
-                                    <button 
-                                      onClick={(e) => toggleFavorite(e, prod.id)} 
+                                    <button
+                                      onClick={(e) => toggleFavorite(e, prod.id)}
                                       className="absolute top-2 right-2 p-1 z-10 cursor-pointer"
                                     >
                                       <svg width="20" height="20" viewBox="0 0 24 24" fill={isFavorite ? "#ef4444" : "none"} stroke={isFavorite ? "#ef4444" : "#9ca3af"} strokeWidth="2" className="transition-colors hover:scale-110">
@@ -523,7 +602,7 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
                                       <span className="text-[10px] md:text-[11px] text-gray-500 uppercase tracking-wide">Wonderfloor</span>
                                       <span className="font-bold text-sm text-gray-900 truncate mt-0.5 pr-6">{prod.name}</span>
                                       <span className="text-xs text-gray-500 mt-1">Size: {prod.size}</span>
-                                      <button 
+                                      <button
                                         onClick={(e) => handleOpenDetails(e, prod)}
                                         className="text-xs text-[#0b5e5e] mt-1 hover:underline text-left cursor-pointer z-10 block w-max"
                                       >
@@ -539,18 +618,16 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
                               {categoryProducts.map((prod) => {
                                 const isFavorite = favoriteProducts.includes(prod.id);
                                 return (
-                                  <div 
+                                  <div
                                     key={prod.id}
                                     onClick={() => handleTileSelection(prod)}
-                                    className={`relative aspect-square rounded overflow-hidden cursor-pointer border-2 transition-all duration-300 bg-white ${
-                                      selectedProduct.id === prod.id 
-                                        ? 'border-[#0b5e5e] shadow-lg transform scale-105 z-10' 
-                                        : 'border-transparent hover:border-gray-200 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:scale-105'
+                                    className={`relative aspect-square rounded overflow-hidden cursor-pointer border-2 transition-all duration-300 bg-white ${selectedProduct.id === prod.id
+                                      ? 'border-[#0b5e5e] shadow-lg transform scale-105 z-10'
+                                      : 'border-transparent hover:border-gray-200 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:scale-105'
                                       }`}
                                   >
-                                    {/* HEART ICON (GRID VIEW) */}
-                                    <button 
-                                      onClick={(e) => toggleFavorite(e, prod.id)} 
+                                    <button
+                                      onClick={(e) => toggleFavorite(e, prod.id)}
                                       className="absolute top-1.5 right-1.5 p-1 bg-white/70 backdrop-blur-sm rounded-full z-20 cursor-pointer shadow-sm"
                                     >
                                       <svg width="14" height="14" viewBox="0 0 24 24" fill={isFavorite ? "#ef4444" : "none"} stroke={isFavorite ? "#ef4444" : "#6b7280"} strokeWidth="2" className="transition-colors hover:scale-110">
@@ -582,7 +659,7 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
                     <span className="text-[11px] text-gray-500 uppercase tracking-wide">Wonderfloor</span>
                     <span className="font-bold text-base text-gray-900 mt-1">{selectedProduct.name}</span>
                     <span className="text-sm text-gray-600 mt-2">Size: <span className="font-medium text-gray-900">{selectedProduct.size}</span></span>
-                    <button 
+                    <button
                       onClick={(e) => handleOpenDetails(e, selectedProduct)}
                       className="text-sm text-[#0b5e5e] mt-4 flex items-center hover:underline cursor-pointer w-max"
                     >
@@ -592,20 +669,17 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
                   </div>
                 </div>
               )}
-              
+
             </div>
           </>
         )}
       </div>
 
-      {/* ── Right Content Area ── */}
       <div className="flex-1 flex flex-col bg-[#e5e7eb] h-full overflow-hidden relative w-full">
 
-       {/* Top Action Bar */}
         <div className="h-[60px] bg-white border-b border-gray-200 flex justify-between items-center px-2 md:px-4 shadow-sm z-30 shrink-0 w-full relative">
-          
+
           <div className="flex items-center gap-1 md:gap-2 text-gray-600 hover:text-black text-sm font-medium px-2 border-r border-gray-200 pr-3 md:pr-6 h-full transition-colors">
-            {/* Mobile Sidebar Toggle */}
             <button onClick={() => setIsSidebarOpen(true)} className="md:hidden p-1.5 rounded-md hover:bg-gray-100 cursor-pointer">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
             </button>
@@ -617,19 +691,16 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
 
           <div className="flex-1 flex items-center justify-center gap-1 md:gap-2 text-sm text-gray-600 font-medium px-3 whitespace-nowrap h-full">
             <button className="flex items-center gap-1.5 px-3 py-2 rounded-md hover:bg-gray-100 hover:text-gray-900 transition-colors cursor-pointer">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M16 3h5v5M4 20L20 4M21 16v5h-5M15 15l6 6M4 4l5 5"></path></svg> 
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M16 3h5v5M4 20L20 4M21 16v5h-5M15 15l6 6M4 4l5 5"></path></svg>
               <span className="hidden lg:inline">Compare</span>
             </button>
-            
-           
-            
-            {/* SHARE DROPDOWN */}
+
             <div className="relative flex items-center h-full" ref={shareRef}>
               <button onClick={() => setIsShareMenuOpen(!isShareMenuOpen)} className="flex items-center gap-1.5 px-3 py-2 rounded-md hover:bg-gray-100 hover:text-gray-900 transition-colors cursor-pointer">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg> 
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
                 <span className="hidden sm:inline">Share</span>
               </button>
-              
+
               {isShareMenuOpen && (
                 <div className="absolute top-[50px] left-1/2 -translate-x-1/2 md:translate-x-0 md:left-auto md:right-0 bg-white shadow-xl border border-gray-200 rounded-md py-2 w-[220px] z-50 flex flex-col">
                   <button onClick={() => handleShare('copy')} className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gray-50 text-left transition-colors cursor-pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg> Copy Link</button>
@@ -641,13 +712,12 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
               )}
             </div>
 
-            {/* DOWNLOAD DROPDOWN (UPDATED) */}
             <div className="relative flex items-center h-full" ref={downloadRef}>
               <button onClick={() => setIsDownloadMenuOpen(!isDownloadMenuOpen)} className="flex items-center gap-1.5 px-3 py-2 rounded-md hover:bg-gray-100 hover:text-gray-900 transition-colors cursor-pointer">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg> 
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
                 <span className="hidden sm:inline">Download</span>
               </button>
-              
+
               {isDownloadMenuOpen && (
                 <div className="absolute top-[50px] left-1/2 -translate-x-1/2 md:translate-x-0 md:left-auto md:right-0 bg-white shadow-xl border border-gray-200 rounded-md py-2 w-[240px] z-50 flex flex-col">
                   <button onClick={() => handleDownload('image')} className="flex items-center gap-3 px-4 py-3 text-sm hover:bg-gray-50 text-left transition-colors cursor-pointer border-b border-gray-100">
@@ -665,7 +735,7 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
 
           <div className="flex items-center gap-1 md:gap-2 border-l border-gray-200 pl-2 md:pl-4 h-full shrink-0">
             <a href="https://www.wonderfloor.co.in/contact-us" target="_blank" rel="noopener noreferrer" title="Contact Us | Wonderfloor">
-              <button 
+              <button
                 className="bg-[#0b5e5e] text-white px-3 py-1.5 md:px-4 md:py-2 rounded-md text-xs md:text-sm font-medium hover:bg-[#084747] flex items-center gap-1.5 shadow-sm transition-colors cursor-pointer"
               >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="hidden sm:block"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
@@ -674,7 +744,7 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
             </a>
 
             <div className="relative flex items-center h-full" ref={menuRef}>
-              <button 
+              <button
                 onClick={() => setIsMenuDropdownOpen(!isMenuDropdownOpen)}
                 className="hidden lg:flex text-gray-600 hover:text-gray-900 hover:bg-gray-100 px-3 py-2 rounded-md text-sm font-medium items-center gap-1 transition-colors cursor-pointer"
               >
@@ -697,13 +767,12 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
           </div>
         </div>
 
-        {/* Main Viewer (Image Canvas) */}
-        <div 
+        <div
           ref={imageContainerRef}
           className="flex-1 relative flex items-center justify-center p-2 md:px-3 md:py-4 overflow-hidden touch-none"
-          onMouseDown={handleMouseDown} 
-          onMouseMove={handleMouseMove} 
-          onMouseUp={handleMouseUpOrLeave} 
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUpOrLeave}
           onMouseLeave={handleMouseUpOrLeave}
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
@@ -711,15 +780,15 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
           onTouchCancel={handleMouseUpOrLeave}
           style={{ cursor: zoomScale > 1 && !isDetailsModalOpen ? (isDragging ? 'grabbing' : 'grab') : 'zoom-in' }}
         >
-          <div 
-            className="relative flex flex-col bg-white shadow-xl rounded-md overflow-hidden" 
-            style={{ 
-              aspectRatio: '4/3', 
+          <div
+            className="relative flex flex-col bg-white shadow-xl rounded-md overflow-hidden"
+            style={{
+              aspectRatio: '4/3',
               maxHeight: '100%',
               maxWidth: '98%',
-              transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoomScale})`, 
-              transformOrigin: 'center center', 
-              transition: isDragging ? 'none' : 'transform 0.1s ease-out' 
+              transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoomScale})`,
+              transformOrigin: 'center center',
+              transition: isDragging ? 'none' : 'transform 0.1s ease-out'
             }}
           >
             <div className="flex-1 relative overflow-hidden bg-gray-200">
@@ -742,65 +811,112 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
           </div>
         </div>
 
-        {/* Responsive Footer bar */}
-        <div className="min-h-[60px] md:h-[70px] bg-white border-t border-gray-200 px-3 md:px-6 py-2 md:py-0 shrink-0 flex flex-wrap md:flex-nowrap items-center justify-between z-20 gap-y-2">
-          
-          <div 
-            onClick={(e) => handleOpenDetails(e, selectedProduct)}
-            className="flex items-center gap-2 md:gap-3 w-full md:w-auto cursor-pointer hover:bg-gray-50 p-1.5 -ml-1.5 rounded-md transition-colors group"
-          >
-            <img src={selectedProduct.img} alt="Selected" className="w-8 h-8 md:w-10 md:h-10 object-cover rounded border border-gray-200" />
-            <div className="flex flex-col mr-auto md:mr-0">
-              <span className="font-bold text-sm md:text-base text-gray-900 leading-tight group-hover:text-[#0b5e5e] transition-colors">{selectedProduct.name}</span>
-              <span className="text-[10px] md:text-xs text-gray-400">{selectedProduct.size}</span>
-            </div>
+        {/* ── UPDATED FOOTER BAR (3-Row Layout for Quick Explorer) ── */}
+        <div className="bg-white border-t border-gray-200 shrink-0 flex flex-col z-20 w-full">
 
-            <div className="flex items-center gap-3 md:gap-6 text-xs md:text-sm text-gray-600 font-medium md:ml-6 md:border-l border-gray-200 pl-2 md:pl-6 h-full py-1">
-              <button 
-                onClick={(e) => { e.stopPropagation(); handleReset(); }} 
-                className="flex items-center gap-1 md:gap-2 px-2 py-1.5 md:py-2 rounded-md hover:bg-gray-100 hover:text-gray-900 transition-colors cursor-pointer"
-              >
-                <span className="hidden sm:inline">Reset</span> 
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="md:w-4 md:h-4">
-                  <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
-                  <polyline points="3 3 3 8 8 8"></polyline>
-                </svg>
-              </button>
-              
-              <button 
-                onClick={(e) => { e.stopPropagation(); handleRotate(); }} 
-                className="flex items-center gap-1 md:gap-2 px-2 py-1.5 md:py-2 rounded-md hover:bg-gray-100 hover:text-gray-900 transition-colors cursor-pointer"
-              >
-                <span className="hidden sm:inline">Rotate</span> 
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="md:w-4 md:h-4">
-                  <path d="M21 2v6h-6"></path>
-                  <path d="M3 12a9 9 0 0 1 15-6.7L21 8"></path>
-                  <path d="M3 22v-6h6"></path>
-                  <path d="M21 12a9 9 0 0 1-15 6.7L3 16"></path>
-                </svg>
-              </button>
+          {/* Row 1: Selected Product Info & Basic Actions */}
+          <div className="flex flex-wrap md:flex-nowrap items-center justify-between px-3 md:px-6 py-2 gap-y-2">
+            <div
+              onClick={(e) => handleOpenDetails(e, selectedProduct)}
+              className="flex items-center gap-2 md:gap-3 w-full md:w-auto cursor-pointer hover:bg-gray-50 p-1.5 -ml-1.5 rounded-md transition-colors group"
+            >
+              <img src={selectedProduct.img} alt="Selected" className="w-8 h-8 md:w-10 md:h-10 object-cover rounded border border-gray-200" />
+              <div className="flex flex-col mr-auto md:mr-0">
+                <span className="font-bold text-sm md:text-base text-gray-900 leading-tight group-hover:text-[#0b5e5e] transition-colors">{selectedProduct.name}</span>
+                <span className="text-[10px] md:text-xs text-gray-400">{selectedProduct.size}</span>
+              </div>
+
+              <div className="flex items-center gap-3 md:gap-6 text-xs md:text-sm text-gray-600 font-medium md:ml-6 md:border-l border-gray-200 pl-2 md:pl-6 h-full py-1">
+                <button
+                  onClick={(e) => { e.stopPropagation(); handleReset(); }}
+                  className="flex items-center gap-1 md:gap-2 px-2 py-1.5 md:py-2 rounded-md hover:bg-gray-100 hover:text-gray-900 transition-colors cursor-pointer"
+                >
+                  <span className="hidden sm:inline">Reset</span>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="md:w-4 md:h-4">
+                    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                    <polyline points="3 3 3 8 8 8"></polyline>
+                  </svg>
+                </button>
+
+                <button
+                  onClick={(e) => { e.stopPropagation(); handleRotate(); }}
+                  className="flex items-center gap-1 md:gap-2 px-2 py-1.5 md:py-2 rounded-md hover:bg-gray-100 hover:text-gray-900 transition-colors cursor-pointer"
+                >
+                  <span className="hidden sm:inline">Rotate</span>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="md:w-4 md:h-4">
+                    <path d="M21 2v6h-6"></path>
+                    <path d="M3 12a9 9 0 0 1 15-6.7L21 8"></path>
+                    <path d="M3 22v-6h6"></path>
+                    <path d="M21 12a9 9 0 0 1-15 6.7L3 16"></path>
+                  </svg>
+                </button>
+              </div>
             </div>
           </div>
 
-          <div className="flex items-center gap-3 w-full md:w-auto justify-end border-t border-gray-100 pt-2 md:border-none md:pt-0">
-             <button className="flex items-center gap-1.5 px-3 py-2 rounded-md hover:bg-gray-100 hover:text-gray-900 transition-colors cursor-default">
+          {/* Row 2: Quick Selector (Horizontal Flex) */}
+          <div className="flex md:hidden flex-col w-full border-t border-gray-100 px-3 md:px-6 py-2 bg-gray-50/50">
+            {/* Category Tabs (Also updating dynamically based on sort!) */}
+            <div className="flex overflow-x-auto gap-2 pb-2 items-center [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+              <span className="text-[10px] md:text-xs font-bold text-gray-500 uppercase tracking-wider mr-1 shrink-0">Collections:</span>
+              {displayCategories.map(cat => (
+                <button
+                  key={cat}
+                  onClick={(e) => { e.stopPropagation(); setActiveFooterCategory(cat); }}
+                  className={`shrink-0 text-[11px] md:text-xs px-3 py-1 rounded-full font-medium transition-colors cursor-pointer border ${activeFooterCategory === cat
+                    ? 'bg-[#0b5e5e] text-white border-[#0b5e5e] shadow-sm'
+                    : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-100'
+                    }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+
+            {/* Product Tiles for Active Category */}
+            <div className="flex overflow-x-auto gap-3 py-1 items-center [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+              {mockProducts.filter(p => p.accordionCategory === activeFooterCategory).map(prod => {
+                const isSelected = selectedProduct.id === prod.id;
+                return (
+                  <div
+                    key={prod.id}
+                    onClick={(e) => { e.stopPropagation(); handleTileSelection(prod); }}
+                    className={`relative shrink-0 w-12 h-12 md:w-14 md:h-14 rounded-md cursor-pointer border-2 transition-all duration-200 overflow-hidden ${isSelected ? 'border-[#0b5e5e] shadow-md scale-105 z-10' : 'border-transparent hover:border-gray-300'
+                      }`}
+                    title={prod.name}
+                  >
+                    <img src={prod.img} alt={prod.name} className="w-full h-full object-cover" />
+                    {isSelected && (
+                      <div className="absolute inset-0 bg-[#0b5e5e]/10 flex items-center justify-center">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" className="drop-shadow-md">
+                          <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Row 3: Zoom Controls */}
+          <div className="flex items-center justify-end gap-3 w-full border-t border-gray-100 px-3 md:px-6 py-2 bg-white">
+            <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-md hover:bg-gray-100 hover:text-gray-900 transition-colors cursor-default text-xs md:text-sm text-gray-600">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
               <span className="hidden sm:inline">Zoom</span> {zoomScale > 1 ? `(${zoomScale.toFixed(1)}x)` : ''}
             </button>
-            <button onClick={() => { setZoomScale(1); setPan({ x: 0, y: 0 }); }} className="text-xs md:text-sm px-3 py-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors cursor-pointer">
+            <button onClick={() => { setZoomScale(1); setPan({ x: 0, y: 0 }); }} className="text-xs md:text-sm px-3 py-1.5 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors cursor-pointer">
               Reset Zoom
             </button>
-
           </div>
         </div>
 
       </div>
 
-      {/* ── PRODUCT DETAILS MODAL (POPUP) ── */}
       {isDetailsModalOpen && detailsProduct && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl flex flex-col max-h-[90vh] overflow-hidden transform transition-all animate-fade-in-up">
-            
+
             <div className="flex justify-between items-center p-4 sm:p-6 border-b border-gray-100 shrink-0">
               <h2 className="text-xl font-bold text-gray-900">Product Details</h2>
               <button onClick={() => setIsDetailsModalOpen(false)} className="p-2 hover:bg-gray-100 rounded-full transition-colors cursor-pointer text-gray-500 hover:text-black">
@@ -809,18 +925,18 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
             </div>
 
             <div className="overflow-y-auto p-4 sm:p-6 flex flex-col flex-1">
-              
+
               <div className="flex flex-col sm:flex-row gap-6 mb-8">
                 <div className="w-full sm:w-1/2 aspect-square rounded-xl overflow-hidden border border-gray-200 bg-gray-50 shadow-sm shrink-0">
                   <img src={detailsProduct.img} alt={detailsProduct.name} className="w-full h-full object-cover" />
                 </div>
-                
+
                 <div className="w-full sm:w-1/2 flex flex-col justify-start pt-2">
                   <span className="text-xs text-gray-500 uppercase tracking-widest font-semibold">Wonderfloor</span>
                   <h3 className="text-2xl font-bold text-gray-900 mt-1">{detailsProduct.name}</h3>
                   <div className="mt-4 space-y-2">
                     <p className="text-sm text-gray-600 font-medium flex items-center gap-2">
-                      <span className="text-gray-400">Size:</span> 
+                      <span className="text-gray-400">Size:</span>
                       <span className="text-gray-900 bg-gray-100 px-2 py-1 rounded font-semibold">{detailsProduct.size}</span>
                     </p>
                   </div>
@@ -832,7 +948,7 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
                   Specifications
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-400 transform rotate-180"><polyline points="18 15 12 9 6 15"></polyline></svg>
                 </h4>
-                
+
                 <div className="border-t border-gray-200 flex flex-col">
                   <div className="flex py-3 sm:py-4 border-b border-gray-100 items-center">
                     <span className="w-1/3 text-sm text-gray-500 font-medium">SKU</span>
@@ -868,10 +984,10 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                 Go to product page
               </button>
-              <button 
+              <button
                 onClick={() => {
-                   handleTileSelection(detailsProduct);
-                   setIsDetailsModalOpen(false);
+                  handleTileSelection(detailsProduct);
+                  setIsDetailsModalOpen(false);
                 }}
                 className="w-full sm:w-auto bg-[#1877f2] hover:bg-[#1564cd] text-white font-bold py-3 px-6 rounded-lg transition-colors shadow-md flex items-center justify-center gap-2 cursor-pointer"
               >

@@ -31,12 +31,9 @@ function App() {
   const [sessionId, setSessionId] = useState('');
 
   const fileInputRef = useRef(null);
-  const dropdownRef = useRef(null);
   const productDropdownRef = useRef(null);
 
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedIndustry, setSelectedIndustry] = useState('ALL INDUSTRY');
-
   const [isProductDropdownOpen, setIsProductDropdownOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState('FLOORING PRODUCTS');
 
@@ -86,16 +83,13 @@ function App() {
 
   useEffect(() => {
     function handleClickOutside(event) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsDropdownOpen(false);
-      }
       if (productDropdownRef.current && !productDropdownRef.current.contains(event.target)) {
         setIsProductDropdownOpen(false);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [dropdownRef, productDropdownRef]);
+  }, [productDropdownRef]);
 
   const industries = [
     "ALL INDUSTRY",
@@ -139,10 +133,8 @@ function App() {
     "Trendo wood",
     "Trendo Chips",
     "Uttsav",
-    "Wallspro Plus"
   ];
 
-  // --- FIXED: Every single room now has a completely unique ID ---
   const allDemoRooms = [
     { id: 'ind-1', name: 'Industrial Flooring Option 1', img: Industrial, category: 'Industrial Flooring', product: ['Durofloor', 'Antique'] },
     { id: 'ind-2', name: 'Industrial Flooring Option 2', img: DefaultImage, category: 'Industrial Flooring', product: 'Siggma' },
@@ -317,14 +309,13 @@ function App() {
         </div>
 
         <div className="flex-grow">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-6 relative z-30 gap-4">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 relative z-30 gap-4">
             <h3 className="text-[18px] sm:text-[20px] font-bold text-gray-400">
               Don't have a picture? Try our demo rooms instead
             </h3>
 
             <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-
-              {/* 1. Flooring Products Dropdown */}
+              {/* Flooring Products Dropdown */}
               <div className="relative w-full sm:w-auto" ref={productDropdownRef}>
                 <button
                   onClick={() => setIsProductDropdownOpen(!isProductDropdownOpen)}
@@ -357,42 +348,30 @@ function App() {
                   </div>
                 )}
               </div>
-
-              {/* 2. User Industry Dropdown */}
-              <div className="relative w-full sm:w-auto" ref={dropdownRef}>
-                <button
-                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                  className="cursor-pointer flex items-center justify-between sm:justify-center gap-2 bg-[#6a6a6a] text-white px-5 py-3 sm:py-2.5 rounded text-[13px] font-bold tracking-wide transition-colors hover:bg-gray-600 uppercase w-full sm:w-auto"
-                >
-                  {selectedIndustry}
-                  <svg className={`w-4 h-4 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7"></path>
-                  </svg>
-                </button>
-
-                {isDropdownOpen && (
-                  <div className="absolute right-0 top-full mt-2 w-full sm:w-64 bg-white shadow-[0_10px_40px_rgba(0,0,0,0.15)] border-t-[3px] border-[#fc6c3f] py-2 z-50 rounded-b max-h-[300px] overflow-y-auto">
-                    {industries.map((industry, index) => (
-                      <button
-                        key={index}
-                        onClick={() => {
-                          setSelectedIndustry(industry);
-                          setSelectedProduct('FLOORING PRODUCTS');
-                          setIsDropdownOpen(false);
-                        }}
-                        className={`cursor-pointer w-full text-left px-5 py-2.5 text-[15px] transition-colors ${selectedIndustry === industry
-                            ? 'text-[#fc6c3f] bg-gray-50'
-                            : 'text-gray-600 hover:text-[#fc6c3f] hover:bg-gray-50'
-                          }`}
-                      >
-                        {industry}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-
             </div>
+          </div>
+
+          {/* NEW: Category Flex Buttons Below Header */}
+          <div 
+            className="flex overflow-x-auto gap-3 mb-8 pb-2 w-full" 
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+          >
+            {industries.map((industry, index) => (
+              <button
+                key={index}
+                onClick={() => {
+                  setSelectedIndustry(industry);
+                  setSelectedProduct('FLOORING PRODUCTS');
+                }}
+                className={`shrink-0 cursor-pointer px-5 py-2 rounded-full text-[13px] font-bold tracking-wide transition-all uppercase border ${
+                  selectedIndustry === industry
+                    ? 'bg-[#f05c3f] text-white border-[#f05c3f] shadow-md'
+                    : 'bg-white text-gray-500 border-gray-300 hover:border-[#f05c3f] hover:text-[#f05c3f]'
+                }`}
+              >
+                {industry}
+              </button>
+            ))}
           </div>
 
           {isDefaultView ? (
