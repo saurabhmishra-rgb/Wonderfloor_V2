@@ -33,7 +33,7 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
   ];
 
   const productCategories = ['Durofloor', 'Siggma', 'Orbit', 'Stoneland Monza', 'Meteor', 'Aventus'];
-
+  const [initialPinchDist, setInitialPinchDist] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(mockProducts[0]);
   const [processedImage, setProcessedImage] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -130,15 +130,44 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
   const handleMouseUpOrLeave = () => setIsDragging(false);
 
   const handleTouchStart = (e) => {
-    if (zoomScale > 1 && !isDetailsModalOpen) {
+    if (isDetailsModalOpen) return;
+
+    if (e.touches.length === 2) {
+      // Two fingers: Pinch-to-zoom start
+      const dist = getDistance(e.touches[0], e.touches[1]);
+      setInitialPinchDist(dist);
+    } else if (e.touches.length === 1 && zoomScale > 1) {
+      // One finger: Panning start
       setIsDragging(true);
       setDragStart({ x: e.touches[0].clientX - pan.x, y: e.touches[0].clientY - pan.y });
     }
   };
+
   const handleTouchMove = (e) => {
-    if (isDragging && !isDetailsModalOpen) {
+    if (isDetailsModalOpen) return;
+
+    if (e.touches.length === 2 && initialPinchDist !== null) {
+      // Two fingers: Pinch-to-zoom move
+      const currentDist = getDistance(e.touches[0], e.touches[1]);
+      const scaleChange = currentDist / initialPinchDist;
+
+      setZoomScale(prev => {
+        const next = Math.min(Math.max(1, prev * scaleChange), 5); // Max zoom is 5x
+        if (next === 1) setPan({ x: 0, y: 0 }); // Reset pan if zoomed all the way out
+        return next;
+      });
+
+      // Update the initial distance for continuous smooth zooming
+      setInitialPinchDist(currentDist);
+    } else if (e.touches.length === 1 && isDragging) {
+      // One finger: Panning move
       setPan({ x: e.touches[0].clientX - dragStart.x, y: e.touches[0].clientY - dragStart.y });
     }
+  };
+
+  const handleTouchEnd = () => {
+    setIsDragging(false);
+    setInitialPinchDist(null);
   };
 
   const getRotatedTileBlob = async (imageSrc, angle) => {
@@ -233,6 +262,13 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
     setZoomScale(1);
     setPan({ x: 0, y: 0 });
     setFloorRotation(0);
+  };
+
+  const getDistance = (touch1, touch2) => {
+    return Math.sqrt(
+      Math.pow(touch2.clientX - touch1.clientX, 2) +
+      Math.pow(touch2.clientY - touch1.clientY, 2)
+    );
   };
 
   const handleShare = (platform) => {
@@ -808,8 +844,8 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
           onMouseLeave={handleMouseUpOrLeave}
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
-          onTouchEnd={handleMouseUpOrLeave}
-          onTouchCancel={handleMouseUpOrLeave}
+          onTouchEnd={handleTouchEnd}      // Updated
+          onTouchCancel={handleTouchEnd}   // Updated
           style={{ cursor: zoomScale > 1 && !isDetailsModalOpen ? (isDragging ? 'grabbing' : 'grab') : 'zoom-in' }}
         >
           <div
