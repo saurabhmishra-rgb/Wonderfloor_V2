@@ -228,11 +228,28 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
   };
 
   const handleTileSelection = (product) => {
+    // 1. Force the iOS keyboard to close by removing focus from the search bar
+    if (document.activeElement && document.activeElement.blur) {
+      document.activeElement.blur();
+    }
+
+    // 2. Reset the React zoom and pan states so the image centers perfectly
+    setZoomScale(1);
+    setPan({ x: 0, y: 0 });
+
+    // 3. Your standard state updates
     setSelectedProduct(product);
     setErrorMsg(null);
     setFloorRotation(0);
     applyFloorOverlay(product, 0);
     setIsSidebarOpen(false);
+
+    // 4. Force iOS Safari to snap the physical viewport back to the top
+    // A slight delay is needed to let the keyboard finish animating down
+    setTimeout(() => {
+      window.scrollTo(0, 0);
+      document.body.scrollTop = 0;
+    }, 100);
   };
 
   const handleOpenDetails = (e, product) => {
@@ -536,9 +553,8 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
                 alt="Logo"
                 className="h-8 max-w-[150px] md:max-w-[180px] object-contain"
               />
-
-              {/* --- NEW WRAPPER FOR BUTTONS --- */}
-              <div className="flex items-center gap-2">
+{/* --- NEW WRAPPER FOR BUTTONS --- */}
+              <div className="flex items-center gap-1 md:gap-2">
 
                 {/* FAVORITES BUTTON */}
                 <button
@@ -559,6 +575,30 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
                 <button onClick={() => setIsSidebarOpen(false)} className="md:hidden text-gray-400 hover:text-gray-800 hover:bg-gray-100 p-1.5 rounded-md transition-colors cursor-pointer">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
                 </button>
+
+                {/* --- NEW MOBILE 3-DOTS MENU --- */}
+                <div className="relative md:hidden flex items-center">
+                  <button
+                    onClick={() => setIsMenuDropdownOpen(!isMenuDropdownOpen)}
+                    className="text-gray-400 hover:text-gray-800 hover:bg-gray-100 p-1.5 rounded-md transition-colors cursor-pointer"
+                  >
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="1.5"></circle><circle cx="12" cy="5" r="1.5"></circle><circle cx="12" cy="19" r="1.5"></circle></svg>
+                  </button>
+
+                  {/* Mobile Dropdown Box */}
+                  {isMenuDropdownOpen && (
+                    <div className="absolute top-[45px] right-0 bg-white shadow-2xl border border-gray-200 rounded-md py-2 w-[180px] z-[100] flex flex-col">
+                      <button onClick={closeModal} className="flex items-center gap-3 px-4 py-3 text-sm hover:bg-gray-50 text-left transition-colors cursor-pointer border-b border-gray-50">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                        Change Room
+                      </button>
+                      <button onClick={() => { setIsMenuDropdownOpen(false); alert("Upload functionality can be wired up here!"); }} className="flex items-center gap-3 px-4 py-3 text-sm hover:bg-gray-50 text-left transition-colors cursor-pointer">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                        Upload
+                      </button>
+                    </div>
+                  )}
+                </div>
 
               </div>
             </div>
@@ -604,7 +644,7 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
                     placeholder="Search products, collections, colors..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full h-10 border border-gray-300 rounded px-3 text-sm focus:outline-none focus:border-[#0b5e5e] focus:ring-1 focus:ring-[#0b5e5e]"
+                    className="w-full h-10 border border-gray-300 rounded px-3 text-[16px] md:text-sm focus:outline-none focus:border-[#0b5e5e] focus:ring-1 focus:ring-[#0b5e5e]"
                     autoFocus
                   />
                 </div>
@@ -722,17 +762,17 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
               </div>
 
               {viewMode === 'grid' && selectedProduct && (
-                <div className="mt-auto border-t border-gray-200 pt-5 pb-2 shrink-0 bg-white sticky bottom-0">
-                  <div className="flex flex-col">
-                    <span className="text-[11px] text-gray-500 uppercase tracking-wide">Wonderfloor</span>
-                    <span className="font-bold text-base text-gray-900 mt-1">{selectedProduct.name}</span>
-                    <span className="text-sm text-gray-600 mt-2">Size: <span className="font-medium text-gray-900">{selectedProduct.size}</span></span>
+                <div className="mt-auto border-t border-gray-200 p-3 shrink-0 bg-white sticky bottom-0 z-20 shadow-[0_-4px_10px_rgba(0,0,0,0.03)]">
+                  <div className="flex items-center justify-between">
+                    <div className="flex flex-col min-w-0 pr-2">
+                      <span className="font-bold text-sm text-gray-900 truncate">{selectedProduct.name}</span>
+                      <span className="text-xs text-gray-500 truncate">Size: {selectedProduct.size}</span>
+                    </div>
                     <button
                       onClick={(e) => handleOpenDetails(e, selectedProduct)}
-                      className="text-sm text-[#0b5e5e] mt-4 flex items-center hover:underline cursor-pointer w-max"
+                      className="text-xs font-medium text-[#0b5e5e] flex items-center hover:bg-[#0b5e5e]/5 px-3 py-2 rounded-md transition-colors cursor-pointer shrink-0"
                     >
-                      More product details
-                      <svg className="ml-1" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                      Details <svg className="ml-1" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
                     </button>
                   </div>
                 </div>
@@ -814,10 +854,13 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
             <div className="relative flex items-center h-full" ref={menuRef}>
               <button
                 onClick={() => setIsMenuDropdownOpen(!isMenuDropdownOpen)}
-                className="hidden lg:flex text-gray-600 hover:text-gray-900 hover:bg-gray-100 px-3 py-2 rounded-md text-sm font-medium items-center gap-1 transition-colors cursor-pointer"
+                className="flex text-gray-600 hover:text-gray-900 hover:bg-gray-100 px-2 md:px-3 py-2 rounded-md text-sm font-medium items-center gap-1 transition-colors cursor-pointer"
               >
-                Menu <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
+                <span className="hidden sm:inline">Menu</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="1.5"></circle><circle cx="12" cy="5" r="1.5"></circle><circle cx="12" cy="19" r="1.5"></circle></svg>
               </button>
+
+
 
               {isMenuDropdownOpen && (
                 <div className="absolute top-[50px] right-0 bg-white shadow-xl border border-gray-200 rounded-md py-2 w-[180px] z-50 flex flex-col">
@@ -921,10 +964,10 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-md hover:bg-gray-100 hover:text-gray-900 transition-colors cursor-default text-xs md:text-sm text-gray-600">
+              {/* <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-md hover:bg-gray-100 hover:text-gray-900 transition-colors cursor-default text-xs md:text-sm text-gray-600">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                 <span className="hidden sm:inline">Zoom</span> {zoomScale > 1 ? `(${zoomScale.toFixed(1)}x)` : ''}
-              </button>
+              </button> */}
               <button onClick={() => { setZoomScale(1); setPan({ x: 0, y: 0 }); }} className="text-xs md:text-sm px-3 py-1.5 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors cursor-pointer">
                 Reset Zoom
               </button>
