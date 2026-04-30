@@ -74,7 +74,7 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
   const shareRef = useRef(null);
   const downloadRef = useRef(null);
   const menuRef = useRef(null);
-
+  const mobileMenuRef = useRef(null);
   // Toolbar States
   const [viewMode, setViewMode] = useState('list');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -121,7 +121,10 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
       if (downloadRef.current && !downloadRef.current.contains(event.target)) {
         setIsDownloadMenuOpen(false);
       }
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
+     if (
+        menuRef.current && !menuRef.current.contains(event.target) &&
+        mobileMenuRef.current && !mobileMenuRef.current.contains(event.target)
+      ) {
         setIsMenuDropdownOpen(false);
       }
     }
@@ -588,7 +591,7 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
                 </button>
 
                 {/* --- NEW MOBILE 3-DOTS MENU --- */}
-                <div className="relative md:hidden flex items-center">
+               <div className="relative md:hidden flex items-center" ref={mobileMenuRef}>
                   <button
                     onClick={() => setIsMenuDropdownOpen(!isMenuDropdownOpen)}
                     className="text-gray-400 hover:text-gray-800 hover:bg-gray-100 p-1.5 rounded-md transition-colors cursor-pointer"
