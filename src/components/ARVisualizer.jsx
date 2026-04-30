@@ -1,6 +1,8 @@
 // ARVisualization.jsx
 import React, { useState, useRef, useEffect } from 'react';
 import FavoritesView from './FavouritesView';
+import RoomUploader from './RoomUploader';
+import DownloadView from './DownloadView';
 // 1. IMPORT YOUR LOCAL ASSETS HERE
 import floorActon from '../assets/image1.jpeg';
 import floorHolmes from '../assets/image2.jpeg';
@@ -34,6 +36,7 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
 
   const productCategories = ['Durofloor', 'Siggma', 'Orbit', 'Stoneland Monza', 'Meteor', 'Aventus'];
   const [initialPinchDist, setInitialPinchDist] = useState(null);
+  const [uploadedRoom, setUploadedRoom] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(mockProducts[0]);
   const [processedImage, setProcessedImage] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -83,8 +86,9 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
   const [activeFilters, setActiveFilters] = useState({});
 
   const imageContainerRef = useRef(null);
-
-  const currentSrc = processedImage || initialImage?.previewUrl || 'https://images.unsplash.com/photo-1595844730298-b960fa25fa48?auto=format&fit=crop&w=1200&q=80';
+  // Use the uploaded room if available, otherwise fallback to the initial prop
+  const activeBaseImage = uploadedRoom || initialImage;
+  const currentSrc = processedImage || activeBaseImage?.previewUrl || 'https://images.unsplash.com/photo-1595844730298-b960fa25fa48?auto=format&fit=crop&w=1200&q=80';
 
   useEffect(() => {
     if (selectedProduct) {
@@ -194,13 +198,20 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
   };
 
   const applyFloorOverlay = async (product, angle) => {
-    if (!initialImage?.rawFile) return;
+    // 1. Determine which image to use (the new upload, or the default starting image)
+    const activeBaseImage = uploadedRoom || initialImage;
+
+    // 2. Check against the active image instead of initialImage
+    if (!activeBaseImage?.rawFile) return;
     setIsProcessing(true);
 
     try {
       const tileBlob = await getRotatedTileBlob(product.img, angle);
       const formData = new FormData();
-      formData.append('roomImage', initialImage.rawFile);
+
+      // 3. Append the active image to the form data
+      formData.append('roomImage', activeBaseImage.rawFile);
+
       formData.append('floorImage', tileBlob, `${product.name}_rotated.jpg`);
       const dimensionInstruction = `The flooring tiles have physical dimensions of ${product.size}. Please scale the floor pattern realistically relative to the room perspective. ${product.description || ""}`.trim();
       formData.append('instructions', dimensionInstruction);
@@ -302,27 +313,27 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
     setIsShareMenuOpen(false);
   };
 
-  const handleDownload = (option) => {
-    if (!currentSrc) return;
-    setIsDownloadMenuOpen(false);
+  // const handleDownload = (option) => {
+  //   if (!currentSrc) return;
+  //   setIsDownloadMenuOpen(false);
 
-    try {
-      if (option === 'image') {
-        const link = document.createElement('a');
-        link.href = currentSrc;
-        const fileName = `Wonderfloor_Design_${Date.now()}.jpg`;
-        link.download = fileName;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      } else if (option === 'details') {
-        alert("Downloading Image & Product Details...");
-      }
-    } catch (error) {
-      console.error("Failed to download image:", error);
-      alert("There was an error downloading your image.");
-    }
-  };
+  //   try {
+  //     if (option === 'image') {
+  //       const link = document.createElement('a');
+  //       link.href = currentSrc;
+  //       const fileName = `Wonderfloor_Design_${Date.now()}.jpg`;
+  //       link.download = fileName;
+  //       document.body.appendChild(link);
+  //       link.click();
+  //       document.body.removeChild(link);
+  //     } else if (option === 'details') {
+  //       alert("Downloading Image & Product Details...");
+  //     }
+  //   } catch (error) {
+  //     console.error("Failed to download image:", error);
+  //     alert("There was an error downloading your image.");
+  //   }
+  // };
 
   const filterCategories = [
     { id: 'accordionCategory', label: 'Brand / Category', options: ['Durofloor', 'Siggma', 'Orbit', 'Stoneland Monza', 'Meteor', 'Aventus'] },
@@ -553,7 +564,7 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
                 alt="Logo"
                 className="h-8 max-w-[150px] md:max-w-[180px] object-contain"
               />
-{/* --- NEW WRAPPER FOR BUTTONS --- */}
+              {/* --- NEW WRAPPER FOR BUTTONS --- */}
               <div className="flex items-center gap-1 md:gap-2">
 
                 {/* FAVORITES BUTTON */}
@@ -592,10 +603,17 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
                         Change Room
                       </button>
-                      <button onClick={() => { setIsMenuDropdownOpen(false); alert("Upload functionality can be wired up here!"); }} className="flex items-center gap-3 px-4 py-3 text-sm hover:bg-gray-50 text-left transition-colors cursor-pointer">
+                      <RoomUploader
+                        onImageUpload={(newImageData) => {
+                          setUploadedRoom(newImageData);
+                          setProcessedImage(null); // Clear the AI floor to show the clean room
+                          setIsMenuDropdownOpen(false); // Close the menu
+                        }}
+                        className="flex items-center gap-3 px-4 py-3 text-sm hover:bg-gray-50 text-left transition-colors cursor-pointer w-full"
+                      >
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
                         Upload
-                      </button>
+                      </RoomUploader>
                     </div>
                   )}
                 </div>
@@ -825,17 +843,13 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
                 <span className="hidden sm:inline">Download</span>
               </button>
-
               {isDownloadMenuOpen && (
                 <div className="absolute top-[50px] left-1/2 -translate-x-1/2 md:translate-x-0 md:left-auto md:right-0 bg-white shadow-xl border border-gray-200 rounded-md py-2 w-[240px] z-50 flex flex-col">
-                  <button onClick={() => handleDownload('image')} className="flex items-center gap-3 px-4 py-3 text-sm hover:bg-gray-50 text-left transition-colors cursor-pointer border-b border-gray-100">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-                    Image
-                  </button>
-                  <button onClick={() => handleDownload('details')} className="flex items-center gap-3 px-4 py-3 text-sm hover:bg-gray-50 text-left transition-colors cursor-pointer">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-                    Image & Product Details
-                  </button>
+                  <DownloadView
+                    selectedProduct={selectedProduct}
+                    currentSrc={currentSrc}
+                    onClose={() => setIsDownloadMenuOpen(false)}
+                  />
                 </div>
               )}
             </div>
@@ -868,10 +882,18 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
                     Change Room
                   </button>
-                  <button onClick={() => { setIsMenuDropdownOpen(false); alert("Upload functionality can be wired up here!"); }} className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gray-50 text-left transition-colors cursor-pointer">
+                  {/* Desktop Upload Button */}
+                  <RoomUploader
+                    onImageUpload={(newImageData) => {
+                      setUploadedRoom(newImageData);
+                      setProcessedImage(null);
+                      setIsMenuDropdownOpen(false);
+                    }}
+                    className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gray-50 text-left transition-colors cursor-pointer w-full"
+                  >
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
                     Upload
-                  </button>
+                  </RoomUploader>
                 </div>
               )}
             </div>
@@ -908,17 +930,17 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
                   <div className="w-10 h-10 md:w-12 md:h-12 border-4 border-[#0b5e5e]/20 border-t-[#0b5e5e] rounded-full animate-spin mb-3 md:mb-4" />
                   <p className="text-[#0b5e5e] font-bold text-sm md:text-lg">Applying {selectedProduct.name}…</p>
                 </div>
+
               )}
               <img
                 src={currentSrc} alt="Room" draggable="false"
                 className="w-full h-full object-cover select-none"
               />
-
-              <div className="absolute bottom-3 right-3 md:bottom-5 md:right-5 bg-black/40 backdrop-blur-md border border-white/10 px-3 md:px-4 py-1.5 md:py-2 rounded-full z-30 pointer-events-none flex items-center gap-1.5 shadow-lg">
-                <span className="text-[10px] md:text-[11px] font-normal text-gray-200">Powered by</span>
-                <span className="text-[11px] md:text-[12px] font-bold text-white tracking-wide">wonderfloor</span>
-              </div>
             </div>
+          </div>
+          <div className="absolute bottom-3 right-3 md:bottom-5 md:right-5 bg-black/40 backdrop-blur-md border border-white/10 px-5 md:px-4 py-1.5 md:py-2 rounded-full z-30 pointer-events-none flex items-center gap-1.5 shadow-lg">
+            <span className="text-[10px] md:text-[11px] font-normal text-gray-200">Powered by</span>
+            <span className="text-[11px] md:text-[12px] font-bold text-white tracking-wide">wonderfloor</span>
           </div>
         </div>
 
@@ -964,10 +986,10 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
               </div>
             </div>
             <div className="flex items-center gap-3">
-              {/* <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-md hover:bg-gray-100 hover:text-gray-900 transition-colors cursor-default text-xs md:text-sm text-gray-600">
+              <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-md hover:bg-gray-100 hover:text-gray-900 transition-colors cursor-default text-xs md:text-sm text-gray-600">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                 <span className="hidden sm:inline">Zoom</span> {zoomScale > 1 ? `(${zoomScale.toFixed(1)}x)` : ''}
-              </button> */}
+              </button>
               <button onClick={() => { setZoomScale(1); setPan({ x: 0, y: 0 }); }} className="text-xs md:text-sm px-3 py-1.5 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors cursor-pointer">
                 Reset Zoom
               </button>
