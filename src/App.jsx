@@ -1,4 +1,4 @@
-// app.jsx
+// App.jsx
 import React, { useState, useRef, useEffect } from 'react';
 import ARVisualizer from './components/ARVisualizer';
 import { io } from 'socket.io-client';
@@ -19,8 +19,12 @@ import Industrial from './assets/Industrial-Flooring_02.jpg';
 import DefaultImage from './assets/Default.jpg';
 import Logo from './assets/logo.png';
 
-// --- CONNECT TO PYTHON BACKEND ---
-const socket = io('http://192.168.1.130:5000');
+// --- CONNECT TO PYTHON BACKEND (RENDER) ---
+// IMPORTANT: Replace this placeholder with your actual Render URL!
+const socket = io('https://YOUR-RENDER-APP-NAME.onrender.com', {
+  transports: ['websocket'], // Forces direct WebSocket connection
+  // We no longer need extraHeaders because Render doesn't block traffic like Ngrok did!
+});
 
 function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -46,7 +50,7 @@ function App() {
     }
     return () => {
       document.body.style.overflow = 'unset';
-    };
+    }
   }, [isModalOpen, showQR]);
 
   // --- Real-time Mobile Sync Logic ---
@@ -78,7 +82,12 @@ function App() {
     const newSessionId = Math.random().toString(36).substring(2, 10);
     setSessionId(newSessionId);
     setShowQR(true);
-    socket.emit('join_session', newSessionId);
+
+    if (socket.connected) {
+      socket.emit('join_session', newSessionId);
+    } else {
+      socket.once('connect', () => socket.emit('join_session', newSessionId));
+    }
   };
 
   useEffect(() => {
@@ -181,7 +190,7 @@ function App() {
     { id: 'aud-3', name: 'Auditorium Flooring Option 3', img: DefaultImage, category: 'Auditorium Flooring', product: ['Timberland Exotica 2mm', 'Trendo wood', 'Braavo', 'Stoneland Monza', 'Timberland Herringbone 2mm'] },
     { id: 'aud-4', name: 'Auditorium Flooring Option 4', img: DefaultImage, category: 'Auditorium Flooring', product: ['Timberland Exotica 2mm', 'Trendo wood', 'Braavo', 'Stoneland Monza', 'Timberland Herringbone 2mm'] },
 
-    { id: 'hot-1', name: 'Hotel Flooring Option 1', img: Hotel, category: 'Hotel/ Hospitality Flooring', product: ['Timberland Exotica 2mm', 'Trendo wood', 'Ornate', 'Braavo', 'Timberworld 1.5 mm', 'Stoneland Monza', 'Meteor', 'Timberland Herringbone 2mm', 'Grandeure Premium Luxury Planks 2mm'] },          
+    { id: 'hot-1', name: 'Hotel Flooring Option 1', img: Hotel, category: 'Hotel/ Hospitality Flooring', product: ['Timberland Exotica 2mm', 'Trendo wood', 'Ornate', 'Braavo', 'Timberworld 1.5 mm', 'Stoneland Monza', 'Meteor', 'Timberland Herringbone 2mm', 'Grandeure Premium Luxury Planks 2mm'] },
     { id: 'hot-2', name: 'Hotel Flooring Option 2', img: DefaultImage, category: 'Hotel/ Hospitality Flooring', product: ['Timberland Exotica 2mm', 'Trendo wood', 'Ornate', 'Braavo', 'Timberworld 1.5 mm', 'Stoneland Monza', 'Meteor', 'Timberland Herringbone 2mm', 'Grandeure Premium Luxury Planks 2mm'] },
     { id: 'hot-3', name: 'Hotel Flooring Option 3', img: DefaultImage, category: 'Hotel/ Hospitality Flooring', product: ['Timberland Exotica 2mm', 'Trendo wood', 'Ornate', 'Braavo', 'Timberworld 1.5 mm', 'Stoneland Monza', 'Meteor', 'Timberland Herringbone 2mm', 'Grandeure Premium Luxury Planks 2mm'] },
     { id: 'hot-4', name: 'Hotel Flooring Option 4', img: DefaultImage, category: 'Hotel/ Hospitality Flooring', product: ['Timberland Exotica 2mm', 'Trendo wood', 'Ornate', 'Braavo', 'Timberworld 1.5 mm', 'Stoneland Monza', 'Meteor', 'Timberland Herringbone 2mm', 'Grandeure Premium Luxury Planks 2mm'] },
@@ -233,7 +242,7 @@ function App() {
   }
 
   return (
-    <div className="w-full min-h-screen mt-[-5%] bg-white  overflow-x-hidden">
+    <div className="w-full min-h-screen mt-[-5%] bg-white overflow-x-hidden">
 
       {/* --- Main Content Container --- */}
       <div className="relative inset-0 w-full max-w-[1300px] mx-auto px-4 sm:px-6 py-15 font-sans text-gray-800 flex flex-col">
@@ -284,8 +293,9 @@ function App() {
                   </p>
 
                   <div className="p-3 border-4 border-gray-100 rounded-xl bg-white mb-6 shadow-sm">
+                    {/* --- PRODUCTION VERCEL URL HERE --- */}
                     <QRCodeCanvas
-                      value={`http://192.168.1.130:5173/mobile-upload?session=${sessionId}`}
+                      value={`https://wonderfloor-v2.vercel.app/mobile-upload?session=${sessionId}`}
                       size={180}
                     />
                   </div>
@@ -338,8 +348,8 @@ function App() {
                           setIsProductDropdownOpen(false);
                         }}
                         className={`cursor-pointer w-full text-left px-5 py-2.5 text-[15px] transition-colors ${selectedProduct === product
-                            ? 'text-[#fc6c3f] bg-gray-50'
-                            : 'text-gray-600 hover:text-[#fc6c3f] hover:bg-gray-50'
+                          ? 'text-[#fc6c3f] bg-gray-50'
+                          : 'text-gray-600 hover:text-[#fc6c3f] hover:bg-gray-50'
                           }`}
                       >
                         {product}
@@ -352,8 +362,8 @@ function App() {
           </div>
 
           {/* NEW: Category Flex Buttons Below Header */}
-          <div 
-            className="flex overflow-x-auto gap-3 mb-8 pb-2 w-full" 
+          <div
+            className="flex overflow-x-auto gap-3 mb-8 pb-2 w-full"
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           >
             {industries.map((industry, index) => (
@@ -363,11 +373,10 @@ function App() {
                   setSelectedIndustry(industry);
                   setSelectedProduct('FLOORING PRODUCTS');
                 }}
-                className={`shrink-0 cursor-pointer px-5 py-2 rounded-full text-[13px] font-bold tracking-wide transition-all uppercase border ${
-                  selectedIndustry === industry
+                className={`shrink-0 cursor-pointer px-5 py-2 rounded-full text-[13px] font-bold tracking-wide transition-all uppercase border ${selectedIndustry === industry
                     ? 'bg-[#f05c3f] text-white border-[#f05c3f] shadow-md'
                     : 'bg-white text-gray-500 border-gray-300 hover:border-[#f05c3f] hover:text-[#f05c3f]'
-                }`}
+                  }`}
               >
                 {industry}
               </button>

@@ -17,8 +17,9 @@ function MobileUpload() {
         formData.append('sessionId', sessionId);
 
         try {
-            // REPLACE 'YOUR_IP_ADDRESS' HERE AS WELL
-            const response = await fetch('http://192.168.1.130:5000/api/upload-mobile', {
+            // --- PRODUCTION RENDER URL HERE ---
+            // Replace 'YOUR-RENDER-APP-NAME' with your actual live Render link!
+            const response = await fetch('https://YOUR-RENDER-APP-NAME.onrender.com/api/upload-mobile', {
                 method: 'POST',
                 body: formData,
             });
@@ -26,11 +27,13 @@ function MobileUpload() {
             if (response.ok) {
                 setStatus('Success! Check your laptop screen.');
             } else {
-                setStatus('Upload failed. Please try again.');
+                const text = await response.text();  
+                console.error('Server response:', text);
+                setStatus(`Failed: ${response.status} — check console`);
             }
         } catch (error) {
             console.error(error);
-            setStatus('Network error. Are you on the same Wi-Fi?');
+            setStatus('Network error. Check if the Python backend is running.');
         }
     };
 

@@ -8,7 +8,11 @@ export default defineConfig({
     tailwindcss(),
   ],
   server: {
-    host: '0.0.0.0', // This is the magic line that allows phone connections!
-    port: 5173
+    host: '0.0.0.0', 
+    allowedHosts: true, 
+    port: 5173,
+    hmr: {
+      clientPort: 443 // <--- ADD THIS: Forces Vite's reloader to use the secure tunnel
+    }
   }
 })
