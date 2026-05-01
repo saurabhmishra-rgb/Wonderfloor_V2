@@ -19,7 +19,7 @@ function MobileUpload() {
         try {
             // --- PRODUCTION RENDER URL HERE ---
             // Replace 'YOUR-RENDER-APP-NAME' with your actual live Render link!
-            const response = await fetch('https://YOUR-RENDER-APP-NAME.onrender.com/api/upload-mobile', {
+            const response = await fetch('https://python-floor-backend.onrender.com/api/upload-mobile', {
                 method: 'POST',
                 body: formData,
             });

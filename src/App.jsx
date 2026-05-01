@@ -21,7 +21,7 @@ import Logo from './assets/logo.png';
 
 // --- CONNECT TO PYTHON BACKEND (RENDER) ---
 // IMPORTANT: Replace this placeholder with your actual Render URL!
-const socket = io('https://YOUR-RENDER-APP-NAME.onrender.com', {
+const socket = io('https://python-floor-backend.onrender.com', {
   transports: ['websocket'], // Forces direct WebSocket connection
   // We no longer need extraHeaders because Render doesn't block traffic like Ngrok did!
 });
