@@ -18,12 +18,15 @@ import Hotel from './assets/Hotel_Hospitality-Flooring_01.jpg';
 import Industrial from './assets/Industrial-Flooring_02.jpg';
 import DefaultImage from './assets/Default.jpg';
 import Logo from './assets/logo.png';
+import room1 from './assets/room1.jpg';
+import room2 from './assets/room2.jpg';
+import room1copy from './assets/room1copy.png';
+import room2copy from './assets/room2copy.png';
 
 // --- CONNECT TO PYTHON BACKEND (RENDER) ---
 // IMPORTANT: Replace this placeholder with your actual Render URL!
 const socket = io('https://python-floor-backend.onrender.com', {
-  transports: ['websocket'], // Forces direct WebSocket connection
-  // We no longer need extraHeaders because Render doesn't block traffic like Ngrok did!
+  transports: ['polling', 'websocket'], // Let it try polling first, then upgrade
 });
 
 function App() {
@@ -55,28 +58,49 @@ function App() {
 
   // --- Real-time Mobile Sync Logic ---
   useEffect(() => {
-    socket.on('image_uploaded_from_mobile', async (base64Data) => {
+    // 1. Re-join session if socket reconnects
+    const handleConnect = () => {
+      if (sessionId) {
+        console.log("Socket reconnected! Re-joining session:", sessionId);
+        socket.emit('join_session', sessionId);
+      }
+    };
+    socket.on('connect', handleConnect);
+
+    // 2. Handle incoming mobile image
+    const handleImageUploaded = async (base64Data) => {
       console.log("Image received from mobile! Processing...");
+      // Log the first 50 characters to check formatting in your browser console
+      console.log("Raw data start:", base64Data.substring(0, 50));
 
       try {
-        const res = await fetch(base64Data);
-        const blob = await res.blob();
-        const file = new File([blob], "mobile_upload.jpg", { type: "image/jpeg" });
+        // FIX: Ensure it's a valid Data URL before fetching
+        const dataUrl = base64Data.startsWith('data:image')
+          ? base64Data
+          : `data:image/jpeg;base64,${base64Data}`;
 
-        setSelectedRoomImage({ previewUrl: base64Data, isDemo: false, rawFile: file });
+        const res = await fetch(dataUrl);
+        const blob = await res.blob();
+        const file = new File([blob], "mobile_upload.jpg", { type: blob.type || "image/jpeg" });
+
+        // Use the corrected dataUrl here
+        setSelectedRoomImage({ previewUrl: dataUrl, isDemo: false, rawFile: file });
         setShowQR(false);
         setIsModalOpen(true);
         console.log("Visualizer opened successfully!");
       } catch (error) {
         console.error("Failed to process the mobile image:", error);
-        alert("Received the image, but it was too large or corrupted to display.");
+        alert("Received the image, but it was unable to be processed.");
       }
-    });
+    };
+
+    socket.on('image_uploaded_from_mobile', handleImageUploaded);
 
     return () => {
-      socket.off('image_uploaded_from_mobile');
+      socket.off('connect', handleConnect);
+      socket.off('image_uploaded_from_mobile', handleImageUploaded);
     };
-  }, []);
+  }, [sessionId]); // Add sessionId as dependency so it always has the latest one
 
   const handleGenerateQR = () => {
     const newSessionId = Math.random().toString(36).substring(2, 10);
@@ -159,7 +183,25 @@ function App() {
     { id: 'res-2', name: 'Residential Flooring Option 2', img: DefaultImage, category: 'Residential Flooring', product: ['Trendo wood', 'Ornate', 'Duratek', 'Galaxxy', 'Luxuria', 'Antique', 'GDP', 'Hi-Tech', 'Uttsav', 'Oriion', 'Rangolie',] },
     { id: 'res-3', name: 'Residential Flooring Option 3', img: DefaultImage, category: 'Residential Flooring', product: ['Trendo wood', 'Ornate', 'Duratek', 'Galaxxy', 'Luxuria', 'Antique', 'GDP', 'Hi-Tech', 'Uttsav', 'Oriion', 'Rangolie',] },
     { id: 'res-4', name: 'Residential Flooring Option 4', img: DefaultImage, category: 'Residential Flooring', product: ['Trendo wood', 'Ornate', 'Duratek', 'Galaxxy', 'Luxuria', 'Antique', 'GDP', 'Hi-Tech', 'Uttsav', 'Oriion', 'Rangolie',] },
+    //  { id: 'res-5', name: 'Residential Flooring Option 5', img: room1, category: 'Residential Flooring', product: ['Trendo wood', 'Ornate', 'Duratek', 'Galaxxy', 'Luxuria', 'Antique', 'GDP', 'Hi-Tech', 'Uttsav', 'Oriion', 'Rangolie',] },
+    {
+      id: 'res-6',
+      name: 'Residential Flooring Option 5',
+      img: room1,
+      mask: room1copy, // <--- Add this line
+      category: 'Residential Flooring',
+      product: ['Trendo wood', 'Ornate', 'Duratek', 'Galaxxy', 'Luxuria', 'Antique', 'GDP', 'Hi-Tech', 'Uttsav', 'Oriion', 'Rangolie',]
+    },
+    {
+      id: 'res-7',
+      name: 'Residential Flooring Option 6',
+      img: room2,
+      mask: room2copy, // <--- Add this line
+      category: 'Residential Flooring',
+      product: ['Trendo wood', 'Ornate', 'Duratek', 'Galaxxy', 'Luxuria', 'Antique', 'GDP', 'Hi-Tech', 'Uttsav', 'Oriion', 'Rangolie',]
+    },
 
+    // { id: 'res-6', name: 'Residential Flooring Option 6', img: room2, category: 'Residential Flooring', product: ['Trendo wood', 'Ornate', 'Duratek', 'Galaxxy', 'Luxuria', 'Antique', 'GDP', 'Hi-Tech', 'Uttsav', 'Oriion', 'Rangolie',] },
     { id: 'sch-1', name: 'School Flooring Option 1', img: school03, category: 'School Flooring', product: ['Krayons', 'Rhythm', 'Trendo Chips'] },
     { id: 'sch-2', name: 'School Flooring Option 2', img: DefaultImage, category: 'School Flooring', product: ['Krayons', 'Rhythm', 'Trendo Chips'] },
     { id: 'sch-3', name: 'School Flooring Option 3', img: DefaultImage, category: 'School Flooring', product: ['Krayons', 'Rhythm', 'Trendo Chips'] },
@@ -206,20 +248,38 @@ function App() {
     }
   };
 
-  const handleDemoRoomClick = async (imgUrl) => {
+  // const handleDemoRoomClick = async (imgUrl) => {
+  //   try {
+  //     const response = await fetch(imgUrl);
+  //     const blob = await response.blob();
+  //     const file = new File([blob], "demo_room.jpg", { type: "image/jpeg" });
+
+  //     setSelectedRoomImage({ previewUrl: imgUrl, isDemo: true, rawFile: file });
+  //     setIsModalOpen(true);
+  //   } catch (error) {
+  //     console.error("Failed to load demo image:", error);
+  //     alert("Could not load the demo room. Check if the image path is correct.");
+  //   }
+  // };
+  // Change parameter from (imgUrl) to (room)
+  const handleDemoRoomClick = async (room) => { // <-- Change parameter to 'room'
     try {
-      const response = await fetch(imgUrl);
+      const response = await fetch(room.img); // <-- Use room.img
       const blob = await response.blob();
       const file = new File([blob], "demo_room.jpg", { type: "image/jpeg" });
 
-      setSelectedRoomImage({ previewUrl: imgUrl, isDemo: true, rawFile: file });
+      setSelectedRoomImage({
+        previewUrl: room.img, // <-- Use room.img
+        isDemo: true,
+        rawFile: file,
+        maskUrl: room.mask || null // <-- ADD THIS LINE to pass the mask to ARVisualizer
+      });
       setIsModalOpen(true);
     } catch (error) {
       console.error("Failed to load demo image:", error);
       alert("Could not load the demo room. Check if the image path is correct.");
     }
   };
-
   const isDefaultView = selectedIndustry === 'ALL INDUSTRY' && selectedProduct === 'FLOORING PRODUCTS';
 
   const displayedRooms = allDemoRooms.filter(room => {
@@ -374,8 +434,8 @@ function App() {
                   setSelectedProduct('FLOORING PRODUCTS');
                 }}
                 className={`shrink-0 cursor-pointer px-5 py-2 rounded-full text-[13px] font-bold tracking-wide transition-all uppercase border ${selectedIndustry === industry
-                    ? 'bg-[#f05c3f] text-white border-[#f05c3f] shadow-md'
-                    : 'bg-white text-gray-500 border-gray-300 hover:border-[#f05c3f] hover:text-[#f05c3f]'
+                  ? 'bg-[#f05c3f] text-white border-[#f05c3f] shadow-md'
+                  : 'bg-white text-gray-500 border-gray-300 hover:border-[#f05c3f] hover:text-[#f05c3f]'
                   }`}
               >
                 {industry}
@@ -412,7 +472,8 @@ function App() {
               {displayedRooms.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-5 gap-y-10 relative z-10">
                   {displayedRooms.map((room, index) => (
-                    <div key={`${room.id}-${index}`} className="cursor-pointer group flex flex-col gap-3" onClick={() => handleDemoRoomClick(room.img)}>
+                    // <div key={`${room.id}-${index}`} className="cursor-pointer group flex flex-col gap-3" onClick={() => handleDemoRoomClick(room.img)}>
+                    <div key={`${room.id}-${index}`} className="cursor-pointer group flex flex-col gap-3" onClick={() => handleDemoRoomClick(room)}>
                       <div className="overflow-hidden rounded-none bg-gray-100">
                         <img src={room.img} alt={room.name} className="w-full h-[200px] object-cover hover:opacity-90 transition-opacity duration-200" />
                       </div>
