@@ -22,7 +22,8 @@ import room1 from './assets/room1.jpg';
 import room2 from './assets/room2.jpg';
 import room1copy from './assets/room1copy.png';
 import room2copy from './assets/room2copy.png';
-
+// import room3copy from './assets/room3copy.png';
+// import room3 from './assets/room3.jpg';
 // --- CONNECT TO PYTHON BACKEND (RENDER) ---
 // IMPORTANT: Replace this placeholder with your actual Render URL!
 const socket = io('https://python-floor-backend.onrender.com', {
@@ -40,9 +41,20 @@ function App() {
   const fileInputRef = useRef(null);
   const productDropdownRef = useRef(null);
 
-  const [selectedIndustry, setSelectedIndustry] = useState('ALL INDUSTRY');
+  // 1. Tell React to check local storage first before defaulting
+  const [selectedIndustry, setSelectedIndustry] = useState(
+    localStorage.getItem('savedIndustry') || 'ALL INDUSTRY'
+  );
   const [isProductDropdownOpen, setIsProductDropdownOpen] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState('FLOORING PRODUCTS');
+  const [selectedProduct, setSelectedProduct] = useState(
+    localStorage.getItem('savedProduct') || 'FLOORING PRODUCTS'
+  );
+
+  // 2. Automatically save choices to local storage whenever they change
+  useEffect(() => {
+    localStorage.setItem('savedIndustry', selectedIndustry);
+    localStorage.setItem('savedProduct', selectedProduct);
+  }, [selectedIndustry, selectedProduct]);
 
   // --- Lock body scroll when modals are open to make mobile perfect ---
   useEffect(() => {
@@ -178,17 +190,22 @@ function App() {
     { id: 'off-2', name: 'Office Flooring Option 2', img: DefaultImage, category: 'Office Flooring', product: ['Siggma', 'Trendo wood', 'Ornate', 'Antique', 'Hi-Tech', 'Trendo Chips', 'Stoneland Monza', 'Adventus'] },
     { id: 'off-3', name: 'Office Flooring Option 3', img: DefaultImage, category: 'Office Flooring', product: ['Siggma', 'Trendo wood', 'Ornate', 'Antique', 'Hi-Tech', 'Trendo Chips', 'Stoneland Monza', 'Adventus'] },
     { id: 'off-4', name: 'Office Flooring Option 4', img: DefaultImage, category: 'Office Flooring', product: ['Siggma', 'Trendo wood', 'Ornate', 'Antique', 'Hi-Tech', 'Trendo Chips', 'Stoneland Monza', 'Adventus'] },
-
+    //  {
+    //   id: 'res-5',
+    //   name: 'Residential Flooring Option 5',
+    //   img: room3,
+    //   mask: room3copy,
+    //   category: 'Office Flooring',
+    //   product:['Siggma', 'Trendo wood', 'Ornate', 'Antique', 'Hi-Tech', 'Trendo Chips', 'Stoneland Monza', 'Adventus'] },
     { id: 'res-1', name: 'Residential Flooring Option 1', img: residential03, category: 'Residential Flooring', product: ['Trendo wood', 'Ornate', 'Duratek', 'Galaxxy', 'Luxuria', 'Antique', 'GDP', 'Hi-Tech', 'Uttsav', 'Oriion', 'Rangolie',] },
     { id: 'res-2', name: 'Residential Flooring Option 2', img: DefaultImage, category: 'Residential Flooring', product: ['Trendo wood', 'Ornate', 'Duratek', 'Galaxxy', 'Luxuria', 'Antique', 'GDP', 'Hi-Tech', 'Uttsav', 'Oriion', 'Rangolie',] },
     { id: 'res-3', name: 'Residential Flooring Option 3', img: DefaultImage, category: 'Residential Flooring', product: ['Trendo wood', 'Ornate', 'Duratek', 'Galaxxy', 'Luxuria', 'Antique', 'GDP', 'Hi-Tech', 'Uttsav', 'Oriion', 'Rangolie',] },
     { id: 'res-4', name: 'Residential Flooring Option 4', img: DefaultImage, category: 'Residential Flooring', product: ['Trendo wood', 'Ornate', 'Duratek', 'Galaxxy', 'Luxuria', 'Antique', 'GDP', 'Hi-Tech', 'Uttsav', 'Oriion', 'Rangolie',] },
-    //  { id: 'res-5', name: 'Residential Flooring Option 5', img: room1, category: 'Residential Flooring', product: ['Trendo wood', 'Ornate', 'Duratek', 'Galaxxy', 'Luxuria', 'Antique', 'GDP', 'Hi-Tech', 'Uttsav', 'Oriion', 'Rangolie',] },
     {
       id: 'res-6',
       name: 'Residential Flooring Option 5',
       img: room1,
-      mask: room1copy, // <--- Add this line
+      mask: room1copy,
       category: 'Residential Flooring',
       product: ['Trendo wood', 'Ornate', 'Duratek', 'Galaxxy', 'Luxuria', 'Antique', 'GDP', 'Hi-Tech', 'Uttsav', 'Oriion', 'Rangolie',]
     },
@@ -196,12 +213,11 @@ function App() {
       id: 'res-7',
       name: 'Residential Flooring Option 6',
       img: room2,
-      mask: room2copy, // <--- Add this line
+      mask: room2copy,
       category: 'Residential Flooring',
       product: ['Trendo wood', 'Ornate', 'Duratek', 'Galaxxy', 'Luxuria', 'Antique', 'GDP', 'Hi-Tech', 'Uttsav', 'Oriion', 'Rangolie',]
     },
 
-    // { id: 'res-6', name: 'Residential Flooring Option 6', img: room2, category: 'Residential Flooring', product: ['Trendo wood', 'Ornate', 'Duratek', 'Galaxxy', 'Luxuria', 'Antique', 'GDP', 'Hi-Tech', 'Uttsav', 'Oriion', 'Rangolie',] },
     { id: 'sch-1', name: 'School Flooring Option 1', img: school03, category: 'School Flooring', product: ['Krayons', 'Rhythm', 'Trendo Chips'] },
     { id: 'sch-2', name: 'School Flooring Option 2', img: DefaultImage, category: 'School Flooring', product: ['Krayons', 'Rhythm', 'Trendo Chips'] },
     { id: 'sch-3', name: 'School Flooring Option 3', img: DefaultImage, category: 'School Flooring', product: ['Krayons', 'Rhythm', 'Trendo Chips'] },
@@ -245,41 +261,55 @@ function App() {
     if (file) {
       setSelectedRoomImage({ previewUrl: URL.createObjectURL(file), isDemo: false, rawFile: file });
       setIsModalOpen(true);
+      // Ensure we clear memory on custom uploads so it doesn't try to auto-reload a local file
+      localStorage.removeItem('activeDemoRoomId');
     }
   };
 
-  // const handleDemoRoomClick = async (imgUrl) => {
-  //   try {
-  //     const response = await fetch(imgUrl);
-  //     const blob = await response.blob();
-  //     const file = new File([blob], "demo_room.jpg", { type: "image/jpeg" });
-
-  //     setSelectedRoomImage({ previewUrl: imgUrl, isDemo: true, rawFile: file });
-  //     setIsModalOpen(true);
-  //   } catch (error) {
-  //     console.error("Failed to load demo image:", error);
-  //     alert("Could not load the demo room. Check if the image path is correct.");
-  //   }
-  // };
-  // Change parameter from (imgUrl) to (room)
-  const handleDemoRoomClick = async (room) => { // <-- Change parameter to 'room'
+  const handleDemoRoomClick = async (room) => { 
     try {
-      const response = await fetch(room.img); // <-- Use room.img
+      const response = await fetch(room.img); 
       const blob = await response.blob();
       const file = new File([blob], "demo_room.jpg", { type: "image/jpeg" });
 
       setSelectedRoomImage({
-        previewUrl: room.img, // <-- Use room.img
+        previewUrl: room.img, 
         isDemo: true,
         rawFile: file,
-        maskUrl: room.mask || null // <-- ADD THIS LINE to pass the mask to ARVisualizer
+        maskUrl: room.mask || null 
       });
       setIsModalOpen(true);
+
+      // Save the room ID so it survives the refresh
+      localStorage.setItem('activeDemoRoomId', room.id);
+
     } catch (error) {
       console.error("Failed to load demo image:", error);
       alert("Could not load the demo room. Check if the image path is correct.");
     }
   };
+
+  // Close modal and wipe memory
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedRoomImage(null);
+    localStorage.removeItem('activeDemoRoomId');
+  };
+
+ // Auto-reload the demo room when the page gets refreshed
+  useEffect(() => {
+    const savedRoomId = localStorage.getItem('activeDemoRoomId');
+    if (savedRoomId && allDemoRooms) {
+      const roomToLoad = allDemoRooms.find(r => r.id === savedRoomId);
+      if (roomToLoad) {
+        // Add .catch() to satisfy the async promise linter rules
+        handleDemoRoomClick(roomToLoad).catch(console.error);
+      }
+    }
+    // Tell the linter to ignore missing dependencies because we ONLY want this to run on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Run only once on mount
+
   const isDefaultView = selectedIndustry === 'ALL INDUSTRY' && selectedProduct === 'FLOORING PRODUCTS';
 
   const displayedRooms = allDemoRooms.filter(room => {
@@ -497,7 +527,7 @@ function App() {
 
       {/* ARVisualizer placed safely outside the width-restricted container */}
       {isModalOpen && (
-        <ARVisualizer closeModal={() => setIsModalOpen(false)} initialImage={selectedRoomImage} />
+        <ARVisualizer closeModal={handleCloseModal} initialImage={selectedRoomImage} />
       )}
 
     </div>

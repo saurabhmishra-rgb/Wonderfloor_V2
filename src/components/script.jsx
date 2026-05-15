@@ -10,7 +10,13 @@ export const initVisualizer = (container) => {
     const camera = new THREE.PerspectiveCamera(50, container.clientWidth / container.clientHeight, 0.1, 10000);
     
     // Alpha: true is crucial so the base room image shows behind the 3D floor!
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  // Alpha: true is crucial so the base room image shows behind the 3D floor!
+    // preserveDrawingBuffer: true is required for html2canvas to capture the 3D layer
+    const renderer = new THREE.WebGLRenderer({ 
+      antialias: true, 
+      alpha: true,
+      preserveDrawingBuffer: true 
+    });
 
     renderer.setSize(container.clientWidth, container.clientHeight);
     renderer.setPixelRatio(window.devicePixelRatio);
@@ -33,7 +39,7 @@ export const initVisualizer = (container) => {
     const floorMesh = new THREE.Mesh(floorGeometry, floorMaterial);
     // Tweak this value slightly if the perspective tilt looks too steep or flat
     floorMesh.rotation.x = -Math.PI / 2.15; 
-    floorMesh.position.y = -25;
+    floorMesh.position.y = -32;
     floorMesh.position.z = -5;
     scene.add(floorMesh);
 

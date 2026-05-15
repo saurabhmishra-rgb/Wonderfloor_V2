@@ -16,8 +16,10 @@ import floorPoppy2 from '../assets/image8.jpeg';
 import floorPoppy3 from '../assets/image9.jpeg';
 import floorPoppy4 from '../assets/image10.jpeg';
 import floorPoppy5 from '../assets/image11.jpeg';
-
-const BACKEND_URL = 'http://127.0.0.8000';
+// Add this near line 13, alongside your floor image imports
+// import logoImg from '../assets/logo.png';
+// // FIX 1: Corrected malformed URL (was 'http://127.0.0.8000')
+const BACKEND_URL = 'http://127.0.0.1:8000';
 // const BACKEND_URL = 'https://wonderfloor-backend-1.onrender.com';
 
 const ARVisualizer = ({ closeModal, initialImage }) => {
@@ -38,13 +40,21 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
   const productCategories = ['Durofloor', 'Siggma', 'Orbit', 'Stoneland Monza', 'Meteor', 'Aventus'];
   const [initialPinchDist, setInitialPinchDist] = useState(null);
   const [uploadedRoom, setUploadedRoom] = useState(null);
-  const [selectedProduct, setSelectedProduct] = useState(mockProducts[0]);
+  const [selectedProduct, setSelectedProduct] = useState(() => {
+    const savedProduct = localStorage.getItem('savedSelectedProduct');
+    return savedProduct ? JSON.parse(savedProduct) : mockProducts[0];
+  });
+  useEffect(() => {
+    localStorage.setItem('savedSelectedProduct', JSON.stringify(selectedProduct));
+  }, [selectedProduct]);
   const [processedImage, setProcessedImage] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [errorMsg, setErrorMsg] = useState(null);
   const threeContainerRef = useRef(null);
   const visualizerInstance = useRef(null);
-  //  FOR FAVOURITE VIEW 
+  const compositeRef = useRef(null);
+
+  //  FOR FAVOURITE VIEW
   const [isFavoritesViewOpen, setIsFavoritesViewOpen] = useState(false);
   const [zoomScale, setZoomScale] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
@@ -65,8 +75,14 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [detailsProduct, setDetailsProduct] = useState(null);
 
-  // Favorites Tracking
-  const [favoriteProducts, setFavoriteProducts] = useState([]);
+  // FIX 2: Corrected 'localStorage.getItemss' typo (double 's') → 'localStorage.getItem'
+  const [favoriteProducts, setFavoriteProducts] = useState(() => {
+    const savedFavs = localStorage.getItem('savedFavorites');
+    return savedFavs ? JSON.parse(savedFavs) : [];
+  });
+  useEffect(() => {
+    localStorage.setItem('savedFavorites', JSON.stringify(favoriteProducts));
+  }, [favoriteProducts]);
 
   // Dropdown States
   const [isShareMenuOpen, setIsShareMenuOpen] = useState(false);
@@ -285,7 +301,7 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
   };
 
   const handleRotate = () => {
-    const nextAngle = (floorRotation + 90) % 360;
+    const nextAngle = (floorRotation - 30) % 360;
     setFloorRotation(nextAngle);
     applyFloorOverlay(selectedProduct, nextAngle);
   };
@@ -751,7 +767,13 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
               </button>
               {isDownloadMenuOpen && (
                 <div className="absolute top-[50px] left-1/2 -translate-x-1/2 md:translate-x-0 md:left-auto md:right-0 bg-white shadow-xl border border-gray-200 rounded-md py-2 w-[240px] z-50 flex flex-col">
-                  <DownloadView selectedProduct={selectedProduct} currentSrc={currentSrc} onClose={() => setIsDownloadMenuOpen(false)} />
+                  {/* UPDATED COMPONENT WITH THE REF ATTACHED */}
+                  <DownloadView
+                    selectedProduct={selectedProduct}
+                    currentSrc={currentSrc}
+                    compositeRef={activeBaseImage?.maskUrl ? compositeRef : null}
+                    onClose={() => setIsDownloadMenuOpen(false)}
+                  />
                 </div>
               )}
             </div>
@@ -806,27 +828,18 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
           onTouchCancel={handleTouchEnd}
           style={{ cursor: zoomScale > 1 && !isDetailsModalOpen ? (isDragging ? 'grabbing' : 'grab') : 'zoom-in' }}
         >
-          {/*
-           * FIX: The outer card now uses height: '100%' as the primary dimension.
-           * aspect-ratio then computes the width from that height.
-           * maxWidth: '98%' prevents overflow on narrow screens.
-           * The inner content div is absolute inset-0 so it always fills the card,
-           * regardless of children being absolutely positioned (which contribute no
-           * intrinsic height to a flex layout).
-           */}
           <div
             className="relative bg-white shadow-xl rounded-md overflow-hidden"
             style={{
               aspectRatio: '4/3',
-              height: '100%',       // ← PRIMARY FIX: gives the card a real height
-              maxWidth: '98%',      // ← prevents sideways overflow
+              height: '100%',
+              maxWidth: '98%',
               transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoomScale})`,
               transformOrigin: 'center center',
               transition: isDragging ? 'none' : 'transform 0.1s ease-out'
             }}
           >
-            {/* ← FIX: changed from flex-1 + relative to absolute inset-0 */}
-            <div className="absolute inset-0 overflow-hidden bg-gray-200">
+            <div className="absolute inset-0 overflow-hidden bg-gray-200" ref={compositeRef}>
               {isProcessing && (
                 <div className="absolute inset-0 bg-white/60 backdrop-blur-sm flex flex-col justify-center items-center z-40">
                   <div className="w-10 h-10 md:w-12 md:h-12 border-4 border-[#0b5e5e]/20 border-t-[#0b5e5e] rounded-full animate-spin mb-3 md:mb-4" />
@@ -841,6 +854,7 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
                     src={activeBaseImage.previewUrl}
                     className="absolute inset-0 w-full h-full object-cover z-0 pointer-events-none"
                     alt="Base Room"
+                    crossOrigin="anonymous"
                   />
                   {/* LAYER 2: Three.js Floor Canvas */}
                   <div
@@ -852,6 +866,7 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
                     src={activeBaseImage.maskUrl}
                     className="absolute inset-0 w-full h-full object-cover z-20 pointer-events-none"
                     alt="Room Mask"
+                    crossOrigin="anonymous"
                   />
                 </div>
               ) : (
@@ -860,8 +875,20 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
                   alt="Room"
                   draggable="false"
                   className="absolute inset-0 w-full h-full object-cover select-none z-0"
+                  crossOrigin="anonymous"
                 />
               )}
+              {/* --- ADD THE LOGO HERE --- */}
+              {/* Because this is inside compositeRef, it WILL show up on the download! */}
+             {/* <div className="absolute bottom-4 right-4 z-30 pointer-events-none">
+              <img 
+                src={logoImg} 
+                alt="Wonderfloor Logo" 
+                className="h-8 md:h-10 object-contain drop-shadow-md bg-white/80 backdrop-blur-sm px-3 py-1.5 rounded-lg border border-white/40" 
+              />
+            </div> */}
+
+
             </div>
           </div>
 

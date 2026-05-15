@@ -1,14 +1,46 @@
-import React, { useState, useRef } from 'react';
-import html2canvas from 'html2canvas';
+import React, { useState, useRef, useEffect } from 'react';
+import * as htmlToImage from 'html-to-image';
+import logoImg from '../assets/logo.png'; 
 
-const DownloadView = ({ selectedProduct, currentSrc, onClose }) => {
+const DownloadView = ({ selectedProduct, currentSrc, compositeRef, onClose }) => {
   const [isProcessing, setIsProcessing] = useState(false);
+  const [downloadableImage, setDownloadableImage] = useState(currentSrc);
   const printRef = useRef(null);
+  const imageOnlyRef = useRef(null); // <-- NEW REF FOR WATERMARKING
+
+  // Capture the live 3D layers if the visualizer is in WebGL mode
+  useEffect(() => {
+    if (compositeRef && compositeRef.current) {
+      setIsProcessing(true);
+      
+      const node = compositeRef.current; 
+
+      // Give the browser 500ms to finish rendering the images and 3D canvas
+      setTimeout(() => {
+        htmlToImage.toJpeg(node, {
+          quality: 0.9,
+          pixelRatio: 2, 
+          skipFonts: true, 
+          width: node.offsetWidth,  
+          height: node.offsetHeight 
+        }).then(dataUrl => {
+          setDownloadableImage(dataUrl);
+        }).catch(err => {
+          console.error("Failed to capture 3D composite:", err);
+          setDownloadableImage(currentSrc); 
+        }).finally(() => {
+          setIsProcessing(false);
+        });
+      }, 500);
+
+    } else {
+      setDownloadableImage(currentSrc);
+    }
+  }, [compositeRef, currentSrc]);
 
   const handleDownload = async (option) => {
-    if (!currentSrc) return;
+    if (!downloadableImage) return;
 
-    // Helper function for iOS download fallback
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
     
     const triggerDownload = (dataUrl, fileName) => {
@@ -32,33 +64,41 @@ const DownloadView = ({ selectedProduct, currentSrc, onClose }) => {
         link.click();
         document.body.removeChild(link);
       }
-      if (onClose) onClose(); // Close the dropdown menu
+      if (onClose) onClose(); 
     };
 
     try {
       if (option === 'image') {
-        triggerDownload(currentSrc, `Wonderfloor_Design_${Date.now()}.jpg`);
-      } else if (option === 'details') {
-        if (!printRef.current) return;
-
+        if (!imageOnlyRef.current) return;
         setIsProcessing(true);
-        
-        // Brief pause to ensure React has fully attached the DOM node
+
+        // Wait a tiny bit for React to attach the hidden imageOnlyRef
         await new Promise(resolve => setTimeout(resolve, 150));
 
-        const canvas = await html2canvas(printRef.current, {
-          scale: 2, // High resolution
-          useCORS: true, 
-          backgroundColor: '#ffffff',
-          logging: false // Turn off console logs
+        // CAPTURE THE HIDDEN DIV WITH THE LOGO WATERMARK
+        const finalImageDataUrl = await htmlToImage.toJpeg(imageOnlyRef.current, {
+          quality: 1.0,
+          pixelRatio: 1 // Set to 1 because downloadableImage is already high-res
         });
 
-        const detailsDataUrl = canvas.toDataURL('image/jpeg', 0.9);
+        triggerDownload(finalImageDataUrl, `Wonderfloor_Design_${Date.now()}.jpg`);
+        
+      } else if (option === 'details') {
+        if (!printRef.current) return;
+        setIsProcessing(true);
+        await new Promise(resolve => setTimeout(resolve, 150));
+
+        const detailsDataUrl = await htmlToImage.toJpeg(printRef.current, {
+          quality: 0.9,
+          pixelRatio: 2,
+          backgroundColor: '#ffffff'
+        });
+
         triggerDownload(detailsDataUrl, `Wonderfloor_Specs_${Date.now()}.jpg`);
       }
     } catch (error) {
       console.error("Failed to generate download:", error);
-      alert(`Download failed. If using an external image, it might be blocking the download due to security. Error: ${error.message}`);
+      alert(`Download failed. Error: ${error.message}`);
       if (onClose) onClose();
     } finally {
       setIsProcessing(false);
@@ -67,13 +107,13 @@ const DownloadView = ({ selectedProduct, currentSrc, onClose }) => {
 
   return (
     <>
-      {/* Dropdown Menu Buttons */}
       <button 
         onClick={() => handleDownload('image')} 
-        className="flex items-center gap-3 px-4 py-3 text-sm hover:bg-gray-50 text-left transition-colors cursor-pointer border-b border-gray-100 w-full"
+        disabled={isProcessing}
+        className="flex items-center gap-3 px-4 py-3 text-sm hover:bg-gray-50 text-left transition-colors cursor-pointer border-b border-gray-100 w-full disabled:opacity-50"
       >
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-        Image
+        {isProcessing && compositeRef ? 'Preparing...' : 'Image'}
       </button>
       
       <button 
@@ -82,50 +122,65 @@ const DownloadView = ({ selectedProduct, currentSrc, onClose }) => {
         className="flex items-center gap-3 px-4 py-3 text-sm hover:bg-gray-50 text-left transition-colors cursor-pointer w-full disabled:opacity-50"
       >
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-        {isProcessing ? 'Generating...' : 'Image & Product Details'}
+        {isProcessing && compositeRef ? 'Preparing...' : 'Image & Product Details'}
       </button>
 
-      {/* 
-        FIXED HIDDEN PRINT LAYOUT 
-        Removed visibility:hidden. It is now absolutely positioned far off-screen
-        so the browser paints it perfectly for html2canvas to capture.
-      */}
-      <div
-        style={{
-          position: 'absolute',
-          top: '-9999px',
-          left: '-9999px',
-          width: '1000px',
-          zIndex: -9999,
-          pointerEvents: 'none'
-        }}
-      >
-        <div 
-          ref={printRef} 
-          style={{ width: '1000px', padding: '40px', backgroundColor: '#ffffff', color: '#000000', fontFamily: 'sans-serif' }}
-        >
-          {/* Header */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
-            <img src="https://www.wonderfloor.co.in/assets/img/logo/logo.png" alt="Wonderfloor" style={{ height: '40px', objectFit: 'contain' }} crossOrigin="anonymous" />
+      {/* ---------------------------------------------------------------- */}
+      {/* HIDDEN LAYOUT 1: JUST THE IMAGE + LOGO WATERMARK                 */}
+      {/* ---------------------------------------------------------------- */}
+      <div style={{ position: 'absolute', top: '-9999px', left: '-9999px', zIndex: -9999, pointerEvents: 'none' }}>
+        <div ref={imageOnlyRef} style={{ position: 'relative', display: 'inline-block' }}>
+          
+          <img 
+            src={downloadableImage} 
+            alt="Room Base" 
+            style={{ display: 'block', maxWidth: '1200px', height: 'auto' }} 
+            crossOrigin="anonymous" 
+          />
+          
+          {/* The Logo Watermark - positioned at the bottom right */}
+          <div style={{ position: 'absolute', bottom: '24px', right: '24px', zIndex: 10 }}>
+            <img 
+              src={logoImg} 
+              alt="Wonderfloor" 
+              style={{ 
+                height: '40px', 
+                objectFit: 'contain', 
+                backgroundColor: 'rgba(255, 255, 255, 0.9)', 
+                padding: '8px 16px', 
+                borderRadius: '8px', 
+                border: '1px solid rgba(255, 255, 255, 0.4)',
+                boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
+              }} 
+            />
           </div>
 
-          {/* Main Room Image */}
+        </div>
+      </div>
+
+      {/* ---------------------------------------------------------------- */}
+      {/* HIDDEN LAYOUT 2: THE PRODUCT DETAILS PDF VIEW                      */}
+      {/* ---------------------------------------------------------------- */}
+      <div style={{ position: 'absolute', top: '-9999px', left: '-9999px', width: '1000px', zIndex: -9999, pointerEvents: 'none' }}>
+        <div ref={printRef} style={{ width: '1000px', padding: '40px', backgroundColor: '#ffffff', color: '#000000', fontFamily: 'sans-serif' }}>
+          
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
+            <img src={logoImg} alt="Wonderfloor" style={{ height: '40px', objectFit: 'contain' }} />
+          </div>
+
           <img 
-            src={currentSrc} 
+            src={downloadableImage} 
             alt="Room Design" 
             style={{ width: '100%', height: '600px', objectFit: 'cover', borderRadius: '8px', marginBottom: '32px', border: '1px solid #e5e7eb' }} 
             crossOrigin="anonymous" 
           />
 
-          {/* Divider / Sub-header */}
           <div style={{ borderTop: '2px solid #f3f4f6', paddingTop: '24px', marginBottom: '32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <img src="https://www.wonderfloor.co.in/assets/img/logo/logo.png" alt="Wonderfloor" style={{ height: '24px', objectFit: 'contain' }} crossOrigin="anonymous" />
+            <img src={logoImg} alt="Wonderfloor" style={{ height: '24px', objectFit: 'contain' }} />
             <span style={{ fontSize: '14px', color: '#6b7280', fontWeight: 500 }}>Powered by <strong style={{ color: '#000' }}>wonderfloor</strong></span>
           </div>
 
-          {/* Details Section */}
           <div style={{ display: 'flex', gap: '48px' }}>
-            {/* Left Side: Product Info */}
             <div style={{ width: '33.333%' }}>
               <h3 style={{ fontSize: '20px', fontWeight: 800, color: '#111827', marginBottom: '20px', marginTop: 0 }}>Floors</h3>
               <div style={{ display: 'flex', gap: '16px' }}>
@@ -137,7 +192,6 @@ const DownloadView = ({ selectedProduct, currentSrc, onClose }) => {
               </div>
             </div>
 
-            {/* Right Side: Specifications Table */}
             <div style={{ width: '66.666%' }}>
               <h3 style={{ fontSize: '20px', fontWeight: 800, color: '#111827', marginBottom: '20px', marginTop: 0 }}>Specifications</h3>
               <div style={{ display: 'flex', flexDirection: 'column', borderTop: '1px solid #e5e7eb' }}>
