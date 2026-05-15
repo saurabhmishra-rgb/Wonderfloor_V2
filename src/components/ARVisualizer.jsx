@@ -24,20 +24,20 @@ const BACKEND_URL = 'http://127.0.0.1:8000';
 // const BACKEND_URL = 'https://wonderfloor-backend-1.onrender.com';
 
 const ARVisualizer = ({ closeModal, initialImage }) => {
-  const mockProducts = [
-    { id: 1, name: 'GDP-550406', size: '30cm x 30cm', img: floorActon, colour: 'Grey', shade: 'Dark', category: 'Tiles', materials: 'Nylon', collection: 'GDP', accordionCategory: 'Durofloor', sku: 'WF000051' },
-    { id: 2, name: 'GDP-551004', size: '30cm x 30cm', img: floorHolmes, colour: 'Beige', shade: 'Light', category: 'Planks', materials: 'PET', collection: 'Classic', accordionCategory: 'Durofloor', sku: 'WF000052' },
-    { id: 3, name: 'GDP-551007', size: '30cm x 30cm', img: floorCedar, colour: 'Brown', shade: 'Medium', category: 'Tiles', materials: 'Vinyl', collection: 'GDP', accordionCategory: 'Siggma', sku: 'WF000053' },
-    { id: 5, name: 'GDP-552107', size: '30cm x 30cm', img: floorCalla, colour: 'Grey', shade: 'Light', category: 'Carpet', materials: 'Nylon', collection: 'Premium', accordionCategory: 'Siggma', sku: 'WF000054' },
-        { id: 5, name: 'GDP-553107', size: '30cm x 30cm', img: floorpoppy6, colour: 'Grey', shade: 'Light', category: 'Carpet', materials: 'Nylon', collection: 'Premium', accordionCategory: 'Siggma', sku: 'WF000054' },
-    { id: 6, name: 'GDP-552112', size: '30cm x 30cm', img: floorTansy, colour: 'Black', shade: 'Dark', category: 'Planks', materials: 'Ceramic', collection: 'Classic', accordionCategory: 'Orbit', sku: 'WF000055' },
-    { id: 7, name: 'GDP-554306', size: '30cm x 30cm', img: floorPoppy, colour: 'White', shade: 'Light', category: 'Tiles', materials: 'PET', collection: 'GDP', accordionCategory: 'Orbit', sku: 'WF000056' },
-    { id: 9, name: 'GDP-555902', size: '30cm x 30cm', img: floorPoppy1, colour: 'Grey', shade: 'Medium', category: 'Carpet', materials: 'Vinyl', collection: 'Premium', accordionCategory: 'Stoneland Monza', sku: 'WF000057' },
-    { id: 10, name: 'GDP-557304', size: '30cm x 30cm', img: floorPoppy2, colour: 'Beige', shade: 'Medium', category: 'Tiles', materials: 'Nylon', collection: 'Classic', accordionCategory: 'Stoneland Monza', sku: 'WF000058' },
-    { id: 11, name: 'GDP-557703', size: '30cm x 30cm', img: floorPoppy3, colour: 'Brown', shade: 'Dark', category: 'Planks', materials: 'Ceramic', collection: 'Premium', accordionCategory: 'Meteor', sku: 'WF000059' },
-    { id: 12, name: 'GDP-559204', size: '30cm x 30cm', img: floorPoppy4, colour: 'Black', shade: 'Dark', category: 'Carpet', materials: 'PET', collection: 'GDP', accordionCategory: 'Meteor', sku: 'WF000060' },
-    { id: 13, name: 'GDP-559404', size: '30cm x 30cm', img: floorPoppy5, colour: 'White', shade: 'Light', category: 'Tiles', materials: 'Vinyl', collection: 'Classic', accordionCategory: 'Aventus', sku: 'WF000061' },
-  ];
+const mockProducts = [
+  { id: 1, name: 'GDP-550406', size: '30cm x 30cm', img: floorActon, colour: 'Grey', shade: 'Dark', category: 'Tiles', materials: 'Nylon', collection: 'GDP', accordionCategory: 'Durofloor', sku: 'WF000051' },
+  { id: 2, name: 'GDP-551004', size: '30cm x 30cm', img: floorHolmes, colour: 'Beige', shade: 'Light', category: 'Planks', materials: 'PET', collection: 'Classic', accordionCategory: 'Durofloor', sku: 'WF000052' },
+  { id: 3, name: 'GDP-551007', size: '30cm x 30cm', img: floorCedar, colour: 'Brown', shade: 'Medium', category: 'Tiles', materials: 'Vinyl', collection: 'GDP', accordionCategory: 'Siggma', sku: 'WF000053' },
+  { id: 4, name: 'GDP-552107', size: '30cm x 30cm', img: floorCalla, colour: 'Grey', shade: 'Light', category: 'Carpet', materials: 'Nylon', collection: 'Premium', accordionCategory: 'Siggma', sku: 'WF000054' }, // Updated ID to 4
+  { id: 5, name: 'GDP-553107', size: '30cm x 30cm', img: floorpoppy6, colour: 'Grey', shade: 'Light', category: 'Carpet', materials: 'Nylon', collection: 'Premium', accordionCategory: 'Siggma', sku: 'WF000055' }, // Unique ID and SKU
+  { id: 6, name: 'GDP-552112', size: '30cm x 30cm', img: floorTansy, colour: 'Black', shade: 'Dark', category: 'Planks', materials: 'Ceramic', collection: 'Classic', accordionCategory: 'Orbit', sku: 'WF000056' },
+  { id: 7, name: 'GDP-554306', size: '30cm x 30cm', img: floorPoppy, colour: 'White', shade: 'Light', category: 'Tiles', materials: 'PET', collection: 'GDP', accordionCategory: 'Orbit', sku: 'WF000057' },
+  { id: 8, name: 'GDP-555902', size: '30cm x 30cm', img: floorPoppy1, colour: 'Grey', shade: 'Medium', category: 'Carpet', materials: 'Vinyl', collection: 'Premium', accordionCategory: 'Stoneland Monza', sku: 'WF000058' }, // Fixed ID (was 9)
+  { id: 9, name: 'GDP-557304', size: '30cm x 30cm', img: floorPoppy2, colour: 'Beige', shade: 'Medium', category: 'Tiles', materials: 'Nylon', collection: 'Classic', accordionCategory: 'Stoneland Monza', sku: 'WF000059' }, // Fixed ID (was 10)
+  { id: 10, name: 'GDP-557703', size: '30cm x 30cm', img: floorPoppy3, colour: 'Brown', shade: 'Dark', category: 'Planks', materials: 'Ceramic', collection: 'Premium', accordionCategory: 'Meteor', sku: 'WF000060' }, // Fixed ID (was 11)
+  { id: 11, name: 'GDP-559204', size: '30cm x 30cm', img: floorPoppy4, colour: 'Black', shade: 'Dark', category: 'Carpet', materials: 'PET', collection: 'GDP', accordionCategory: 'Meteor', sku: 'WF000061' }, // Fixed ID (was 12)
+  { id: 12, name: 'GDP-559404', size: '30cm x 30cm', img: floorPoppy5, colour: 'White', shade: 'Light', category: 'Tiles', materials: 'Vinyl', collection: 'Classic', accordionCategory: 'Aventus', sku: 'WF000062' }, // Fixed ID (was 13)
+];
 
   const productCategories = ['Durofloor', 'Siggma', 'Orbit', 'Stoneland Monza', 'Meteor', 'Aventus'];
   const [initialPinchDist, setInitialPinchDist] = useState(null);
