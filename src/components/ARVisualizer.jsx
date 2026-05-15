@@ -16,6 +16,7 @@ import floorPoppy2 from '../assets/image8.jpeg';
 import floorPoppy3 from '../assets/image9.jpeg';
 import floorPoppy4 from '../assets/image10.jpeg';
 import floorPoppy5 from '../assets/image11.jpeg';
+import floorpoppy6 from '../assets/image3.1.jpeg';
 // Add this near line 13, alongside your floor image imports
 // import logoImg from '../assets/logo.png';
 // // FIX 1: Corrected malformed URL (was 'http://127.0.0.8000')
@@ -28,6 +29,7 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
     { id: 2, name: 'GDP-551004', size: '30cm x 30cm', img: floorHolmes, colour: 'Beige', shade: 'Light', category: 'Planks', materials: 'PET', collection: 'Classic', accordionCategory: 'Durofloor', sku: 'WF000052' },
     { id: 3, name: 'GDP-551007', size: '30cm x 30cm', img: floorCedar, colour: 'Brown', shade: 'Medium', category: 'Tiles', materials: 'Vinyl', collection: 'GDP', accordionCategory: 'Siggma', sku: 'WF000053' },
     { id: 5, name: 'GDP-552107', size: '30cm x 30cm', img: floorCalla, colour: 'Grey', shade: 'Light', category: 'Carpet', materials: 'Nylon', collection: 'Premium', accordionCategory: 'Siggma', sku: 'WF000054' },
+        { id: 5, name: 'GDP-553107', size: '30cm x 30cm', img: floorpoppy6, colour: 'Grey', shade: 'Light', category: 'Carpet', materials: 'Nylon', collection: 'Premium', accordionCategory: 'Siggma', sku: 'WF000054' },
     { id: 6, name: 'GDP-552112', size: '30cm x 30cm', img: floorTansy, colour: 'Black', shade: 'Dark', category: 'Planks', materials: 'Ceramic', collection: 'Classic', accordionCategory: 'Orbit', sku: 'WF000055' },
     { id: 7, name: 'GDP-554306', size: '30cm x 30cm', img: floorPoppy, colour: 'White', shade: 'Light', category: 'Tiles', materials: 'PET', collection: 'GDP', accordionCategory: 'Orbit', sku: 'WF000056' },
     { id: 9, name: 'GDP-555902', size: '30cm x 30cm', img: floorPoppy1, colour: 'Grey', shade: 'Medium', category: 'Carpet', materials: 'Vinyl', collection: 'Premium', accordionCategory: 'Stoneland Monza', sku: 'WF000057' },
