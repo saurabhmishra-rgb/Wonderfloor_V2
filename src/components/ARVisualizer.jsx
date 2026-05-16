@@ -4,6 +4,7 @@ import FavoritesView from './FavouritesView';
 import RoomUploader from './RoomUploader';
 import DownloadView from './DownloadView';
 import { initVisualizer } from './script.jsx';
+import AttractiveLoader from './AttractiveLoader';
 // 1. IMPORT YOUR LOCAL ASSETS HERE
 import floorActon from '../assets/image1.jpeg';
 import floorHolmes from '../assets/image2.jpeg';
@@ -24,24 +25,27 @@ const BACKEND_URL = 'http://127.0.0.1:8000';
 // const BACKEND_URL = 'https://wonderfloor-backend-1.onrender.com';
 
 const ARVisualizer = ({ closeModal, initialImage }) => {
-const mockProducts = [
-  { id: 1, name: 'GDP-550406', size: '30cm x 30cm', img: floorActon, colour: 'Grey', shade: 'Dark', category: 'Tiles', materials: 'Nylon', collection: 'GDP', accordionCategory: 'Durofloor', sku: 'WF000051' },
-  { id: 2, name: 'GDP-551004', size: '30cm x 30cm', img: floorHolmes, colour: 'Beige', shade: 'Light', category: 'Planks', materials: 'PET', collection: 'Classic', accordionCategory: 'Durofloor', sku: 'WF000052' },
-  { id: 3, name: 'GDP-551007', size: '30cm x 30cm', img: floorCedar, colour: 'Brown', shade: 'Medium', category: 'Tiles', materials: 'Vinyl', collection: 'GDP', accordionCategory: 'Siggma', sku: 'WF000053' },
-  { id: 4, name: 'GDP-552107', size: '30cm x 30cm', img: floorCalla, colour: 'Grey', shade: 'Light', category: 'Carpet', materials: 'Nylon', collection: 'Premium', accordionCategory: 'Siggma', sku: 'WF000054' }, // Updated ID to 4
-  { id: 5, name: 'GDP-553107', size: '30cm x 30cm', img: floorpoppy6, colour: 'Grey', shade: 'Light', category: 'Carpet', materials: 'Nylon', collection: 'Premium', accordionCategory: 'Siggma', sku: 'WF000055' }, // Unique ID and SKU
-  { id: 6, name: 'GDP-552112', size: '30cm x 30cm', img: floorTansy, colour: 'Black', shade: 'Dark', category: 'Planks', materials: 'Ceramic', collection: 'Classic', accordionCategory: 'Orbit', sku: 'WF000056' },
-  { id: 7, name: 'GDP-554306', size: '30cm x 30cm', img: floorPoppy, colour: 'White', shade: 'Light', category: 'Tiles', materials: 'PET', collection: 'GDP', accordionCategory: 'Orbit', sku: 'WF000057' },
-  { id: 8, name: 'GDP-555902', size: '30cm x 30cm', img: floorPoppy1, colour: 'Grey', shade: 'Medium', category: 'Carpet', materials: 'Vinyl', collection: 'Premium', accordionCategory: 'Stoneland Monza', sku: 'WF000058' }, // Fixed ID (was 9)
-  { id: 9, name: 'GDP-557304', size: '30cm x 30cm', img: floorPoppy2, colour: 'Beige', shade: 'Medium', category: 'Tiles', materials: 'Nylon', collection: 'Classic', accordionCategory: 'Stoneland Monza', sku: 'WF000059' }, // Fixed ID (was 10)
-  { id: 10, name: 'GDP-557703', size: '30cm x 30cm', img: floorPoppy3, colour: 'Brown', shade: 'Dark', category: 'Planks', materials: 'Ceramic', collection: 'Premium', accordionCategory: 'Meteor', sku: 'WF000060' }, // Fixed ID (was 11)
-  { id: 11, name: 'GDP-559204', size: '30cm x 30cm', img: floorPoppy4, colour: 'Black', shade: 'Dark', category: 'Carpet', materials: 'PET', collection: 'GDP', accordionCategory: 'Meteor', sku: 'WF000061' }, // Fixed ID (was 12)
-  { id: 12, name: 'GDP-559404', size: '30cm x 30cm', img: floorPoppy5, colour: 'White', shade: 'Light', category: 'Tiles', materials: 'Vinyl', collection: 'Classic', accordionCategory: 'Aventus', sku: 'WF000062' }, // Fixed ID (was 13)
-];
+  const mockProducts = [
+    { id: 1, name: 'GDP-550406', size: '30cm x 30cm', img: floorActon, colour: 'Grey', shade: 'Dark', category: 'Tiles', materials: 'Nylon', collection: 'GDP', accordionCategory: 'Durofloor', sku: 'WF000051' },
+    { id: 2, name: 'GDP-551004', size: '30cm x 30cm', img: floorHolmes, colour: 'Beige', shade: 'Light', category: 'Planks', materials: 'PET', collection: 'Classic', accordionCategory: 'Durofloor', sku: 'WF000052' },
+    { id: 3, name: 'GDP-551007', size: '30cm x 30cm', img: floorCedar, colour: 'Brown', shade: 'Medium', category: 'Tiles', materials: 'Vinyl', collection: 'GDP', accordionCategory: 'Siggma', sku: 'WF000053' },
+    { id: 4, name: 'GDP-552107', size: '30cm x 30cm', img: floorCalla, colour: 'Grey', shade: 'Light', category: 'Carpet', materials: 'Nylon', collection: 'Premium', accordionCategory: 'Siggma', sku: 'WF000054' }, // Updated ID to 4
+    { id: 5, name: 'GDP-553107', size: '30cm x 30cm', img: floorpoppy6, colour: 'Grey', shade: 'Light', category: 'Carpet', materials: 'Nylon', collection: 'Premium', accordionCategory: 'Siggma', sku: 'WF000055' }, // Unique ID and SKU
+    { id: 6, name: 'GDP-552112', size: '30cm x 30cm', img: floorTansy, colour: 'Black', shade: 'Dark', category: 'Planks', materials: 'Ceramic', collection: 'Classic', accordionCategory: 'Orbit', sku: 'WF000056' },
+    { id: 7, name: 'GDP-554306', size: '30cm x 30cm', img: floorPoppy, colour: 'White', shade: 'Light', category: 'Tiles', materials: 'PET', collection: 'GDP', accordionCategory: 'Orbit', sku: 'WF000057' },
+    { id: 8, name: 'GDP-555902', size: '30cm x 30cm', img: floorPoppy1, colour: 'Grey', shade: 'Medium', category: 'Carpet', materials: 'Vinyl', collection: 'Premium', accordionCategory: 'Stoneland Monza', sku: 'WF000058' }, // Fixed ID (was 9)
+    { id: 9, name: 'GDP-557304', size: '30cm x 30cm', img: floorPoppy2, colour: 'Beige', shade: 'Medium', category: 'Tiles', materials: 'Nylon', collection: 'Classic', accordionCategory: 'Stoneland Monza', sku: 'WF000059' }, // Fixed ID (was 10)
+    { id: 10, name: 'GDP-557703', size: '30cm x 30cm', img: floorPoppy3, colour: 'Brown', shade: 'Dark', category: 'Planks', materials: 'Ceramic', collection: 'Premium', accordionCategory: 'Meteor', sku: 'WF000060' }, // Fixed ID (was 11)
+    { id: 11, name: 'GDP-559204', size: '30cm x 30cm', img: floorPoppy4, colour: 'Black', shade: 'Dark', category: 'Carpet', materials: 'PET', collection: 'GDP', accordionCategory: 'Meteor', sku: 'WF000061' }, // Fixed ID (was 12)
+    { id: 12, name: 'GDP-559404', size: '30cm x 30cm', img: floorPoppy5, colour: 'White', shade: 'Light', category: 'Tiles', materials: 'Vinyl', collection: 'Classic', accordionCategory: 'Aventus', sku: 'WF000062' }, // Fixed ID (was 13)
+  ];
 
   const productCategories = ['Durofloor', 'Siggma', 'Orbit', 'Stoneland Monza', 'Meteor', 'Aventus'];
   const [initialPinchDist, setInitialPinchDist] = useState(null);
   const [uploadedRoom, setUploadedRoom] = useState(null);
+  // For custom rotation input
+  const [isEditingRotation, setIsEditingRotation] = useState(false);
+  const [customAngle, setCustomAngle] = useState("");
   const [selectedProduct, setSelectedProduct] = useState(() => {
     const savedProduct = localStorage.getItem('savedSelectedProduct');
     return savedProduct ? JSON.parse(savedProduct) : mockProducts[0];
@@ -50,8 +54,10 @@ const mockProducts = [
     localStorage.setItem('savedSelectedProduct', JSON.stringify(selectedProduct));
   }, [selectedProduct]);
   const [processedImage, setProcessedImage] = useState(null);
-  const [isProcessing, setIsProcessing] = useState(false);
+const [isProcessing, setIsProcessing] = useState(true);
   const [errorMsg, setErrorMsg] = useState(null);
+  // ADD THIS LINE: Track whether the 3D/2D floor overlay is visible
+  const [isFloorVisible, setIsFloorVisible] = useState(true);
   const threeContainerRef = useRef(null);
   const visualizerInstance = useRef(null);
   const compositeRef = useRef(null);
@@ -108,6 +114,17 @@ const mockProducts = [
   const imageContainerRef = useRef(null);
   const activeBaseImage = uploadedRoom || initialImage;
   const currentSrc = processedImage || activeBaseImage?.previewUrl || 'https://images.unsplash.com/photo-1595844730298-b960fa25fa48?auto=format&fit=crop&w=1200&q=80';
+  // --- ADD THIS NEW EFFECT ---
+  // Triggers the loader on page refresh or when a new room is opened
+  useEffect(() => {
+    setIsProcessing(true);
+    
+    const initTimer = setTimeout(() => {
+      setIsProcessing(false);
+    }, 5000); // Shows the loader for 3 seconds
+
+    return () => clearTimeout(initTimer);
+  }, [activeBaseImage]);
 
   useEffect(() => {
     if (selectedProduct) {
@@ -233,27 +250,43 @@ const mockProducts = [
     });
   };
 
-  const applyFloorOverlay = async (product, angle) => {
+ const applyFloorOverlay = async (product, angle) => {
     const activeBaseImage = uploadedRoom || initialImage;
-    if (activeBaseImage?.maskUrl) {
-      if (visualizerInstance.current && visualizerInstance.current.updateTexture) {
-        visualizerInstance.current.updateTexture(product.img, angle);
-      }
-      return;
-    }
-    if (!activeBaseImage?.rawFile) return;
+    if (!activeBaseImage) return;
+
+    // 1. ALWAYS show the loader immediately, regardless of 2D or 3D mode
     setIsProcessing(true);
+
     try {
+      // --- SCENARIO A: 3D Texture Swap (Instant) ---
+      if (activeBaseImage?.maskUrl) {
+        if (visualizerInstance.current && visualizerInstance.current.updateTexture) {
+          visualizerInstance.current.updateTexture(product.img, angle);
+        }
+        // Force the loader to stay on screen for 1.5 seconds so it looks premium
+        await new Promise(resolve => setTimeout(resolve, 5000));
+        return; // Exit here, we are done with the 3D path
+      }
+
+      // --- SCENARIO B: 2D Python Backend Processing ---
+      if (!activeBaseImage?.rawFile) return;
+
       const tileBlob = await getRotatedTileBlob(product.img, angle);
       const formData = new FormData();
       formData.append('roomImage', activeBaseImage.rawFile);
       formData.append('floorImage', tileBlob, `${product.name}_rotated.jpg`);
       const dimensionInstruction = `The flooring tiles have physical dimensions of ${product.size}. Please scale the floor pattern realistically relative to the room perspective. ${product.description || ""}`.trim();
       formData.append('instructions', dimensionInstruction);
-      const response = await fetch(`${BACKEND_URL}/api/replace-floor`, {
-        method: 'POST',
-        body: formData,
-      });
+
+      // Fetch from backend AND wait 1.5 seconds concurrently
+      const [response] = await Promise.all([
+        fetch(`${BACKEND_URL}/api/replace-floor`, {
+          method: 'POST',
+          body: formData,
+        }),
+        new Promise(resolve => setTimeout(resolve, 1500)) 
+      ]);
+
       const data = await response.json();
       if (response.ok && data.success) {
         setProcessedImage(data.imageDataUrl);
@@ -262,10 +295,12 @@ const mockProducts = [
         console.error('Server error:', msg);
         setErrorMsg(`Backend Error: ${msg}`);
       }
+
     } catch (err) {
       console.error('Network / processing error:', err);
       setErrorMsg(`Connection Error: ${err.message}. Is the Python server running on port 8000?`);
     } finally {
+      // 2. ALWAYS hide the loader when everything is completely finished
       setIsProcessing(false);
     }
   };
@@ -279,12 +314,24 @@ const mockProducts = [
     setSelectedProduct(product);
     setErrorMsg(null);
     setFloorRotation(0);
+    setIsFloorVisible(true); // <-- ADD THIS: Show floor when a new tile is clicked
     applyFloorOverlay(product, 0);
     setIsSidebarOpen(false);
     setTimeout(() => {
       window.scrollTo(0, 0);
       document.body.scrollTop = 0;
     }, 100);
+  };
+
+  // ... skip to handleReset ...
+
+  const handleReset = () => {
+    setProcessedImage(null);
+    setErrorMsg(null);
+    setZoomScale(1);
+    setPan({ x: 0, y: 0 });
+    setFloorRotation(0);
+    setIsFloorVisible(false); // <-- ADD THIS: Hide the floor when reset is clicked
   };
 
   const handleOpenDetails = (e, product) => {
@@ -301,20 +348,31 @@ const mockProducts = [
         : [...prev, productId]
     );
   };
-
-  const handleRotate = () => {
-    const nextAngle = (floorRotation - 30) % 360;
+const handleRotate = () => {
+    const nextAngle = (floorRotation + 30 ) % 360;
     setFloorRotation(nextAngle);
-    applyFloorOverlay(selectedProduct, nextAngle);
+    // ensure floor stays visible if rotating
+    setIsFloorVisible(true); 
+    applyFloorOverlay(selectedProduct, -nextAngle);
   };
 
-  const handleReset = () => {
-    setProcessedImage(null);
-    setErrorMsg(null);
-    setZoomScale(1);
-    setPan({ x: 0, y: 0 });
-    setFloorRotation(0);
+  // ADD THIS NEW FUNCTION
+  const handleAngleSubmit = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      let angle = parseInt(customAngle, 10);
+      
+      // Fallback to 0 if they typed letters or left it blank
+      if (isNaN(angle)) angle = 0;
+
+      setFloorRotation(angle);
+      setIsEditingRotation(false);
+      setIsFloorVisible(true);
+      applyFloorOverlay(selectedProduct, angle);
+    }
   };
+
+ 
 
   const getDistance = (touch1, touch2) => {
     return Math.sqrt(
@@ -815,8 +873,7 @@ const mockProducts = [
             </div>
           </div>
         </div>
-
-        {/* ── IMAGE VIEWER ── */}
+       {/* ── IMAGE VIEWER ── */}
         <div
           ref={imageContainerRef}
           className="flex-1 relative flex items-center justify-center p-2 md:px-3 md:py-4 overflow-hidden touch-none"
@@ -830,8 +887,24 @@ const mockProducts = [
           onTouchCancel={handleTouchEnd}
           style={{ cursor: zoomScale > 1 && !isDetailsModalOpen ? (isDragging ? 'grabbing' : 'grab') : 'zoom-in' }}
         >
+
+          {/* --- BLURRED BACKGROUND LAYER --- */}
+          <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden bg-gray-300">
+            <img
+              src={activeBaseImage?.previewUrl || processedImage}
+              className="w-full h-full object-cover blur-[11px] scale-110 opacity-80"
+              alt="Blurred Background"
+              crossOrigin="anonymous"
+            />
+            <div className="absolute inset-0 bg-white/21"></div>
+          </div>
+
+          {/* ── FIXED: Loader is now outside the 4/3 box to cover the full viewport area edge-to-edge ── */}
+          {isProcessing && <AttractiveLoader productName={selectedProduct?.name} />}
+
+          {/* --- MAIN 4/3 CONTAINER --- */}
           <div
-            className="relative bg-white shadow-xl rounded-md overflow-hidden"
+            className="relative z-10 bg-white shadow-[0_20px_50px_rgba(0,0,0,0.5)] rounded-md overflow-hidden ring-1 ring-black/10"
             style={{
               aspectRatio: '4/3',
               height: '100%',
@@ -842,55 +915,38 @@ const mockProducts = [
             }}
           >
             <div className="absolute inset-0 overflow-hidden bg-gray-200" ref={compositeRef}>
-              {isProcessing && (
-                <div className="absolute inset-0 bg-white/60 backdrop-blur-sm flex flex-col justify-center items-center z-40">
-                  <div className="w-10 h-10 md:w-12 md:h-12 border-4 border-[#0b5e5e]/20 border-t-[#0b5e5e] rounded-full animate-spin mb-3 md:mb-4" />
-                  <p className="text-[#0b5e5e] font-bold text-sm md:text-lg">Applying {selectedProduct.name}…</p>
-                </div>
-              )}
-
+              
               {activeBaseImage?.maskUrl ? (
                 <div className="absolute inset-0 w-full h-full pointer-events-none">
-                  {/* LAYER 1: Background Room */}
+                  {/* LAYER 1: Background Room (Always visible) */}
                   <img
                     src={activeBaseImage.previewUrl}
                     className="absolute inset-0 w-full h-full object-cover z-0 pointer-events-none"
                     alt="Base Room"
                     crossOrigin="anonymous"
                   />
-                  {/* LAYER 2: Three.js Floor Canvas */}
+                  {/* LAYER 2: Three.js Floor Canvas (Hide on reset) */}
                   <div
                     ref={threeContainerRef}
-                    className="absolute inset-0 w-full h-full z-10 pointer-events-auto"
+                    className={`absolute inset-0 w-full h-full z-10 transition-opacity duration-300 ${isFloorVisible ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
                   ></div>
-                  {/* LAYER 3: Mask Image (Front) */}
+                  {/* LAYER 3: Mask Image (Hide on reset) */}
                   <img
                     src={activeBaseImage.maskUrl}
-                    className="absolute inset-0 w-full h-full object-cover z-20 pointer-events-none"
+                    className={`absolute inset-0 w-full h-full object-cover z-20 transition-opacity duration-300 pointer-events-none ${isFloorVisible ? 'opacity-100' : 'opacity-0'}`}
                     alt="Room Mask"
                     crossOrigin="anonymous"
                   />
                 </div>
               ) : (
                 <img
-                  src={currentSrc}
+                  src={isFloorVisible ? (processedImage || activeBaseImage?.previewUrl) : activeBaseImage?.previewUrl}
                   alt="Room"
                   draggable="false"
                   className="absolute inset-0 w-full h-full object-cover select-none z-0"
                   crossOrigin="anonymous"
                 />
               )}
-              {/* --- ADD THE LOGO HERE --- */}
-              {/* Because this is inside compositeRef, it WILL show up on the download! */}
-             {/* <div className="absolute bottom-4 right-4 z-30 pointer-events-none">
-              <img 
-                src={logoImg} 
-                alt="Wonderfloor Logo" 
-                className="h-8 md:h-10 object-contain drop-shadow-md bg-white/80 backdrop-blur-sm px-3 py-1.5 rounded-lg border border-white/40" 
-              />
-            </div> */}
-
-
             </div>
           </div>
 
@@ -900,7 +956,6 @@ const mockProducts = [
             <span className="text-[11px] md:text-[12px] font-bold text-white tracking-wide">wonderfloor</span>
           </div>
         </div>
-
         {/* ── FOOTER BAR ── */}
         <div className="bg-white border-t border-gray-200 shrink-0 flex flex-col z-20 w-full">
 
@@ -925,10 +980,39 @@ const mockProducts = [
                 </button>
                 <button
                   onClick={(e) => { e.stopPropagation(); handleRotate(); }}
-                  className="flex items-center gap-1 md:gap-2 px-2 py-1.5 md:py-2 rounded-md hover:bg-gray-100 hover:text-gray-900 transition-colors cursor-pointer"
+                  className="flex items-center gap-1 md:gap-2 px-2 py-1.5 md:py-2 rounded-md hover:bg-gray-100 hover:text-gray-900 transition-colors cursor-pointer group"
                 >
                   <span className="hidden sm:inline">Rotate</span>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="md:w-4 md:h-4"><path d="M21 2v6h-6"></path><path d="M3 12a9 9 0 0 1 15-6.7L21 8"></path><path d="M3 22v-6h6"></path><path d="M21 12a9 9 0 0 1-15 6.7L3 16"></path></svg>
+
+                  {/* INTERACTIVE DEGREE BADGE */}
+                  {(floorRotation !== 0 || isEditingRotation) && (
+                    isEditingRotation ? (
+                      <input
+                        type="number"
+                        value={customAngle}
+                        onChange={(e) => setCustomAngle(e.target.value)}
+                        onKeyDown={handleAngleSubmit}
+                        onBlur={() => setIsEditingRotation(false)} // Closes input if user clicks away
+                        onClick={(e) => e.stopPropagation()} // Prevents the main rotate button from firing
+                        autoFocus
+                        className="ml-1 w-12 px-1 py-0.5 text-[10px] md:text-xs font-bold text-[#0b5e5e] bg-white border border-[#0b5e5e] rounded outline-none focus:ring-1 focus:ring-[#0b5e5e] text-center shadow-inner"
+                        placeholder="Deg"
+                      />
+                    ) : (
+                      <span 
+                        onClick={(e) => {
+                          e.stopPropagation(); // Prevents the main rotate button from firing
+                          setCustomAngle(floorRotation.toString());
+                          setIsEditingRotation(true);
+                        }}
+                        className="ml-1 px-1.5 py-0.5 text-[10px] md:text-xs font-bold text-[#0b5e5e] bg-[#0b5e5e]/10 rounded-full group-hover:bg-[#0b5e5e]/20 transition-colors cursor-text"
+                        title="Click to enter custom angle"
+                      >
+                        {floorRotation}&deg;
+                      </span>
+                    )
+                  )}
                 </button>
               </div>
             </div>

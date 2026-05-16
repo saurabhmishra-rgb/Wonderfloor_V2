@@ -6,7 +6,7 @@ const DownloadView = ({ selectedProduct, currentSrc, compositeRef, onClose }) =>
   const [isProcessing, setIsProcessing] = useState(false);
   const [downloadableImage, setDownloadableImage] = useState(currentSrc);
   const printRef = useRef(null);
-  const imageOnlyRef = useRef(null); // <-- NEW REF FOR WATERMARKING
+  const imageOnlyRef = useRef(null); 
 
   // Capture the live 3D layers if the visualizer is in WebGL mode
   useEffect(() => {
@@ -31,7 +31,7 @@ const DownloadView = ({ selectedProduct, currentSrc, compositeRef, onClose }) =>
         }).finally(() => {
           setIsProcessing(false);
         });
-      }, 500);
+      }, 500); // Note: Added the missing 500ms here
 
     } else {
       setDownloadableImage(currentSrc);
@@ -72,13 +72,14 @@ const DownloadView = ({ selectedProduct, currentSrc, compositeRef, onClose }) =>
         if (!imageOnlyRef.current) return;
         setIsProcessing(true);
 
-        // Wait a tiny bit for React to attach the hidden imageOnlyRef
-        await new Promise(resolve => setTimeout(resolve, 150));
+        // Safari needs a slightly longer timeout to register the off-screen DOM
+        await new Promise(resolve => setTimeout(resolve, 300));
 
         // CAPTURE THE HIDDEN DIV WITH THE LOGO WATERMARK
         const finalImageDataUrl = await htmlToImage.toJpeg(imageOnlyRef.current, {
           quality: 1.0,
-          pixelRatio: 1 // Set to 1 because downloadableImage is already high-res
+          pixelRatio: 1, // Set to 1 because downloadableImage is already high-res
+          skipFonts: true
         });
 
         triggerDownload(finalImageDataUrl, `Wonderfloor_Design_${Date.now()}.jpg`);
@@ -86,12 +87,13 @@ const DownloadView = ({ selectedProduct, currentSrc, compositeRef, onClose }) =>
       } else if (option === 'details') {
         if (!printRef.current) return;
         setIsProcessing(true);
-        await new Promise(resolve => setTimeout(resolve, 150));
+        await new Promise(resolve => setTimeout(resolve, 300));
 
         const detailsDataUrl = await htmlToImage.toJpeg(printRef.current, {
           quality: 0.9,
           pixelRatio: 2,
-          backgroundColor: '#ffffff'
+          backgroundColor: '#ffffff',
+          skipFonts: true
         });
 
         triggerDownload(detailsDataUrl, `Wonderfloor_Specs_${Date.now()}.jpg`);
@@ -128,14 +130,15 @@ const DownloadView = ({ selectedProduct, currentSrc, compositeRef, onClose }) =>
       {/* ---------------------------------------------------------------- */}
       {/* HIDDEN LAYOUT 1: JUST THE IMAGE + LOGO WATERMARK                 */}
       {/* ---------------------------------------------------------------- */}
-      <div style={{ position: 'absolute', top: '-9999px', left: '-9999px', zIndex: -9999, pointerEvents: 'none' }}>
+      {/* Fix: Replaced top: -9999px with position: fixed, opacity: 0 to stop Safari from culling */}
+      <div style={{ position: 'fixed', top: 0, left: 0, zIndex: -9999, opacity: 0, pointerEvents: 'none' }}>
         <div ref={imageOnlyRef} style={{ position: 'relative', display: 'inline-block' }}>
           
           <img 
             src={downloadableImage} 
             alt="Room Base" 
             style={{ display: 'block', maxWidth: '1200px', height: 'auto' }} 
-            crossOrigin="anonymous" 
+            // Fix: Removed crossOrigin="anonymous" to resolve Safari Data URI blackscreen bug
           />
           
           {/* The Logo Watermark - positioned at the bottom right */}
@@ -145,12 +148,8 @@ const DownloadView = ({ selectedProduct, currentSrc, compositeRef, onClose }) =>
               alt="Wonderfloor" 
               style={{ 
                 height: '40px', 
-                objectFit: 'contain', 
-                backgroundColor: 'rgba(255, 255, 255, 0.9)', 
-                padding: '8px 16px', 
-                borderRadius: '8px', 
-                border: '1px solid rgba(255, 255, 255, 0.4)',
-                boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
+                objectFit: 'contain'
+                // Fix: Removed background, padding, and border for transparency
               }} 
             />
           </div>
@@ -161,22 +160,37 @@ const DownloadView = ({ selectedProduct, currentSrc, compositeRef, onClose }) =>
       {/* ---------------------------------------------------------------- */}
       {/* HIDDEN LAYOUT 2: THE PRODUCT DETAILS PDF VIEW                      */}
       {/* ---------------------------------------------------------------- */}
-      <div style={{ position: 'absolute', top: '-9999px', left: '-9999px', width: '1000px', zIndex: -9999, pointerEvents: 'none' }}>
+      {/* Fix: Replaced top: -9999px with position: fixed, opacity: 0 to stop Safari from culling */}
+      <div style={{ position: 'fixed', top: 0, left: 0, width: '1000px', zIndex: -9999, opacity: 0, pointerEvents: 'none' }}>
         <div ref={printRef} style={{ width: '1000px', padding: '40px', backgroundColor: '#ffffff', color: '#000000', fontFamily: 'sans-serif' }}>
           
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
             <img src={logoImg} alt="Wonderfloor" style={{ height: '40px', objectFit: 'contain' }} />
           </div>
 
-          <img 
-            src={downloadableImage} 
-            alt="Room Design" 
-            style={{ width: '100%', height: '600px', objectFit: 'cover', borderRadius: '8px', marginBottom: '32px', border: '1px solid #e5e7eb' }} 
-            crossOrigin="anonymous" 
-          />
+          {/* Fix: Added relative positioning block to correctly house the logo overlay inside the details view */}
+          <div style={{ position: 'relative', marginBottom: '32px' }}>
+            <img 
+              src={downloadableImage} 
+              alt="Room Design" 
+              style={{ width: '100%', height: '600px', display: 'block', objectFit: 'cover', borderRadius: '8px', border: '1px solid #e5e7eb' }} 
+              // Fix: Removed crossOrigin="anonymous"
+            />
+            
+            <div style={{ position: 'absolute', bottom: '24px', right: '24px', zIndex: 10 }}>
+              <img 
+                src={logoImg} 
+                alt="Wonderfloor" 
+                style={{ 
+                  height: '40px', 
+                  objectFit: 'contain'
+                }} 
+              />
+            </div>
+          </div>
 
-          <div style={{ borderTop: '2px solid #f3f4f6', paddingTop: '24px', marginBottom: '32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <img src={logoImg} alt="Wonderfloor" style={{ height: '24px', objectFit: 'contain' }} />
+          {/* LOGO REMOVED HERE - Changed justifyContent to flex-end to keep text on the right */}
+          <div style={{ borderTop: '2px solid #f3f4f6', paddingTop: '24px', marginBottom: '32px', display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
             <span style={{ fontSize: '14px', color: '#6b7280', fontWeight: 500 }}>Powered by <strong style={{ color: '#000' }}>wonderfloor</strong></span>
           </div>
 
@@ -184,7 +198,7 @@ const DownloadView = ({ selectedProduct, currentSrc, compositeRef, onClose }) =>
             <div style={{ width: '33.333%' }}>
               <h3 style={{ fontSize: '20px', fontWeight: 800, color: '#111827', marginBottom: '20px', marginTop: 0 }}>Floors</h3>
               <div style={{ display: 'flex', gap: '16px' }}>
-                <img src={selectedProduct.img} alt={selectedProduct.name} style={{ width: '80px', height: '80px', borderRadius: '4px', objectFit: 'cover', border: '1px solid #e5e7eb' }} crossOrigin="anonymous" />
+                <img src={selectedProduct.img} alt={selectedProduct.name} style={{ width: '80px', height: '80px', borderRadius: '4px', objectFit: 'cover', border: '1px solid #e5e7eb' }} />
                 <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
                   <span style={{ fontSize: '11px', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 600, marginBottom: '4px' }}>Wonderfloor</span>
                   <span style={{ fontSize: '18px', fontWeight: 700, color: '#111827', lineHeight: 1.2 }}>{selectedProduct.name}</span>
