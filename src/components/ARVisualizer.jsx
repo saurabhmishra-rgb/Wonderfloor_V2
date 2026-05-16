@@ -250,12 +250,12 @@ const [isProcessing, setIsProcessing] = useState(true);
     });
   };
 
- const applyFloorOverlay = async (product, angle) => {
+const applyFloorOverlay = async (product, angle, showLoader = true) => {
     const activeBaseImage = uploadedRoom || initialImage;
     if (!activeBaseImage) return;
 
     // 1. ALWAYS show the loader immediately, regardless of 2D or 3D mode
-    setIsProcessing(true);
+     if (showLoader) setIsProcessing(true);  
 
     try {
       // --- SCENARIO A: 3D Texture Swap (Instant) ---
@@ -349,12 +349,11 @@ const [isProcessing, setIsProcessing] = useState(true);
     );
   };
 const handleRotate = () => {
-    const nextAngle = (floorRotation + 30 ) % 360;
-    setFloorRotation(nextAngle);
-    // ensure floor stays visible if rotating
-    setIsFloorVisible(true); 
-    applyFloorOverlay(selectedProduct, -nextAngle);
-  };
+  const nextAngle = (floorRotation + 30) % 360;
+  setFloorRotation(nextAngle);
+  setIsFloorVisible(true);
+  applyFloorOverlay(selectedProduct, -nextAngle, false); // no loader on rotate
+};
 
   // ADD THIS NEW FUNCTION
   const handleAngleSubmit = (e) => {
@@ -368,7 +367,7 @@ const handleRotate = () => {
       setFloorRotation(angle);
       setIsEditingRotation(false);
       setIsFloorVisible(true);
-      applyFloorOverlay(selectedProduct, angle);
+      applyFloorOverlay(selectedProduct, angle, false);
     }
   };
 

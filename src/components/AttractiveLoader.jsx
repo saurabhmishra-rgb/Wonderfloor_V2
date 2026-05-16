@@ -7,7 +7,7 @@ const WORDS = ['Processing', 'Rendering', 'Calibrating', 'Optimizing', 'Aligning
 const AttractiveLoader = ({ productName = 'Design' }) => {
   const [wordIndex, setWordIndex] = useState(0);
   const [wordVisible, setWordVisible] = useState(true);
-  
+
   const mountRef = useRef(null);
 
   /* ── Word Cycling Logic ── */
@@ -17,8 +17,8 @@ const AttractiveLoader = ({ productName = 'Design' }) => {
       setTimeout(() => {
         setWordIndex(i => (i + 1) % WORDS.length);
         setWordVisible(true);
-      }, 300); 
-    }, 2000); 
+      }, 300);
+    }, 2000);
     return () => clearInterval(id);
   }, []);
 
@@ -39,11 +39,11 @@ const AttractiveLoader = ({ productName = 'Design' }) => {
     // 3. Renderer Setup
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(mount.clientWidth, mount.clientHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); 
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     mount.appendChild(renderer.domElement);
 
     // 4. Create the Massive Holographic Plane Grid
-    const size = 60; 
+    const size = 60;
     const segments = 450; // Adjusted slightly for compact 4/3 card optimization
     const geometry = new THREE.PlaneGeometry(size, size, segments, segments);
     geometry.rotateX(-Math.PI / 2);
@@ -52,12 +52,12 @@ const AttractiveLoader = ({ productName = 'Design' }) => {
     geometry.setAttribute('color', new THREE.BufferAttribute(new Float32Array(count * 3), 3));
 
     const material = new THREE.PointsMaterial({
-      size: 0.05, 
+      size: 0.05,
       vertexColors: true,
       transparent: true,
       opacity: 0.85,
-      blending: THREE.AdditiveBlending, 
-      depthWrite: false, 
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
     });
 
     const plane = new THREE.Points(geometry, material);
@@ -66,12 +66,12 @@ const AttractiveLoader = ({ productName = 'Design' }) => {
     // 5. Animation Loop
     const clock = new THREE.Clock();
     let animationFrameId;
-const colorLow = new THREE.Color('#210d02');   // Deep amber void
+    const colorLow = new THREE.Color('#210d02');   // Deep amber void
     const colorMid = new THREE.Color('#e60800');   // Vivid core orange
     const colorHigh = new THREE.Color('#ff00bf');  // Bright highlight yellow
     const animate = () => {
       animationFrameId = requestAnimationFrame(animate);
-      
+
       const time = clock.getElapsedTime();
       const positions = geometry.attributes.position;
       const colors = geometry.attributes.color;
@@ -86,7 +86,7 @@ const colorLow = new THREE.Color('#210d02');   // Deep amber void
         const radialWave = Math.sin(dist * 1.5 - time * 2.5) * 0.35;
         const directionalWaveX = Math.sin(x * 0.8 + time * 1.2) * 0.25;
         const directionalWaveZ = Math.cos(z * 1.0 - time * 1.0) * 0.25;
-        
+
         const y = radialWave + directionalWaveX + directionalWaveZ;
         positions.setY(i, y);
 
@@ -95,10 +95,10 @@ const colorLow = new THREE.Color('#210d02');   // Deep amber void
 
         const tempColor = new THREE.Color();
         if (clampedHeight < 0.5) {
-          const mix = clampedHeight * 2; 
+          const mix = clampedHeight * 2;
           tempColor.lerpColors(colorLow, colorMid, mix);
         } else {
-          const mix = (clampedHeight - 0.5) * 2; 
+          const mix = (clampedHeight - 0.5) * 2;
           tempColor.lerpColors(colorMid, colorHigh, mix);
         }
         colors.setXYZ(i, tempColor.r, tempColor.g, tempColor.b);
@@ -119,7 +119,7 @@ const colorLow = new THREE.Color('#210d02');   // Deep amber void
       camera.updateProjectionMatrix();
       renderer.setSize(mount.clientWidth, mount.clientHeight);
     };
-    
+
     const resizeObserver = new ResizeObserver(() => handleResize());
     resizeObserver.observe(mount);
 
@@ -141,7 +141,7 @@ const colorLow = new THREE.Color('#210d02');   // Deep amber void
       style={{
         width: '100%',
         height: '100%',
-        background: '#ffffff', 
+        background: '#ffffff',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -180,36 +180,36 @@ const colorLow = new THREE.Color('#210d02');   // Deep amber void
         }
       `}</style>
 
-      <div 
-        ref={mountRef} 
+      <div
+        ref={mountRef}
         style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}
       />
 
-      <div style={{ 
-        position: 'relative', 
-        zIndex: 10, 
-        display: 'flex', 
-        flexDirection: 'column', 
-        alignItems: 'center', 
+      <div style={{
+        position: 'relative',
+        zIndex: 10,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
         gap: 16,
-        marginTop: '-40px', 
+        marginTop: '-40px',
         pointerEvents: 'none',
         transform: 'scale(0.9)' // Scale adjustment for cleaner containment inside 4/3 ratios
       }}>
-        
+
         <h3 className="hologram-headline">
           Projecting
         </h3>
 
         <div style={{
           display: 'flex', alignItems: 'center', gap: 14,
-          background: 'rgba(3, 20, 20, 0.6)', 
+          background: 'rgba(3, 20, 20, 0.6)',
           border: '1px solid rgba(206, 100, 13, 0.4)',
           padding: '10px 24px', borderRadius: 999,
           backdropFilter: 'blur(12px)',
           boxShadow: '0 8px 32px rgba(13, 206, 206, 0.15)'
         }}>
-          
+
           <div style={{ display: 'flex', gap: 4, alignItems: 'flex-end', height: 22 }}>
             {[0, 0.15, 0.3].map((delay, i) => (
               <div key={i} style={{
