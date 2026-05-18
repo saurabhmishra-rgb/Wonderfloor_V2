@@ -22,6 +22,14 @@ import room1 from './assets/room1.jpg';
 import room2 from './assets/room2.jpg';
 import room1copy from './assets/room1copy.png';
 import room2copy from './assets/room2copy.png';
+import schoolcopy1 from './assets/School-Flooring_02 copy.png'
+import schoolcopy2 from './assets/School-Flooring_03 copy.png'
+import schoolcopy3 from './assets/School-Flooring_04 copy.png'
+import schoolcopy4 from './assets/School-Flooring_05 copy.png'
+import schoolcopy5 from './assets/School-Flooring_06 copy.png'
+import schoolcopy6 from './assets/School-Flooring_07.png'
+import school01 from './assets/School-Flooring_01.jpeg'
+// import schoolcopy7 from './assets/School-Flooring_08.png'
 // import room3copy from './assets/room3copy.png';
 // import room3 from './assets/room3.jpg';
 // --- CONNECT TO PYTHON BACKEND (RENDER) ---
@@ -218,10 +226,64 @@ function App() {
       product: ['Trendo wood', 'Ornate', 'Duratek', 'Galaxxy', 'Luxuria', 'Antique', 'GDP', 'Hi-Tech', 'Uttsav', 'Oriion', 'Rangolie',]
     },
 
-    { id: 'sch-1', name: 'School Flooring Option 1', img: school03, category: 'School Flooring', product: ['Krayons', 'Rhythm', 'Trendo Chips'] },
-    { id: 'sch-2', name: 'School Flooring Option 2', img: DefaultImage, category: 'School Flooring', product: ['Krayons', 'Rhythm', 'Trendo Chips'] },
-    { id: 'sch-3', name: 'School Flooring Option 3', img: DefaultImage, category: 'School Flooring', product: ['Krayons', 'Rhythm', 'Trendo Chips'] },
-    { id: 'sch-4', name: 'School Flooring Option 4', img: DefaultImage, category: 'School Flooring', product: ['Krayons', 'Rhythm', 'Trendo Chips'] },
+  
+  { 
+    id: 'sch-1', 
+    name: 'School Flooring Option 1', 
+    mask: schoolcopy1, 
+    img: school03, 
+    category: 'School Flooring', 
+    product: ['Krayons', 'Rhythm', 'Trendo Chips'] 
+  },
+  { 
+    id: 'sch-2', 
+    name: 'School Flooring Option 2', 
+    mask: schoolcopy2, 
+    img: DefaultImage, 
+    category: 'School Flooring', 
+    product: ['Krayons', 'Rhythm', 'Trendo Chips'] 
+  },
+  { 
+    id: 'sch-3', 
+    name: 'School Flooring Option 3', 
+    mask: schoolcopy3, 
+    img: school01, 
+    category: 'School Flooring', 
+    product: ['Krayons', 'Rhythm', 'Trendo Chips'] 
+  },
+  { 
+    id: 'sch-4', 
+    name: 'School Flooring Option 4', 
+    mask: schoolcopy4, 
+    img: DefaultImage, 
+    category: 'School Flooring', 
+    product: ['Krayons', 'Rhythm', 'Trendo Chips'] 
+  },
+  { 
+    id: 'sch-5', 
+    name: 'School Flooring Option 5', 
+    mask: schoolcopy5, 
+    img: DefaultImage, 
+    category: 'School Flooring', 
+    product: ['Krayons', 'Rhythm', 'Trendo Chips'] 
+  },
+  { 
+    id: 'sch-6', 
+    name: 'School Flooring Option 6', 
+    mask: schoolcopy6, 
+    img: DefaultImage, 
+    category: 'School Flooring', 
+    product: ['Krayons', 'Rhythm', 'Trendo Chips'] 
+  },
+  // { 
+  //   id: 'sch-7', 
+  //   name: 'School Flooring Option 7', 
+  //   mask: schoolcopy7, 
+  //   img: DefaultImage, 
+  //   category: 'School Flooring', 
+  //   product: ['Krayons', 'Rhythm', 'Trendo Chips'] 
+  // },
+
 
     { id: 'spo-1', name: 'Sports Flooring Option 1', img: Sport, category: 'Sports Flooring', product: ['Ornate', 'Braavo'] },
     { id: 'spo-2', name: 'Sports Flooring Option 2', img: DefaultImage, category: 'Sports Flooring', product: ['Ornate', 'Braavo'] },
@@ -266,17 +328,17 @@ function App() {
     }
   };
 
-  const handleDemoRoomClick = async (room) => { 
+  const handleDemoRoomClick = async (room) => {
     try {
-      const response = await fetch(room.img); 
+      const response = await fetch(room.img);
       const blob = await response.blob();
       const file = new File([blob], "demo_room.jpg", { type: "image/jpeg" });
 
       setSelectedRoomImage({
-        previewUrl: room.img, 
+        previewUrl: room.img,
         isDemo: true,
         rawFile: file,
-        maskUrl: room.mask || null 
+        maskUrl: room.mask || null
       });
       setIsModalOpen(true);
 
@@ -296,7 +358,7 @@ function App() {
     localStorage.removeItem('activeDemoRoomId');
   };
 
- // Auto-reload the demo room when the page gets refreshed
+  // Auto-reload the demo room when the page gets refreshed
   useEffect(() => {
     const savedRoomId = localStorage.getItem('activeDemoRoomId');
     if (savedRoomId && allDemoRooms) {

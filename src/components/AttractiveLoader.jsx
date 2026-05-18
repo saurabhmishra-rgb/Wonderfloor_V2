@@ -198,7 +198,7 @@ const AttractiveLoader = ({ productName = 'Design' }) => {
       }}>
 
         <h3 className="hologram-headline">
-          Projecting
+          RENDERING
         </h3>
 
         <div style={{
