@@ -28,7 +28,7 @@ import schoolcopy3 from './assets/School-Flooring_04 copy.png'
 import schoolcopy4 from './assets/School-Flooring_05 copy.png'
 import schoolcopy5 from './assets/School-Flooring_06 copy.png'
 import schoolcopy6 from './assets/School-Flooring_07.png'
-import school01 from './assets/School-Flooring_01.jpeg'
+import school01 from './assets/School-Flooring_01.jpg'
 // import schoolcopy7 from './assets/School-Flooring_08.png'
 // import room3copy from './assets/room3copy.png';
 // import room3 from './assets/room3.jpg';
