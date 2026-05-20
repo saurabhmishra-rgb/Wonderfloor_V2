@@ -29,6 +29,10 @@ import schoolcopy4 from './assets/School-Flooring_05 copy.png'
 import schoolcopy5 from './assets/School-Flooring_06 copy.png'
 import schoolcopy6 from './assets/School-Flooring_07.png'
 import school01 from './assets/school1.jpg';
+import school02 from './assets/school2.jpg';
+import school04 from './assets/school3.jpg';
+import school05 from './assets/school4.jpg';
+import school06 from './assets/school6.jpg';
 // import schoolcopy7 from './assets/School-Flooring_08.png'
 // import room3copy from './assets/room3copy.png';
 // import room3 from './assets/room3.jpg';
@@ -239,7 +243,7 @@ function App() {
     id: 'sch-2', 
     name: 'School Flooring Option 2', 
     mask: schoolcopy2, 
-    img: DefaultImage, 
+    img: school02, 
     category: 'School Flooring', 
     product: ['Krayons', 'Rhythm', 'Trendo Chips'] 
   },
@@ -255,7 +259,7 @@ function App() {
     id: 'sch-4', 
     name: 'School Flooring Option 4', 
     mask: schoolcopy4, 
-    img: DefaultImage, 
+    img: school04, 
     category: 'School Flooring', 
     product: ['Krayons', 'Rhythm', 'Trendo Chips'] 
   },
@@ -263,7 +267,7 @@ function App() {
     id: 'sch-5', 
     name: 'School Flooring Option 5', 
     mask: schoolcopy5, 
-    img: DefaultImage, 
+    img: school05, 
     category: 'School Flooring', 
     product: ['Krayons', 'Rhythm', 'Trendo Chips'] 
   },
@@ -271,7 +275,7 @@ function App() {
     id: 'sch-6', 
     name: 'School Flooring Option 6', 
     mask: schoolcopy6, 
-    img: DefaultImage, 
+    img: school06, 
     category: 'School Flooring', 
     product: ['Krayons', 'Rhythm', 'Trendo Chips'] 
   },
