@@ -31,7 +31,7 @@ import Krayons9 from '../assets/krayons-frosty-n-blue.jpg';
 import Krayons10 from '../assets/krayons-pastel-blue.jpg';
 import Krayons11 from '../assets/krayons-pastel-green.png';
 import Krayons12 from '../assets/krayons-pastel-lemon.jpg';
-import Krayons13 from '../assets/krayons-pastel-orange.jpg'; 
+import Krayons13 from '../assets/krayons-frosty-n-orange.jpg';
 import Krayons14 from '../assets/krayons-pastel-purple.jpg';
 import Krayons15 from '../assets/krayons-pastel-cherry.jpg';
 import Krayons16 from '../assets/krayons-pastel-pink.jpg';
@@ -177,21 +177,21 @@ const CompareView = ({
 // ── MAIN AR VISUALIZER COMPONENT ──
 const ARVisualizer = ({ closeModal, initialImage }) => {
   const mockProducts = [
-    { id: 13, name: 'Pastel Green', size: '2mtr x 20mtr', img: Krayons1, colour: 'Green', shade: 'Light', category: 'Krayons', materials: 'PET', collection: 'Classic', accordionCategory: 'Krayons', sku: 'WF/kr/001', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons' },
-    { id: 14, name: 'Frosty N Beige', size: '2mtr x 20mtr', img: Krayons2, colour: 'Beige', shade: 'Light', category: 'Krayons', materials: 'PET', collection: 'Classic', accordionCategory: 'Krayons', sku: 'WF/kr/002', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons' },
-    { id: 15, name: 'Frosty N Grey', size: '2mtr x 20mtr', img: Krayons4, colour: 'Blue', shade: 'Light', category: 'Krayons', materials: 'PET', collection: 'Classic', accordionCategory: 'Krayons', sku: 'WF/kr/003', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons' },
-    { id: 16, name: 'Frosty N Orange', size: '2mtr x 20mtr', img: Krayons5, colour: 'Grey', shade: 'Light', category: 'Krayons', materials: 'PET', collection: 'Classic', accordionCategory: 'Krayons', sku: 'WF/kr/004', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons' },
-    { id: 17, name: 'Frosty N Red', size: '2mtr x 20mtr', img: Krayons6, colour: 'Orange', shade: 'Light', category: 'Krayons', materials: 'PET', collection: 'Classic', accordionCategory: 'Krayons', sku: 'WF/kr/005', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons' },
-    { id: 18, name: 'Frosty N Yellow', size: '2mtr x 20mtr', img: Krayons7, colour: 'Red', shade: 'Light', category: 'Krayons', materials: 'PET', collection: 'Classic', accordionCategory: 'Krayons', sku: 'WF/kr/006', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons' },
-    { id: 19, name: 'Frosty N Sea Blue', size: '2mtr x 20mtr', img: Krayons8, colour: 'Yellow', shade: 'Light', category: 'Krayons', materials: 'PET', collection: 'Classic', accordionCategory: 'Krayons', sku: 'WF/kr/007', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons' },
-    { id: 20, name: 'Frosty N Blue', size: '2mtr x 20mtr', img: Krayons9, colour: 'Blue', shade: 'Light', category: 'Krayons', materials: 'PET', collection: 'Classic', accordionCategory: 'Krayons', sku: 'WF/kr/008', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons' },
-    { id: 21, name: 'Pastel Blue', size: '2mtr x 20mtr', img: Krayons10, colour: 'Blue', shade: 'Light', category: 'Krayons', materials: 'PET', collection: 'Classic', accordionCategory: 'Krayons', sku: 'WF/kr/009', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons' },
-    { id: 22, name: 'FLUORESCENT', size: '2mtr x 20mtr', img: Krayons11, colour: 'Green', shade: 'Light', category: 'Krayons', materials: 'PET', collection: 'Classic', accordionCategory: 'Krayons', sku: 'WF/kr/0010', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons' },
-    { id: 23, name: 'Pastel Lemon', size: '2mtr x 20mtr', img: Krayons12, colour: 'Lemon', shade: 'Light', category: 'Krayons', materials: 'PET', collection: 'Classic', accordionCategory: 'Krayons', sku: 'WF/kr/0011', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons' },
-    { id: 24, name: 'Pastel Orange', size: '2mtr x 20mtr', img: Krayons13, colour: 'Orange', shade: 'Light', category: 'Krayons', materials: 'PET', collection: 'Classic', accordionCategory: 'Krayons', sku: 'WF/kr/0012', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons' },
-    { id: 25, name: 'Pastel Purple', size: '2mtr x 20mtr', img: Krayons14, colour: 'Purple', shade: 'Light', category: 'Krayons', materials: 'PET', collection: 'Classic', accordionCategory: 'Krayons', sku: 'WF/kr/0013', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons' },
-    { id: 26, name: 'Pastel Cherry', size: '2mtr x 20mtr', img: Krayons15, colour: 'Cherry', shade: 'Light', category: 'Krayons', materials: 'PET', collection: 'Classic', accordionCategory: 'Krayons', sku: 'WF/kr/0014', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons' },
-    { id: 27, name: 'Pastel Pink', size: '2mtr x 20mtr', img: Krayons16, colour: 'Pink', shade: 'Light', category: 'Krayons', materials: 'PET', collection: 'Classic', accordionCategory: 'Krayons', sku: 'WF/kr/0015', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons' },
+    { id: 13, name: 'Pastel Green', size: '2mtr x 20mtr(Roll)', img: Krayons1, colour: 'Green', shade: 'Light', category: 'Krayons', materials: 'PET', collection: 'Classic', accordionCategory: 'Krayons', sku: 'WF/KR/0001', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons' },
+    { id: 14, name: 'Frosty N Beige', size: '2mtr x 20mtr(Roll)', img: Krayons2, colour: 'Beige', shade: 'Light', category: 'Krayons', materials: 'PET', collection: 'Classic', accordionCategory: 'Krayons', sku: 'WF/KR/0002', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons' },
+    { id: 15, name: 'Frosty N Grey', size: '2mtr x 20mtr(Roll)', img: Krayons4, colour: 'Blue', shade: 'Light', category: 'Krayons', materials: 'PET', collection: 'Classic', accordionCategory: 'Krayons', sku: 'WF/KR/0003', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons' },
+    { id: 16, name: 'Frosty N Orange', size: '2mtr x 20mtr(Roll)', img: Krayons5, colour: 'Grey', shade: 'Light', category: 'Krayons', materials: 'PET', collection: 'Classic', accordionCategory: 'Krayons', sku: 'WF/KR/0004', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons' },
+    { id: 17, name: 'Frosty N Red', size: '2mtr x 20mtr(Roll)', img: Krayons6, colour: 'Orange', shade: 'Light', category: 'Krayons', materials: 'PET', collection: 'Classic', accordionCategory: 'Krayons', sku: 'WF/KR/0005', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons' },
+    { id: 18, name: 'Frosty N Yellow', size: '2mtr x 20mtr(Roll)', img: Krayons7, colour: 'Red', shade: 'Light', category: 'Krayons', materials: 'PET', collection: 'Classic', accordionCategory: 'Krayons', sku: 'WF/KR/0006', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons' },
+    { id: 19, name: 'Frosty N Sea Blue', size: '2mtr x 20mtr(Roll)', img: Krayons8, colour: 'Yellow', shade: 'Light', category: 'Krayons', materials: 'PET', collection: 'Classic', accordionCategory: 'Krayons', sku: 'WF/KR/0007', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons' },
+    { id: 20, name: 'Frosty N Blue', size: '2mtr x 20mtr(Roll)', img: Krayons9, colour: 'Blue', shade: 'Light', category: 'Krayons', materials: 'PET', collection: 'Classic', accordionCategory: 'Krayons', sku: 'WFKRr/0008', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons' },
+    { id: 21, name: 'Pastel Blue', size: '2mtr x 20mtr(Roll)', img: Krayons10, colour: 'Blue', shade: 'Light', category: 'Krayons', materials: 'PET', collection: 'Classic', accordionCategory: 'Krayons', sku: 'WF/KR/0009', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons' },
+    { id: 22, name: 'Fluoresent', size: '2mtr x 20mtr(Roll)', img: Krayons11, colour: 'Green', shade: 'Light', category: 'Krayons', materials: 'PET', collection: 'Classic', accordionCategory: 'Krayons', sku: 'WF/KR/00010', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons' },
+    { id: 23, name: 'Pastel Lemon', size: '2mtr x 20mtr(Roll)', img: Krayons12, colour: 'Lemon', shade: 'Light', category: 'Krayons', materials: 'PET', collection: 'Classic', accordionCategory: 'Krayons', sku: 'WF/KR/00011', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons' },
+    { id: 24, name: 'Pastel Orange', size: '2mtr x 20mtr(Roll)', img: Krayons13, colour: 'Orange', shade: 'Light', category: 'Krayons', materials: 'PET', collection: 'Classic', accordionCategory: 'Krayons', sku: 'WF/KR/00012', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons' },
+    { id: 25, name: 'Pastel Purple', size: '2mtr x 20mtr(Roll)', img: Krayons14, colour: 'Purple', shade: 'Light', category: 'Krayons', materials: 'PET', collection: 'Classic', accordionCategory: 'Krayons', sku: 'WF/KR/00013', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons' },
+    { id: 26, name: 'Pastel Cherry', size: '2mtr x 20mtr(Roll)', img: Krayons15, colour: 'Cherry', shade: 'Light', category: 'Krayons', materials: 'PET', collection: 'Classic', accordionCategory: 'Krayons', sku: 'WF/KR/00014', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons' },
+    { id: 27, name: 'Pastel Pink', size: '2mtr x 20mtr(Roll)', img: Krayons16, colour: 'Pink', shade: 'Light', category: 'Krayons', materials: 'PET', collection: 'Classic', accordionCategory: 'Krayons', sku: 'WF/kr/0015', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons' },
     { id: 1, name: 'GDP-550406', size: '30cm x 30cm', img: floorActon, colour: 'Grey', shade: 'Dark', category: 'Tiles', materials: 'Nylon', collection: 'GDP', accordionCategory: 'Durofloor', sku: 'WF000051' },
     { id: 2, name: 'GDP-551004', size: '30cm x 30cm', img: floorHolmes, colour: 'Beige', shade: 'Light', category: 'Planks', materials: 'PET', collection: 'Classic', accordionCategory: 'Durofloor', sku: 'WF000052' },
     { id: 3, name: 'GDP-551007', size: '30cm x 30cm', img: floorCedar, colour: 'Brown', shade: 'Medium', category: 'Tiles', materials: 'Vinyl', collection: 'GDP', accordionCategory: 'Siggma', sku: 'WF000053' },
@@ -287,7 +287,7 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
 
   useEffect(() => {
     setIsProcessing(true);
-    const initTimer = setTimeout(() => setIsProcessing(false), 3000);
+    const initTimer = setTimeout(() => setIsProcessing(false), 1500);
     return () => clearTimeout(initTimer);
   }, [activeBaseImage]);
 
@@ -580,7 +580,7 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
         if (visualizerInstance.current && visualizerInstance.current.updateTexture) {
           visualizerInstance.current.updateTexture(product.img, angle);
         }
-        await new Promise(resolve => setTimeout(resolve, 3000));
+        await new Promise(resolve => setTimeout(resolve, 1500));
         return;
       }
 
@@ -695,12 +695,17 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
     setIsFloorVisible(false);
   };
 
-  const handleOpenDetails = (e, product) => {
-    e.stopPropagation();
-    setDetailsProduct(product);
-    setIsDetailsModalOpen(true);
-  };
+ const handleOpenDetails = (e, product) => {
+  e.stopPropagation();
+  setDetailsProduct(product);
+  setIsDetailsModalOpen(true);
 
+  // ✅ ADD THIS: Select product immediately when "More details" is clicked
+  if (!isCompareMode && selectedProduct.id !== product.id) {
+    setSelectedProduct(product);
+    applyFloorOverlay(product, 0);
+  }
+};
   const toggleFavorite = (e, productId) => {
     e.stopPropagation();
     setFavoriteProducts(prev => prev.includes(productId) ? prev.filter(id => id !== productId) : [...prev, productId]);
@@ -1307,7 +1312,7 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
               {/* Powered-by badge */}
               <div className="absolute bottom-3 right-3 md:bottom-5 md:right-5 bg-gradient-to-r from-red-600/80 to-rose-500/80 backdrop-blur-xl border border-white/20 px-5 md:px-4 py-1.5 md:py-2 rounded-full z-30 pointer-events-none flex items-center gap-1.5 shadow-lg shadow-red-500/40 ring-1 ring-inset ring-white/10">
                 <span className="text-[10px] md:text-[11px] font-normal text-gray-200">Powered by</span>
-                <span className="text-[11px] md:text-[12px] font-bold text-white tracking-wide">wonderfloor</span>
+                <span className="text-[11px] md:text-[12px] font-bold text-white tracking-wide">Technetty</span>
               </div>
             </div>
 
