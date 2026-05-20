@@ -21,7 +21,7 @@ import floorPoppy5 from '../assets/image11.jpeg';
 import floorpoppy6 from '../assets/image3.1.jpeg';
 //Krayons
 import Krayons1 from '../assets/krayon-fluorescent.jpg';
-import Krayons2 from '../assets/krayons-frosty-n-beige.JPG';
+import Krayons2 from '../assets/krayons-frosty-n-beige.jpg';
 import Krayons4 from '../assets/krayons-frosty-n-grey.jpg';
 import Krayons5 from '../assets/krayons-frosty-n-orange.jpg';
 import Krayons6 from '../assets/krayons-frosty-n-red.jpg';
