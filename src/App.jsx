@@ -4,6 +4,9 @@ import ARVisualizer from './components/ARVisualizer';
 import { io } from 'socket.io-client';
 import { QRCodeCanvas } from 'qrcode.react';
 
+import { useLocation,useParams } from 'react-router-dom'; // <-- ADD THIS
+
+
 // --- 1. Import all local images from your assets folder ---
 import Hospital from './assets/Hospital_02.jpg';
 import office02 from './assets/Office-Flooring_02.jpg';
@@ -42,14 +45,187 @@ const socket = io('https://python-floor-backend.onrender.com', {
   transports: ['polling', 'websocket'], // Let it try polling first, then upgrade
 });
 
+const industries = [
+    "ALL INDUSTRY",
+    "Industrial Flooring",
+    "Office Flooring",
+    "Residential Flooring",
+    "School Flooring",
+    "Sports Flooring",
+    "Supermarket Flooring",
+    "Transport Flooring",
+    "Hospital Flooring",
+    "Auditorium Flooring",
+    "Hotel/ Hospitality Flooring",
+    "Luxury Vinyl Tile"
+  ];
+
+  const flooringProducts = [
+    "Product Collections",
+    "Antique",
+    "Adventus",
+    "Braavo",
+    "Durofloor",
+    "Duratek",
+    "D'ZINER",
+    "Galaxxy",
+    "GDP",
+    "Hi-Tech",
+    "Krayons",
+    "Luxuria",
+    "Matrixx",
+    "Meteor",
+    "Ornate",
+    "Orbit",
+    "Oriion",
+    "Rangolie",
+    "Rhythm",
+    "Robust",
+    "Siggma",
+    "Stoneland Monza",
+    "Traction / Safety",
+    "Trendo wood",
+    "Trendo Chips",
+    "Uttsav",
+  ];
+
+  const allDemoRooms = [
+    { id: 'ind-1', name: 'Industrial Flooring Option 1', img: Industrial, category: 'Industrial Flooring', product: ['Durofloor', 'Antique'] },
+    { id: 'ind-2', name: 'Industrial Flooring Option 2', img: DefaultImage, category: 'Industrial Flooring', product: 'Siggma' },
+    { id: 'ind-3', name: 'Industrial Flooring Option 3', img: DefaultImage, category: 'Industrial Flooring', product: 'Siggma' },
+    { id: 'ind-4', name: 'Industrial Flooring Option 4', img: DefaultImage, category: 'Industrial Flooring', product: 'Siggma' },
+
+    { id: 'off-1', name: 'Office Flooring Option 1', img: office02, category: 'Office Flooring', product: ['Siggma', 'Trendo wood', 'Ornate', 'Antique', 'Hi-Tech', 'Trendo Chips', 'Stoneland Monza', 'Adventus'] },
+    { id: 'off-2', name: 'Office Flooring Option 2', img: DefaultImage, category: 'Office Flooring', product: ['Siggma', 'Trendo wood', 'Ornate', 'Antique', 'Hi-Tech', 'Trendo Chips', 'Stoneland Monza', 'Adventus'] },
+    { id: 'off-3', name: 'Office Flooring Option 3', img: DefaultImage, category: 'Office Flooring', product: ['Siggma', 'Trendo wood', 'Ornate', 'Antique', 'Hi-Tech', 'Trendo Chips', 'Stoneland Monza', 'Adventus'] },
+    { id: 'off-4', name: 'Office Flooring Option 4', img: DefaultImage, category: 'Office Flooring', product: ['Siggma', 'Trendo wood', 'Ornate', 'Antique', 'Hi-Tech', 'Trendo Chips', 'Stoneland Monza', 'Adventus'] },
+    //  {
+    //   id: 'res-5',
+    //   name: 'Residential Flooring Option 5',
+    //   img: room3,
+    //   mask: room3copy,
+    //   category: 'Office Flooring',
+    //   product:['Siggma', 'Trendo wood', 'Ornate', 'Antique', 'Hi-Tech', 'Trendo Chips', 'Stoneland Monza', 'Adventus'] },
+    { id: 'res-1', name: 'Residential Flooring Option 1', img: residential03, category: 'Residential Flooring', product: ['Trendo wood', 'Ornate', 'Duratek', 'Galaxxy', 'Luxuria', 'Antique', 'GDP', 'Hi-Tech', 'Uttsav', 'Oriion', 'Rangolie',] },
+    { id: 'res-2', name: 'Residential Flooring Option 2', img: DefaultImage, category: 'Residential Flooring', product: ['Trendo wood', 'Ornate', 'Duratek', 'Galaxxy', 'Luxuria', 'Antique', 'GDP', 'Hi-Tech', 'Uttsav', 'Oriion', 'Rangolie',] },
+    { id: 'res-3', name: 'Residential Flooring Option 3', img: DefaultImage, category: 'Residential Flooring', product: ['Trendo wood', 'Ornate', 'Duratek', 'Galaxxy', 'Luxuria', 'Antique', 'GDP', 'Hi-Tech', 'Uttsav', 'Oriion', 'Rangolie',] },
+    { id: 'res-4', name: 'Residential Flooring Option 4', img: DefaultImage, category: 'Residential Flooring', product: ['Trendo wood', 'Ornate', 'Duratek', 'Galaxxy', 'Luxuria', 'Antique', 'GDP', 'Hi-Tech', 'Uttsav', 'Oriion', 'Rangolie',] },
+    {
+      id: 'res-6',
+      name: 'Residential Flooring Option 5',
+      img: room1,
+      mask: room1copy,
+      category: 'Residential Flooring',
+      product: ['Trendo wood', 'Ornate', 'Duratek', 'Galaxxy', 'Luxuria', 'Antique', 'GDP', 'Hi-Tech', 'Uttsav', 'Oriion', 'Rangolie',]
+    },
+    {
+      id: 'res-7',
+      name: 'Residential Flooring Option 6',
+      img: room2,
+      mask: room2copy,
+      category: 'Residential Flooring',
+      product: ['Trendo wood', 'Ornate', 'Duratek', 'Galaxxy', 'Luxuria', 'Antique', 'GDP', 'Hi-Tech', 'Uttsav', 'Oriion', 'Rangolie',]
+    },
+
+
+    {
+      id: 'sch-1',
+      name: 'School Flooring Option 1',
+      mask: schoolcopy1,
+      img: school03,
+      category: 'School Flooring',
+      product: ['Krayons', 'Rhythm', 'Trendo Chips']
+    },
+    {
+      id: 'sch-2',
+      name: 'School Flooring Option 2',
+      mask: schoolcopy2,
+      img: school02,
+      category: 'School Flooring',
+      product: ['Krayons', 'Rhythm', 'Trendo Chips']
+    },
+    {
+      id: 'sch-3',
+      name: 'School Flooring Option 3',
+      mask: schoolcopy3,
+      img: school01,
+      category: 'School Flooring',
+      product: ['Krayons', 'Rhythm', 'Trendo Chips']
+    },
+    {
+      id: 'sch-4',
+      name: 'School Flooring Option 4',
+      mask: schoolcopy4,
+      img: school04,
+      category: 'School Flooring',
+      product: ['Krayons', 'Rhythm', 'Trendo Chips']
+    },
+    {
+      id: 'sch-5',
+      name: 'School Flooring Option 5',
+      mask: schoolcopy5,
+      img: school05,
+      category: 'School Flooring',
+      product: ['Krayons', 'Rhythm', 'Trendo Chips']
+    },
+    {
+      id: 'sch-6',
+      name: 'School Flooring Option 6',
+      mask: schoolcopy6,
+      img: school06,
+      category: 'School Flooring',
+      product: ['Krayons', 'Rhythm', 'Trendo Chips']
+    },
+    // { 
+    //   id: 'sch-7', 
+    //   name: 'School Flooring Option 7', 
+    //   mask: schoolcopy7, 
+    //   img: DefaultImage, 
+    //   category: 'School Flooring', 
+    //   product: ['Krayons', 'Rhythm', 'Trendo Chips'] 
+    // },
+
+
+    { id: 'spo-1', name: 'Sports Flooring Option 1', img: Sport, category: 'Sports Flooring', product: ['Ornate', 'Braavo'] },
+    { id: 'spo-2', name: 'Sports Flooring Option 2', img: DefaultImage, category: 'Sports Flooring', product: ['Ornate', 'Braavo'] },
+    { id: 'spo-3', name: 'Sports Flooring Option 3', img: DefaultImage, category: 'Sports Flooring', product: ['Ornate', 'Braavo'] },
+    { id: 'spo-4', name: 'Sports Flooring Option 4', img: DefaultImage, category: 'Sports Flooring', product: ['Ornate', 'Braavo'] },
+
+    { id: 'sup-1', name: 'Supermarket Flooring Option 1', img: superMarket01, category: 'Supermarket Flooring', product: ['Durofloor', 'Siggma', 'Timberland Exotica 2mm', 'Trendo wood', 'Ornate', 'Trendo Chips', 'Oriion'] },
+    { id: 'sup-2', name: 'Supermarket Flooring Option 2', img: DefaultImage, category: 'Supermarket Flooring', product: ['Durofloor', 'Siggma', 'Timberland Exotica 2mm', 'Trendo wood', 'Ornate', 'Trendo Chips', 'Oriion'] },
+    { id: 'sup-3', name: 'Supermarket Flooring Option 3', img: DefaultImage, category: 'Supermarket Flooring', product: ['Durofloor', 'Siggma', 'Timberland Exotica 2mm', 'Trendo wood', 'Ornate', 'Trendo Chips', 'Oriion'] },
+    { id: 'sup-4', name: 'Supermarket Flooring Option 4', img: DefaultImage, category: 'Supermarket Flooring', product: ['Durofloor', 'Siggma', 'Timberland Exotica 2mm', 'Trendo wood', 'Ornate', 'Trendo Chips', 'Oriion'] },
+
+    { id: 'tra-1', name: 'Transport Flooring Option 1', img: Transport, category: 'Transport Flooring', product: ['Traction / Safety', 'Matrixx (Export)', 'D’ziner',] },
+    { id: 'tra-2', name: 'Transport Flooring Option 2', img: DefaultImage, category: 'Transport Flooring', product: ['Traction / Safety', 'Matrixx (Export)', 'D’ziner',] },
+    { id: 'tra-3', name: 'Transport Flooring Option 3', img: DefaultImage, category: 'Transport Flooring', product: ['Traction / Safety', 'Matrixx (Export)', 'D’ziner',] },
+    { id: 'tra-4', name: 'Transport Flooring Option 4', img: DefaultImage, category: 'Transport Flooring', product: ['Traction / Safety', 'Matrixx (Export)', 'D’ziner',] },
+
+    { id: 'hos-1', name: 'Hospital Flooring Option 1', img: Hospital, category: 'Hospital Flooring', product: ['Siggma', 'Orbit', 'Trendo Chips', 'Wallspro Plus', 'Adventus'] },
+    { id: 'hos-2', name: 'Hospital Flooring Option 2', img: DefaultImage, category: 'Hospital Flooring', product: ['Siggma', 'Orbit', 'Trendo Chips', 'Wallspro Plus', 'Adventus'] },
+    { id: 'hos-3', name: 'Hospital Flooring Option 3', img: DefaultImage, category: 'Hospital Flooring', product: ['Siggma', 'Orbit', 'Trendo Chips', 'Wallspro Plus', 'Adventus'] },
+    { id: 'hos-4', name: 'Hospital Flooring Option 4', img: DefaultImage, category: 'Hospital Flooring', product: ['Siggma', 'Orbit', 'Trendo Chips', 'Wallspro Plus', 'Adventus'] },
+
+    { id: 'aud-1', name: 'Auditorium Flooring Option 1', img: Auditorial, category: 'Auditorium Flooring', product: ['Timberland Exotica 2mm', 'Trendo wood', 'Braavo', 'Stoneland Monza', 'Timberland Herringbone 2mm'] },
+    { id: 'aud-2', name: 'Auditorium Flooring Option 2', img: DefaultImage, category: 'Auditorium Flooring', product: ['Timberland Exotica 2mm', 'Trendo wood', 'Braavo', 'Stoneland Monza', 'Timberland Herringbone 2mm'] },
+    { id: 'aud-3', name: 'Auditorium Flooring Option 3', img: DefaultImage, category: 'Auditorium Flooring', product: ['Timberland Exotica 2mm', 'Trendo wood', 'Braavo', 'Stoneland Monza', 'Timberland Herringbone 2mm'] },
+    { id: 'aud-4', name: 'Auditorium Flooring Option 4', img: DefaultImage, category: 'Auditorium Flooring', product: ['Timberland Exotica 2mm', 'Trendo wood', 'Braavo', 'Stoneland Monza', 'Timberland Herringbone 2mm'] },
+
+    { id: 'hot-1', name: 'Hotel Flooring Option 1', img: Hotel, category: 'Hotel/ Hospitality Flooring', product: ['Timberland Exotica 2mm', 'Trendo wood', 'Ornate', 'Braavo', 'Timberworld 1.5 mm', 'Stoneland Monza', 'Meteor', 'Timberland Herringbone 2mm', 'Grandeure Premium Luxury Planks 2mm'] },
+    { id: 'hot-2', name: 'Hotel Flooring Option 2', img: DefaultImage, category: 'Hotel/ Hospitality Flooring', product: ['Timberland Exotica 2mm', 'Trendo wood', 'Ornate', 'Braavo', 'Timberworld 1.5 mm', 'Stoneland Monza', 'Meteor', 'Timberland Herringbone 2mm', 'Grandeure Premium Luxury Planks 2mm'] },
+    { id: 'hot-3', name: 'Hotel Flooring Option 3', img: DefaultImage, category: 'Hotel/ Hospitality Flooring', product: ['Timberland Exotica 2mm', 'Trendo wood', 'Ornate', 'Braavo', 'Timberworld 1.5 mm', 'Stoneland Monza', 'Meteor', 'Timberland Herringbone 2mm', 'Grandeure Premium Luxury Planks 2mm'] },
+    { id: 'hot-4', name: 'Hotel Flooring Option 4', img: DefaultImage, category: 'Hotel/ Hospitality Flooring', product: ['Timberland Exotica 2mm', 'Trendo wood', 'Ornate', 'Braavo', 'Timberworld 1.5 mm', 'Stoneland Monza', 'Meteor', 'Timberland Herringbone 2mm', 'Grandeure Premium Luxury Planks 2mm'] },
+  ];
+  
 function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRoomImage, setSelectedRoomImage] = useState(null);
-
+ 
   // --- QR Code & Session State ---
   const [showQR, setShowQR] = useState(false);
   const [sessionId, setSessionId] = useState('');
-
+  const location = useLocation();
+ const { roomId } = useParams();
   const fileInputRef = useRef(null);
   const productDropdownRef = useRef(null);
 
@@ -148,177 +324,7 @@ function App() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [productDropdownRef]);
 
-  const industries = [
-    "ALL INDUSTRY",
-    "Industrial Flooring",
-    "Office Flooring",
-    "Residential Flooring",
-    "School Flooring",
-    "Sports Flooring",
-    "Supermarket Flooring",
-    "Transport Flooring",
-    "Hospital Flooring",
-    "Auditorium Flooring",
-    "Hotel/ Hospitality Flooring",
-    "Luxury Vinyl Tile"
-  ];
-
-  const flooringProducts = [
-    "Product Collections",
-    "Antique",
-    "Adventus",
-    "Braavo",
-    "Durofloor",
-    "Duratek",
-    "D'ZINER",
-    "Galaxxy",
-    "GDP",
-    "Hi-Tech",
-    "Krayons",
-    "Luxuria",
-    "Matrixx",
-    "Meteor",
-    "Ornate",
-    "Orbit",
-    "Oriion",
-    "Rangolie",
-    "Rhythm",
-    "Robust",
-    "Siggma",
-    "Stoneland Monza",
-    "Traction / Safety",
-    "Trendo wood",
-    "Trendo Chips",
-    "Uttsav",
-  ];
-
-  const allDemoRooms = [
-    { id: 'ind-1', name: 'Industrial Flooring Option 1', img: Industrial, category: 'Industrial Flooring', product: ['Durofloor', 'Antique'] },
-    { id: 'ind-2', name: 'Industrial Flooring Option 2', img: DefaultImage, category: 'Industrial Flooring', product: 'Siggma' },
-    { id: 'ind-3', name: 'Industrial Flooring Option 3', img: DefaultImage, category: 'Industrial Flooring', product: 'Siggma' },
-    { id: 'ind-4', name: 'Industrial Flooring Option 4', img: DefaultImage, category: 'Industrial Flooring', product: 'Siggma' },
-
-    { id: 'off-1', name: 'Office Flooring Option 1', img: office02, category: 'Office Flooring', product: ['Siggma', 'Trendo wood', 'Ornate', 'Antique', 'Hi-Tech', 'Trendo Chips', 'Stoneland Monza', 'Adventus'] },
-    { id: 'off-2', name: 'Office Flooring Option 2', img: DefaultImage, category: 'Office Flooring', product: ['Siggma', 'Trendo wood', 'Ornate', 'Antique', 'Hi-Tech', 'Trendo Chips', 'Stoneland Monza', 'Adventus'] },
-    { id: 'off-3', name: 'Office Flooring Option 3', img: DefaultImage, category: 'Office Flooring', product: ['Siggma', 'Trendo wood', 'Ornate', 'Antique', 'Hi-Tech', 'Trendo Chips', 'Stoneland Monza', 'Adventus'] },
-    { id: 'off-4', name: 'Office Flooring Option 4', img: DefaultImage, category: 'Office Flooring', product: ['Siggma', 'Trendo wood', 'Ornate', 'Antique', 'Hi-Tech', 'Trendo Chips', 'Stoneland Monza', 'Adventus'] },
-    //  {
-    //   id: 'res-5',
-    //   name: 'Residential Flooring Option 5',
-    //   img: room3,
-    //   mask: room3copy,
-    //   category: 'Office Flooring',
-    //   product:['Siggma', 'Trendo wood', 'Ornate', 'Antique', 'Hi-Tech', 'Trendo Chips', 'Stoneland Monza', 'Adventus'] },
-    { id: 'res-1', name: 'Residential Flooring Option 1', img: residential03, category: 'Residential Flooring', product: ['Trendo wood', 'Ornate', 'Duratek', 'Galaxxy', 'Luxuria', 'Antique', 'GDP', 'Hi-Tech', 'Uttsav', 'Oriion', 'Rangolie',] },
-    { id: 'res-2', name: 'Residential Flooring Option 2', img: DefaultImage, category: 'Residential Flooring', product: ['Trendo wood', 'Ornate', 'Duratek', 'Galaxxy', 'Luxuria', 'Antique', 'GDP', 'Hi-Tech', 'Uttsav', 'Oriion', 'Rangolie',] },
-    { id: 'res-3', name: 'Residential Flooring Option 3', img: DefaultImage, category: 'Residential Flooring', product: ['Trendo wood', 'Ornate', 'Duratek', 'Galaxxy', 'Luxuria', 'Antique', 'GDP', 'Hi-Tech', 'Uttsav', 'Oriion', 'Rangolie',] },
-    { id: 'res-4', name: 'Residential Flooring Option 4', img: DefaultImage, category: 'Residential Flooring', product: ['Trendo wood', 'Ornate', 'Duratek', 'Galaxxy', 'Luxuria', 'Antique', 'GDP', 'Hi-Tech', 'Uttsav', 'Oriion', 'Rangolie',] },
-    {
-      id: 'res-6',
-      name: 'Residential Flooring Option 5',
-      img: room1,
-      mask: room1copy,
-      category: 'Residential Flooring',
-      product: ['Trendo wood', 'Ornate', 'Duratek', 'Galaxxy', 'Luxuria', 'Antique', 'GDP', 'Hi-Tech', 'Uttsav', 'Oriion', 'Rangolie',]
-    },
-    {
-      id: 'res-7',
-      name: 'Residential Flooring Option 6',
-      img: room2,
-      mask: room2copy,
-      category: 'Residential Flooring',
-      product: ['Trendo wood', 'Ornate', 'Duratek', 'Galaxxy', 'Luxuria', 'Antique', 'GDP', 'Hi-Tech', 'Uttsav', 'Oriion', 'Rangolie',]
-    },
-
   
-  { 
-    id: 'sch-1', 
-    name: 'School Flooring Option 1', 
-    mask: schoolcopy1, 
-    img: school03, 
-    category: 'School Flooring', 
-    product: ['Krayons', 'Rhythm', 'Trendo Chips'] 
-  },
-  { 
-    id: 'sch-2', 
-    name: 'School Flooring Option 2', 
-    mask: schoolcopy2, 
-    img: school02, 
-    category: 'School Flooring', 
-    product: ['Krayons', 'Rhythm', 'Trendo Chips'] 
-  },
-  { 
-    id: 'sch-3', 
-    name: 'School Flooring Option 3', 
-    mask: schoolcopy3, 
-    img: school01, 
-    category: 'School Flooring', 
-    product: ['Krayons', 'Rhythm', 'Trendo Chips'] 
-  },
-  { 
-    id: 'sch-4', 
-    name: 'School Flooring Option 4', 
-    mask: schoolcopy4, 
-    img: school04, 
-    category: 'School Flooring', 
-    product: ['Krayons', 'Rhythm', 'Trendo Chips'] 
-  },
-  { 
-    id: 'sch-5', 
-    name: 'School Flooring Option 5', 
-    mask: schoolcopy5, 
-    img: school05, 
-    category: 'School Flooring', 
-    product: ['Krayons', 'Rhythm', 'Trendo Chips'] 
-  },
-  { 
-    id: 'sch-6', 
-    name: 'School Flooring Option 6', 
-    mask: schoolcopy6, 
-    img: school06, 
-    category: 'School Flooring', 
-    product: ['Krayons', 'Rhythm', 'Trendo Chips'] 
-  },
-  // { 
-  //   id: 'sch-7', 
-  //   name: 'School Flooring Option 7', 
-  //   mask: schoolcopy7, 
-  //   img: DefaultImage, 
-  //   category: 'School Flooring', 
-  //   product: ['Krayons', 'Rhythm', 'Trendo Chips'] 
-  // },
-
-
-    { id: 'spo-1', name: 'Sports Flooring Option 1', img: Sport, category: 'Sports Flooring', product: ['Ornate', 'Braavo'] },
-    { id: 'spo-2', name: 'Sports Flooring Option 2', img: DefaultImage, category: 'Sports Flooring', product: ['Ornate', 'Braavo'] },
-    { id: 'spo-3', name: 'Sports Flooring Option 3', img: DefaultImage, category: 'Sports Flooring', product: ['Ornate', 'Braavo'] },
-    { id: 'spo-4', name: 'Sports Flooring Option 4', img: DefaultImage, category: 'Sports Flooring', product: ['Ornate', 'Braavo'] },
-
-    { id: 'sup-1', name: 'Supermarket Flooring Option 1', img: superMarket01, category: 'Supermarket Flooring', product: ['Durofloor', 'Siggma', 'Timberland Exotica 2mm', 'Trendo wood', 'Ornate', 'Trendo Chips', 'Oriion'] },
-    { id: 'sup-2', name: 'Supermarket Flooring Option 2', img: DefaultImage, category: 'Supermarket Flooring', product: ['Durofloor', 'Siggma', 'Timberland Exotica 2mm', 'Trendo wood', 'Ornate', 'Trendo Chips', 'Oriion'] },
-    { id: 'sup-3', name: 'Supermarket Flooring Option 3', img: DefaultImage, category: 'Supermarket Flooring', product: ['Durofloor', 'Siggma', 'Timberland Exotica 2mm', 'Trendo wood', 'Ornate', 'Trendo Chips', 'Oriion'] },
-    { id: 'sup-4', name: 'Supermarket Flooring Option 4', img: DefaultImage, category: 'Supermarket Flooring', product: ['Durofloor', 'Siggma', 'Timberland Exotica 2mm', 'Trendo wood', 'Ornate', 'Trendo Chips', 'Oriion'] },
-
-    { id: 'tra-1', name: 'Transport Flooring Option 1', img: Transport, category: 'Transport Flooring', product: ['Traction / Safety', 'Matrixx (Export)', 'D’ziner',] },
-    { id: 'tra-2', name: 'Transport Flooring Option 2', img: DefaultImage, category: 'Transport Flooring', product: ['Traction / Safety', 'Matrixx (Export)', 'D’ziner',] },
-    { id: 'tra-3', name: 'Transport Flooring Option 3', img: DefaultImage, category: 'Transport Flooring', product: ['Traction / Safety', 'Matrixx (Export)', 'D’ziner',] },
-    { id: 'tra-4', name: 'Transport Flooring Option 4', img: DefaultImage, category: 'Transport Flooring', product: ['Traction / Safety', 'Matrixx (Export)', 'D’ziner',] },
-
-    { id: 'hos-1', name: 'Hospital Flooring Option 1', img: Hospital, category: 'Hospital Flooring', product: ['Siggma', 'Orbit', 'Trendo Chips', 'Wallspro Plus', 'Adventus'] },
-    { id: 'hos-2', name: 'Hospital Flooring Option 2', img: DefaultImage, category: 'Hospital Flooring', product: ['Siggma', 'Orbit', 'Trendo Chips', 'Wallspro Plus', 'Adventus'] },
-    { id: 'hos-3', name: 'Hospital Flooring Option 3', img: DefaultImage, category: 'Hospital Flooring', product: ['Siggma', 'Orbit', 'Trendo Chips', 'Wallspro Plus', 'Adventus'] },
-    { id: 'hos-4', name: 'Hospital Flooring Option 4', img: DefaultImage, category: 'Hospital Flooring', product: ['Siggma', 'Orbit', 'Trendo Chips', 'Wallspro Plus', 'Adventus'] },
-
-    { id: 'aud-1', name: 'Auditorium Flooring Option 1', img: Auditorial, category: 'Auditorium Flooring', product: ['Timberland Exotica 2mm', 'Trendo wood', 'Braavo', 'Stoneland Monza', 'Timberland Herringbone 2mm'] },
-    { id: 'aud-2', name: 'Auditorium Flooring Option 2', img: DefaultImage, category: 'Auditorium Flooring', product: ['Timberland Exotica 2mm', 'Trendo wood', 'Braavo', 'Stoneland Monza', 'Timberland Herringbone 2mm'] },
-    { id: 'aud-3', name: 'Auditorium Flooring Option 3', img: DefaultImage, category: 'Auditorium Flooring', product: ['Timberland Exotica 2mm', 'Trendo wood', 'Braavo', 'Stoneland Monza', 'Timberland Herringbone 2mm'] },
-    { id: 'aud-4', name: 'Auditorium Flooring Option 4', img: DefaultImage, category: 'Auditorium Flooring', product: ['Timberland Exotica 2mm', 'Trendo wood', 'Braavo', 'Stoneland Monza', 'Timberland Herringbone 2mm'] },
-
-    { id: 'hot-1', name: 'Hotel Flooring Option 1', img: Hotel, category: 'Hotel/ Hospitality Flooring', product: ['Timberland Exotica 2mm', 'Trendo wood', 'Ornate', 'Braavo', 'Timberworld 1.5 mm', 'Stoneland Monza', 'Meteor', 'Timberland Herringbone 2mm', 'Grandeure Premium Luxury Planks 2mm'] },
-    { id: 'hot-2', name: 'Hotel Flooring Option 2', img: DefaultImage, category: 'Hotel/ Hospitality Flooring', product: ['Timberland Exotica 2mm', 'Trendo wood', 'Ornate', 'Braavo', 'Timberworld 1.5 mm', 'Stoneland Monza', 'Meteor', 'Timberland Herringbone 2mm', 'Grandeure Premium Luxury Planks 2mm'] },
-    { id: 'hot-3', name: 'Hotel Flooring Option 3', img: DefaultImage, category: 'Hotel/ Hospitality Flooring', product: ['Timberland Exotica 2mm', 'Trendo wood', 'Ornate', 'Braavo', 'Timberworld 1.5 mm', 'Stoneland Monza', 'Meteor', 'Timberland Herringbone 2mm', 'Grandeure Premium Luxury Planks 2mm'] },
-    { id: 'hot-4', name: 'Hotel Flooring Option 4', img: DefaultImage, category: 'Hotel/ Hospitality Flooring', product: ['Timberland Exotica 2mm', 'Trendo wood', 'Ornate', 'Braavo', 'Timberworld 1.5 mm', 'Stoneland Monza', 'Meteor', 'Timberland Herringbone 2mm', 'Grandeure Premium Luxury Planks 2mm'] },
-  ];
 
   const handleUploadClick = () => fileInputRef.current.click();
 
@@ -332,13 +338,14 @@ function App() {
     }
   };
 
-  const handleDemoRoomClick = async (room) => {
+ const handleDemoRoomClick = async (room) => {
     try {
       const response = await fetch(room.img);
       const blob = await response.blob();
       const file = new File([blob], "demo_room.jpg", { type: "image/jpeg" });
 
       setSelectedRoomImage({
+        id: room.id,           // <--- ADD THIS LINE RIGHT HERE!
         previewUrl: room.img,
         isDemo: true,
         rawFile: file,
@@ -361,7 +368,22 @@ function App() {
     setSelectedRoomImage(null);
     localStorage.removeItem('activeDemoRoomId');
   };
-
+  // Logic for share function 
+  // Logic for share function 
+  useEffect(() => {
+    if (location.pathname.startsWith('/visualizer')) {
+      if (roomId && roomId !== 'default') {
+        const matchedRoom = allDemoRooms.find(r => r.id === roomId);
+        if (matchedRoom) {
+          handleDemoRoomClick(matchedRoom);
+        } else {
+          handleDemoRoomClick(allDemoRooms[0]);
+        }
+      } else if (roomId === 'default') {
+        handleDemoRoomClick(allDemoRooms[0]);
+      }
+    }
+  }, [location.pathname, roomId]);
   // Auto-reload the demo room when the page gets refreshed
   useEffect(() => {
     const savedRoomId = localStorage.getItem('activeDemoRoomId');
