@@ -54,10 +54,10 @@ const DownloadView = ({ selectedProduct, currentSrc, compositeRef, onClose }) =>
     const safetyTimeout = setTimeout(() => {
       if (iosWindow) iosWindow.close();
       console.warn("Download timed out. Safari image generation hung.");
-    }, 15000); // 15 seconds max
+    }, 15000); 
 
     try {
-      // STEP 1: Capture the live 3D room ON DEMAND instead of on menu open
+      // STEP 1: Capture the live 3D room ON DEMAND
       let readyBaseImage = currentSrc;
       if (compositeRef && compositeRef.current) {
         readyBaseImage = await htmlToImage.toJpeg(compositeRef.current, {
@@ -70,9 +70,25 @@ const DownloadView = ({ selectedProduct, currentSrc, compositeRef, onClose }) =>
         });
       }
 
-      // Feed it to the hidden layout and give React a moment to render it
+      // Feed it to the hidden layout
       setDownloadableImage(readyBaseImage);
-      await new Promise(resolve => setTimeout(resolve, 300));
+      
+      // =================================================================
+      // SAFARI CORE FIX: Wait explicitly for the DOM & Image to load
+      // =================================================================
+      await new Promise((resolve) => {
+        const img = new window.Image();
+        img.onload = () => {
+          // Double requestAnimationFrame forces Safari to complete its paint cycle 
+          // before we attempt to capture the hidden div.
+          requestAnimationFrame(() => {
+            requestAnimationFrame(resolve);
+          });
+        };
+        img.onerror = resolve; // Fallback resolve to prevent infinite hang
+        img.src = readyBaseImage;
+      });
+      // =================================================================
 
       // STEP 2: Generate the final image with Watermarks/Details
       if (option === 'image') {
@@ -115,10 +131,18 @@ const DownloadView = ({ selectedProduct, currentSrc, compositeRef, onClose }) =>
     }
   };
 
-  // Ensure arrays display cleanly on the PDF spec sheet
   const displayUserIndustry = Array.isArray(selectedProduct.userIndustry) 
     ? selectedProduct.userIndustry.join(', ') 
     : selectedProduct.userIndustry;
+
+  // SAFARI CSS FIX: Replaced `opacity: 0.01` and `zIndex: -9999` with off-screen positioning.
+  const hiddenContainerStyle = {
+    position: 'absolute',
+    top: '-9999px',
+    left: '-9999px',
+    width: '1000px',
+    pointerEvents: 'none'
+  };
 
   return (
     <>
@@ -141,7 +165,7 @@ const DownloadView = ({ selectedProduct, currentSrc, compositeRef, onClose }) =>
       {/* ---------------------------------------------------------------- */}
       {/* HIDDEN LAYOUT 1: JUST THE IMAGE + LOGO WATERMARK                 */}
       {/* ---------------------------------------------------------------- */}
-      <div style={{ position: 'fixed', top: 0, left: 0, width: '1000px', zIndex: -9999, opacity: 0.01, pointerEvents: 'none' }}>
+      <div style={hiddenContainerStyle}>
         <div ref={imageOnlyRef} style={{ position: 'relative', display: 'inline-block' }}>
           
           <img 
@@ -165,9 +189,9 @@ const DownloadView = ({ selectedProduct, currentSrc, compositeRef, onClose }) =>
       </div>
 
       {/* ---------------------------------------------------------------- */}
-      {/* HIDDEN LAYOUT 2: THE PRODUCT DETAILS PDF VIEW                      */}
+      {/* HIDDEN LAYOUT 2: THE PRODUCT DETAILS PDF VIEW                    */}
       {/* ---------------------------------------------------------------- */}
-      <div style={{ position: 'fixed', top: 0, left: 0, width: '1000px', zIndex: -9999, opacity: 0.01, pointerEvents: 'none' }}>
+      <div style={hiddenContainerStyle}>
         <div ref={printRef} style={{ width: '1000px', padding: '40px', backgroundColor: '#ffffff', color: '#000000', fontFamily: 'sans-serif' }}>
           
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
