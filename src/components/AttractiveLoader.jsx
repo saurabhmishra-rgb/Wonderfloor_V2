@@ -198,7 +198,7 @@ const AttractiveLoader = ({ productName = 'Design' }) => {
       }}>
 
         <h3 className="hologram-headline">
-          FINDING BEST PRODUCT
+          Rendering Image
         </h3>
 
         <div style={{
