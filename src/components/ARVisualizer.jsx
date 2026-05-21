@@ -21,7 +21,7 @@ import floorPoppy5 from '../assets/image11.jpeg';
 import floorpoppy6 from '../assets/image3.1.jpeg';
 //Krayons
 import Krayons1 from '../assets/krayon-fluorescent.jpg';
-import Krayons2 from '../assets/krayons-frosty-n-beige.JPG';
+import Krayons2 from '../assets/krayons-frosty-n-beige.jpg';
 import Krayons4 from '../assets/krayons-frosty-n-grey.jpg';
 import Krayons5 from '../assets/krayons-frosty-n-orange.jpg';
 import Krayons6 from '../assets/krayons-frosty-n-red.jpg';
@@ -177,33 +177,33 @@ const CompareView = ({
 // ── MAIN AR VISUALIZER COMPONENT ──
 const ARVisualizer = ({ closeModal, initialImage }) => {
   const mockProducts = [
-    { id: 13, name: 'Pastel Green', size: '2mtr x 20mtr(Roll)', img: Krayons1, colour: 'Green', shade: 'Light', category: 'Krayons', materials: 'PET', collection: 'Classic', accordionCategory: 'Krayons', sku: 'WF/KR/0001', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons' },
-    { id: 14, name: 'Frosty N Beige', size: '2mtr x 20mtr(Roll)', img: Krayons2, colour: 'Beige', shade: 'Light', category: 'Krayons', materials: 'PET', collection: 'Classic', accordionCategory: 'Krayons', sku: 'WF/KR/0002', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons' },
-    { id: 15, name: 'Frosty N Grey', size: '2mtr x 20mtr(Roll)', img: Krayons4, colour: 'Blue', shade: 'Light', category: 'Krayons', materials: 'PET', collection: 'Classic', accordionCategory: 'Krayons', sku: 'WF/KR/0003', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons' },
-    { id: 16, name: 'Frosty N Orange', size: '2mtr x 20mtr(Roll)', img: Krayons5, colour: 'Grey', shade: 'Light', category: 'Krayons', materials: 'PET', collection: 'Classic', accordionCategory: 'Krayons', sku: 'WF/KR/0004', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons' },
-    { id: 17, name: 'Frosty N Red', size: '2mtr x 20mtr(Roll)', img: Krayons6, colour: 'Orange', shade: 'Light', category: 'Krayons', materials: 'PET', collection: 'Classic', accordionCategory: 'Krayons', sku: 'WF/KR/0005', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons' },
-    { id: 18, name: 'Frosty N Yellow', size: '2mtr x 20mtr(Roll)', img: Krayons7, colour: 'Red', shade: 'Light', category: 'Krayons', materials: 'PET', collection: 'Classic', accordionCategory: 'Krayons', sku: 'WF/KR/0006', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons' },
-    { id: 19, name: 'Frosty N Sea Blue', size: '2mtr x 20mtr(Roll)', img: Krayons8, colour: 'Yellow', shade: 'Light', category: 'Krayons', materials: 'PET', collection: 'Classic', accordionCategory: 'Krayons', sku: 'WF/KR/0007', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons' },
-    { id: 20, name: 'Frosty N Blue', size: '2mtr x 20mtr(Roll)', img: Krayons9, colour: 'Blue', shade: 'Light', category: 'Krayons', materials: 'PET', collection: 'Classic', accordionCategory: 'Krayons', sku: 'WFKRr/0008', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons' },
-    { id: 21, name: 'Pastel Blue', size: '2mtr x 20mtr(Roll)', img: Krayons10, colour: 'Blue', shade: 'Light', category: 'Krayons', materials: 'PET', collection: 'Classic', accordionCategory: 'Krayons', sku: 'WF/KR/0009', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons' },
-    { id: 22, name: 'Fluoresent', size: '2mtr x 20mtr(Roll)', img: Krayons11, colour: 'Green', shade: 'Light', category: 'Krayons', materials: 'PET', collection: 'Classic', accordionCategory: 'Krayons', sku: 'WF/KR/00010', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons' },
-    { id: 23, name: 'Pastel Lemon', size: '2mtr x 20mtr(Roll)', img: Krayons12, colour: 'Lemon', shade: 'Light', category: 'Krayons', materials: 'PET', collection: 'Classic', accordionCategory: 'Krayons', sku: 'WF/KR/00011', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons' },
-    { id: 24, name: 'Pastel Orange', size: '2mtr x 20mtr(Roll)', img: Krayons13, colour: 'Orange', shade: 'Light', category: 'Krayons', materials: 'PET', collection: 'Classic', accordionCategory: 'Krayons', sku: 'WF/KR/00012', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons' },
-    { id: 25, name: 'Pastel Purple', size: '2mtr x 20mtr(Roll)', img: Krayons14, colour: 'Purple', shade: 'Light', category: 'Krayons', materials: 'PET', collection: 'Classic', accordionCategory: 'Krayons', sku: 'WF/KR/00013', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons' },
-    { id: 26, name: 'Pastel Cherry', size: '2mtr x 20mtr(Roll)', img: Krayons15, colour: 'Cherry', shade: 'Light', category: 'Krayons', materials: 'PET', collection: 'Classic', accordionCategory: 'Krayons', sku: 'WF/KR/00014', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons' },
-    { id: 27, name: 'Pastel Pink', size: '2mtr x 20mtr(Roll)', img: Krayons16, colour: 'Pink', shade: 'Light', category: 'Krayons', materials: 'PET', collection: 'Classic', accordionCategory: 'Krayons', sku: 'WF/kr/0015', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons' },
-    { id: 1, name: 'GDP-550406', size: '30cm x 30cm', img: floorActon, colour: 'Grey', shade: 'Dark', category: 'Tiles', materials: 'Nylon', collection: 'GDP', accordionCategory: 'Durofloor', sku: 'WF000051' },
-    { id: 2, name: 'GDP-551004', size: '30cm x 30cm', img: floorHolmes, colour: 'Beige', shade: 'Light', category: 'Planks', materials: 'PET', collection: 'Classic', accordionCategory: 'Durofloor', sku: 'WF000052' },
-    { id: 3, name: 'GDP-551007', size: '30cm x 30cm', img: floorCedar, colour: 'Brown', shade: 'Medium', category: 'Tiles', materials: 'Vinyl', collection: 'GDP', accordionCategory: 'Siggma', sku: 'WF000053' },
-    { id: 4, name: 'GDP-552107', size: '30cm x 30cm', img: floorCalla, colour: 'Grey', shade: 'Light', category: 'Carpet', materials: 'Nylon', collection: 'Premium', accordionCategory: 'Siggma', sku: 'WF000054' },
-    { id: 5, name: 'GDP-553107', size: '30cm x 30cm', img: floorpoppy6, colour: 'Grey', shade: 'Light', category: 'Carpet', materials: 'Nylon', collection: 'Premium', accordionCategory: 'Siggma', sku: 'WF000055' },
-    { id: 6, name: 'GDP-552112', size: '30cm x 30cm', img: floorTansy, colour: 'Black', shade: 'Dark', category: 'Planks', materials: 'Ceramic', collection: 'Classic', accordionCategory: 'Orbit', sku: 'WF000056' },
-    { id: 7, name: 'GDP-554306', size: '30cm x 30cm', img: floorPoppy, colour: 'White', shade: 'Light', category: 'Tiles', materials: 'PET', collection: 'GDP', accordionCategory: 'Orbit', sku: 'WF000057' },
-    { id: 8, name: 'GDP-555902', size: '30cm x 30cm', img: floorPoppy1, colour: 'Grey', shade: 'Medium', category: 'Carpet', materials: 'Vinyl', collection: 'Premium', accordionCategory: 'Stoneland Monza', sku: 'WF000058' },
-    { id: 9, name: 'GDP-557304', size: '30cm x 30cm', img: floorPoppy2, colour: 'Beige', shade: 'Medium', category: 'Tiles', materials: 'Nylon', collection: 'Classic', accordionCategory: 'Stoneland Monza', sku: 'WF000059' },
-    { id: 10, name: 'GDP-557703', size: '30cm x 30cm', img: floorPoppy3, colour: 'Brown', shade: 'Dark', category: 'Planks', materials: 'Ceramic', collection: 'Premium', accordionCategory: 'Meteor', sku: 'WF000060' },
-    { id: 11, name: 'GDP-559204', size: '30cm x 30cm', img: floorPoppy4, colour: 'Black', shade: 'Dark', category: 'Carpet', materials: 'PET', collection: 'GDP', accordionCategory: 'Meteor', sku: 'WF000061' },
-    { id: 12, name: 'GDP-559404', size: '30cm x 30cm', img: floorPoppy5, colour: 'White', shade: 'Light', category: 'Tiles', materials: 'Vinyl', collection: 'Classic', accordionCategory: 'Aventus', sku: 'WF000062' },
+    { id: 13, name: 'Pastel Green', size: '2mtr x 20mtr (Roll)', img: Krayons1, colour: 'Green', shade: 'Dark', category: 'Krayons', userIndustry: ['School Flooring, Office Flooring', 'Hotel/ Hospitality Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Krayons', sku: 'WF/KR/0001', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons', description: "Wonderfloor Krayons cushion vinyl flooring brings vibrant colours and creative design flexibility to interiors with easy mix-and-match patterns, durable dimensional stability, and a maintenance-free PUR-coated surface.\n\nIdeal for schools, play areas, homes, offices, and hospitality spaces, Krayons adds a cheerful and lively atmosphere while offering long-lasting performance." },
+    { id: 14, name: 'Frosty N Beige', size: '2mtr x 20mtr (Roll)', img: Krayons2, colour: 'Beige', shade: 'Dark', category: 'Krayons', userIndustry: ['School Flooring Office Flooring', 'Hotel/ Hospitality Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Krayons', sku: 'WF/KR/0002', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons', description: "Wonderfloor Krayons cushion vinyl flooring brings vibrant colours and creative design flexibility to interiors with easy mix-and-match patterns, durable dimensional stability, and a maintenance-free PUR-coated surface.\n\nIdeal for schools, play areas, homes, offices, and hospitality spaces, Krayons adds a cheerful and lively atmosphere while offering long-lasting performance." },
+    { id: 15, name: 'Frosty N Grey', size: '2mtr x 20mtr (Roll)', img: Krayons4, colour: 'Blue', shade: 'Dark', category: 'Krayons', userIndustry: ['School Flooring', 'Office Flooring', 'Hotel/ Hospitality Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Krayons', sku: 'WF/KR/0003', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons', description: "Wonderfloor Krayons cushion vinyl flooring brings vibrant colours and creative design flexibility to interiors with easy mix-and-match patterns, durable dimensional stability, and a maintenance-free PUR-coated surface.\n\nIdeal for schools, play areas, homes, offices, and hospitality spaces, Krayons adds a cheerful and lively atmosphere while offering long-lasting performance." },
+    { id: 16, name: 'Frosty N Orange', size: '2mtr x 20mtr (Roll)', img: Krayons5, colour: 'Grey', shade: 'Dark', category: 'Krayons', userIndustry: ['School Flooring', 'Office Flooring', 'Hotel/ Hospitality Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Krayons', sku: 'WF/KR/0004', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons', description: "Wonderfloor Krayons cushion vinyl flooring brings vibrant colours and creative design flexibility to interiors with easy mix-and-match patterns, durable dimensional stability, and a maintenance-free PUR-coated surface.\n\nIdeal for schools, play areas, homes, offices, and hospitality spaces, Krayons adds a cheerful and lively atmosphere while offering long-lasting performance." },
+    { id: 17, name: 'Frosty N Red', size: '2mtr x 20mtr (Roll)', img: Krayons6, colour: 'Orange', shade: 'Dark', category: 'Krayons', userIndustry: ['School Flooring', 'Office Flooring', 'Hotel/ Hospitality Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Krayons', sku: 'WF/KR/0005', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons', description: "Wonderfloor Krayons cushion vinyl flooring brings vibrant colours and creative design flexibility to interiors with easy mix-and-match patterns, durable dimensional stability, and a maintenance-free PUR-coated surface.\n\nIdeal for schools, play areas, homes, offices, and hospitality spaces, Krayons adds a cheerful and lively atmosphere while offering long-lasting performance." },
+    { id: 18, name: 'Frosty N Yellow', size: '2mtr x 20mtr (Roll)', img: Krayons7, colour: 'Red', shade: 'Dark', category: 'Krayons', userIndustry: ['School Flooring', 'Office Flooring', 'Hotel/ Hospitality Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Krayons', sku: 'WF/KR/0006', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons', description: "Wonderfloor Krayons cushion vinyl flooring brings vibrant colours and creative design flexibility to interiors with easy mix-and-match patterns, durable dimensional stability, and a maintenance-free PUR-coated surface.\n\nIdeal for schools, play areas, homes, offices, and hospitality spaces, Krayons adds a cheerful and lively atmosphere while offering long-lasting performance." },
+    { id: 19, name: 'Frosty N Sea Blue', size: '2mtr x 20mtr (Roll)', img: Krayons8, colour: 'Yellow', shade: 'Dark', category: 'Krayons', userIndustry: ['School Flooring', 'Office Flooring', 'Hotel/ Hospitality Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Krayons', sku: 'WF/KR/0007', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons', description: "Wonderfloor Krayons cushion vinyl flooring brings vibrant colours and creative design flexibility to interiors with easy mix-and-match patterns, durable dimensional stability, and a maintenance-free PUR-coated surface.\n\nIdeal for schools, play areas, homes, offices, and hospitality spaces, Krayons adds a cheerful and lively atmosphere while offering long-lasting performance." },
+    { id: 20, name: 'Frosty N Blue', size: '2mtr x 20mtr (Roll)', img: Krayons9, colour: 'Blue', shade: 'Dark', category: 'Krayons', userIndustry: ['School Flooring', 'Office Flooring', 'Hotel/ Hospitality Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Krayons', sku: 'WFKRr/0008', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons', description: "Wonderfloor Krayons cushion vinyl flooring brings vibrant colours and creative design flexibility to interiors with easy mix-and-match patterns, durable dimensional stability, and a maintenance-free PUR-coated surface.\n\nIdeal for schools, play areas, homes, offices, and hospitality spaces, Krayons adds a cheerful and lively atmosphere while offering long-lasting performance." },
+    { id: 21, name: 'Pastel Blue', size: '2mtr x 20mtr (Roll)', img: Krayons10, colour: 'Blue', shade: 'Dark', category: 'Krayons', userIndustry: ['School Flooring', 'Office Flooring', 'Hotel/ Hospitality Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Krayons', sku: 'WF/KR/0009', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons', description: "Wonderfloor Krayons cushion vinyl flooring brings vibrant colours and creative design flexibility to interiors with easy mix-and-match patterns, durable dimensional stability, and a maintenance-free PUR-coated surface.\n\nIdeal for schools, play areas, homes, offices, and hospitality spaces, Krayons adds a cheerful and lively atmosphere while offering long-lasting performance." },
+    { id: 22, name: 'Fluoresent', size: '2mtr x 20mtr (Roll)', img: Krayons11, colour: 'Green', shade: 'Dark', category: 'Krayons', userIndustry: ['School Flooring', 'Office Flooring', 'Hotel/ Hospitality Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Krayons', sku: 'WF/KR/00010', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons', description: "Wonderfloor Krayons cushion vinyl flooring brings vibrant colours and creative design flexibility to interiors with easy mix-and-match patterns, durable dimensional stability, and a maintenance-free PUR-coated surface.\n\nIdeal for schools, play areas, homes, offices, and hospitality spaces, Krayons adds a cheerful and lively atmosphere while offering long-lasting performance." },
+    { id: 23, name: 'Pastel Lemon', size: '2mtr x 20mtr (Roll)', img: Krayons12, colour: 'Lemon', shade: 'Dark', category: 'Krayons', userIndustry: ['School Flooring', 'Office Flooring', 'Hotel/ Hospitality Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Krayons', sku: 'WF/KR/00011', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons', description: "Wonderfloor Krayons cushion vinyl flooring brings vibrant colours and creative design flexibility to interiors with easy mix-and-match patterns, durable dimensional stability, and a maintenance-free PUR-coated surface.\n\nIdeal for schools, play areas, homes, offices, and hospitality spaces, Krayons adds a cheerful and lively atmosphere while offering long-lasting performance." },
+    { id: 24, name: 'Pastel Orange', size: '2mtr x 20mtr (Roll)', img: Krayons13, colour: 'Orange', shade: 'Dark', category: 'Krayons', userIndustry: ['School Flooring', 'Office Flooring', 'Hotel/ Hospitality Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Krayons', sku: 'WF/KR/00012', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons', description: "Wonderfloor Krayons cushion vinyl flooring brings vibrant colours and creative design flexibility to interiors with easy mix-and-match patterns, durable dimensional stability, and a maintenance-free PUR-coated surface.\n\nIdeal for schools, play areas, homes, offices, and hospitality spaces, Krayons adds a cheerful and lively atmosphere while offering long-lasting performance." },
+    { id: 25, name: 'Pastel Purple', size: '2mtr x 20mtr (Roll)', img: Krayons14, colour: 'Purple', shade: 'Dark', category: 'Krayons', userIndustry: ['School Flooring', 'Office Flooring', 'Hotel/ Hospitality Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Krayons', sku: 'WF/KR/00013', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons', description: "Wonderfloor Krayons cushion vinyl flooring brings vibrant colours and creative design flexibility to interiors with easy mix-and-match patterns, durable dimensional stability, and a maintenance-free PUR-coated surface.\n\nIdeal for schools, play areas, homes, offices, and hospitality spaces, Krayons adds a cheerful and lively atmosphere while offering long-lasting performance." },
+    { id: 26, name: 'Pastel Cherry', size: '2mtr x 20mtr (Roll)', img: Krayons15, colour: 'Cherry', shade: 'Dark', category: 'Krayons', userIndustry: ['School Flooring', 'Office Flooring', 'Hotel/ Hospitality Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Krayons', sku: 'WF/KR/00014', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons', description: "Wonderfloor Krayons cushion vinyl flooring brings vibrant colours and creative design flexibility to interiors with easy mix-and-match patterns, durable dimensional stability, and a maintenance-free PUR-coated surface.\n\nIdeal for schools, play areas, homes, offices, and hospitality spaces, Krayons adds a cheerful and lively atmosphere while offering long-lasting performance." },
+    { id: 27, name: 'Pastel Pink', size: '2mtr x 20mtr (Roll)', img: Krayons16, colour: 'Pink', shade: 'Dark', category: 'Krayons', userIndustry: ['School Flooring', 'Office Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Krayons', sku: 'WF/kr/0015', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons' },
+    { id: 1, name: 'GDP-550406', size: '30cm x 30cm', img: floorActon, colour: 'Grey', shade: 'Dark', category: 'Tiles', userIndustry: ['Industrial Flooring'], collection: 'GDP', accordionCategory: 'Durofloor', sku: 'WF000051' },
+    { id: 2, name: 'GDP-551004', size: '30cm x 30cm', img: floorHolmes, colour: 'Beige', shade: 'Light', category: 'Planks', userIndustry: ['Office Flooring', 'Residential Flooring'], collection: 'Classic', accordionCategory: 'Durofloor', sku: 'WF000052' },
+    { id: 3, name: 'GDP-551007', size: '30cm x 30cm', img: floorCedar, colour: 'Brown', shade: 'Medium', category: 'Tiles', userIndustry: ['Industrial Flooring'], collection: 'GDP', accordionCategory: 'Siggma', sku: 'WF000053' },
+    { id: 4, name: 'GDP-552107', size: '30cm x 30cm', img: floorCalla, colour: 'Grey', shade: 'Light', category: 'Carpet', userIndustry: ['Office Flooring'], collection: 'Premium', accordionCategory: 'Siggma', sku: 'WF000054' },
+    { id: 5, name: 'GDP-553107', size: '30cm x 30cm', img: floorpoppy6, colour: 'Grey', shade: 'Light', category: 'Carpet', userIndustry: ['Office Flooring'], collection: 'Premium', accordionCategory: 'Siggma', sku: 'WF000055' },
+    { id: 6, name: 'GDP-552112', size: '30cm x 30cm', img: floorTansy, colour: 'Black', shade: 'Dark', category: 'Planks', userIndustry: ['Residential Flooring'], collection: 'Classic', accordionCategory: 'Orbit', sku: 'WF000056' },
+    { id: 7, name: 'GDP-554306', size: '30cm x 30cm', img: floorPoppy, colour: 'White', shade: 'Light', category: 'Tiles', userIndustry: ['Residential Flooring'], collection: 'GDP', accordionCategory: 'Orbit', sku: 'WF000057' },
+    { id: 8, name: 'GDP-555902', size: '30cm x 30cm', img: floorPoppy1, colour: 'Grey', shade: 'Medium', category: 'Carpet', userIndustry: ['Industrial Flooring'], collection: 'Premium', accordionCategory: 'Stoneland Monza', sku: 'WF000058' },
+    { id: 9, name: 'GDP-557304', size: '30cm x 30cm', img: floorPoppy2, colour: 'Beige', shade: 'Medium', category: 'Tiles', userIndustry: ['Office Flooring'], collection: 'Classic', accordionCategory: 'Stoneland Monza', sku: 'WF000059' },
+    { id: 10, name: 'GDP-557703', size: '30cm x 30cm', img: floorPoppy3, colour: 'Brown', shade: 'Dark', category: 'Planks', userIndustry: ['Residential Flooring'], collection: 'Premium', accordionCategory: 'Meteor', sku: 'WF000060' },
+    { id: 11, name: 'GDP-559204', size: '30cm x 30cm', img: floorPoppy4, colour: 'Black', shade: 'Dark', category: 'Carpet', userIndustry: ['Sports Flooring'], collection: 'GDP', accordionCategory: 'Meteor', sku: 'WF000061' },
+    { id: 12, name: 'GDP-559404', size: '30cm x 30cm', img: floorPoppy5, colour: 'White', shade: 'Light', category: 'Tiles', userIndustry: ['Residential Flooring'], collection: 'Classic', accordionCategory: 'Aventus', sku: 'WF000062' },
   ];
 
   const productCategories = ['Krayons', 'Durofloor', 'Siggma', 'Orbit', 'Stoneland Monza', 'Meteor', 'Aventus'];
@@ -694,18 +694,11 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
     setFloorRotation(0);
     setIsFloorVisible(false);
   };
-
  const handleOpenDetails = (e, product) => {
-  e.stopPropagation();
-  setDetailsProduct(product);
-  setIsDetailsModalOpen(true);
-
-  // ✅ ADD THIS: Select product immediately when "More details" is clicked
-  if (!isCompareMode && selectedProduct.id !== product.id) {
-    setSelectedProduct(product);
-    applyFloorOverlay(product, 0);
-  }
-};
+    e.stopPropagation();
+    setDetailsProduct(product);
+    setIsDetailsModalOpen(true);
+  };
   const toggleFavorite = (e, productId) => {
     e.stopPropagation();
     setFavoriteProducts(prev => prev.includes(productId) ? prev.filter(id => id !== productId) : [...prev, productId]);
@@ -738,12 +731,12 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
   };
 
   const filterCategories = [
-    { id: 'accordionCategory', label: 'Brand / Category', options: ['Krayons', 'Durofloor', 'Siggma', 'Orbit', 'Stoneland Monza', 'Meteor', 'Aventus'] },
-    { id: 'colour', label: 'Colour', options: ['Grey', 'Beige', 'Brown', 'Black', 'White', 'Blue', 'Green', 'Lemon', 'Orange', 'Purple', 'Cherry', 'Pink'] },
+    { id: 'accordionCategory', label: 'Flooring Product', options: ['Krayons', 'Durofloor', 'Siggma', 'Orbit', 'Stoneland Monza', 'Meteor', 'Aventus'] },
+    { id: 'colour', label: 'Colour Family', options: ['Grey', 'Beige', 'Brown', 'Black', 'White', 'Blue', 'Green', 'Lemon', 'Orange', 'Purple', 'Cherry', 'Pink'] },
     { id: 'shade', label: 'Shade', options: ['Light', 'Medium', 'Dark'] },
-    { id: 'User Industry', label: 'User Industry', options: ['Industrial Flooring', 'Office Flooring', 'Residential Flooring', 'School Flooring', 'Sports Flooring'] },
-    { id: 'Pattern/Layout', label: 'Pattern/Layout', options: ['Harringbone'] },
-    { id: 'collection/Style', label: 'Collection/Style', options: ['Wood', 'Stone'] },
+    { id: 'userIndustry', label: 'User Industry', options: ['Industrial Flooring', 'Office Flooring', 'Residential Flooring', 'School Flooring', 'Sports Flooring', 'Hotel/ Hospitality Flooring'] },
+    { id: 'Pattern/Layout', label: 'Pattern/ Layout', options: ['Harringbone'] },
+    { id: 'collection', label: 'Collection/ Style', options: ['Wood', 'Stone', 'Cushion Vinyl'] },
   ];
 
   const handleToggleFilter = (categoryId, option) => {
@@ -755,7 +748,7 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
   };
 
   const clearFilters = () => setActiveFilters({});
-
+  // Filter Logic
   const filteredProducts = mockProducts.filter(prod => {
     const searchLower = searchQuery.trim().toLowerCase();
     const matchesSearch = searchLower === '' ||
@@ -764,15 +757,22 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
       (prod.collection && prod.collection.toLowerCase().includes(searchLower)) ||
       (prod.category && prod.category.toLowerCase().includes(searchLower)) ||
       (prod.colour && prod.colour.toLowerCase().includes(searchLower));
+
+    // FILTERING LOGIC TO SUPPORT REAL ARRAYS
     const matchesFilters = Object.entries(activeFilters).every(([key, selectedValues]) => {
       if (selectedValues.length === 0) return true;
+      if (!prod[key]) return false;
+
+      // Check if the product data property is an Array (like our new userIndustry format)
+      if (Array.isArray(prod[key])) {
+        return selectedValues.some(val => prod[key].includes(val));
+      }
+
+      // Normal string check fallback (for colour, shade, etc.)
       return selectedValues.includes(prod[key]);
     });
+
     return matchesSearch && matchesFilters;
-  }).sort((a, b) => {
-    if (sortOrder === 'Prod-A-Z') return a.name.localeCompare(b.name);
-    else if (sortOrder === 'Prod-Z-A') return b.name.localeCompare(a.name);
-    return 0;
   });
 
   const displayCategories = [...productCategories].sort((a, b) => {
@@ -1130,7 +1130,7 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
 
       {/* ── MAIN CONTENT AREA ── */}
       <div className="flex-1 flex flex-col bg-[#e5e7eb] h-full overflow-hidden relative w-full">
-        
+
         {isCompareMode ? (
           <>
             <CompareView
@@ -1332,7 +1332,11 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
                   <div className="flex items-center gap-3 md:gap-6 text-xs md:text-sm text-gray-600 font-medium md:ml-6 md:border-l border-gray-200 pl-2 md:pl-6 h-full py-1">
                     <button
                       onClick={(e) => { e.stopPropagation(); handleReset(); }}
-                      className="flex items-center gap-1 md:gap-2 px-2 py-1.5 md:py-2 rounded-md hover:bg-gray-100 hover:text-gray-900 transition-colors cursor-pointer"
+                      disabled={!isFloorVisible}
+                      className={`flex items-center gap-1 md:gap-2 px-2 py-1.5 md:py-2 rounded-md transition-colors ${isFloorVisible
+                        ? 'hover:bg-gray-100 hover:text-gray-900 cursor-pointer text-gray-600'
+                        : 'opacity-50 cursor-not-allowed text-gray-400'
+                        }`}
                     >
                       <span className="hidden sm:inline">Reset</span>
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="md:w-4 md:h-4"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><polyline points="3 3 3 8 8 8"></polyline></svg>
@@ -1410,8 +1414,8 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
 
       {/* ── PRODUCT DETAILS MODAL ── */}
       {isDetailsModalOpen && detailsProduct && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl flex flex-col max-h-[90vh] overflow-hidden transform transition-all animate-fade-in-up">
+        <div onClick={() => setIsDetailsModalOpen(false)} className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div onClick={(e) => e.stopPropagation()} className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl flex flex-col max-h-[90vh] overflow-hidden transform transition-all animate-fade-in-up">
             <div className="flex justify-between items-center p-4 sm:p-6 border-b border-gray-100 shrink-0">
               <h2 className="text-xl font-bold text-gray-900">Product Details</h2>
               <button onClick={() => setIsDetailsModalOpen(false)} className="p-2 hover:bg-gray-100 rounded-full transition-colors cursor-pointer text-gray-500 hover:text-black">
@@ -1431,6 +1435,12 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
                       <span className="text-gray-400">Size:</span>
                       <span className="text-gray-900 bg-gray-100 px-2 py-1 rounded font-semibold">{detailsProduct.size}</span>
                     </p>
+                    {/* NEW DESCRIPTION PARAGRAPH LAYER INSERTED HERE */}
+                    {detailsProduct.description && (
+                      <p className="mt-5 text-xs sm:text-sm text-gray-600 leading-relaxed font-normal whitespace-pre-line">
+                        {detailsProduct.description}
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>
@@ -1442,11 +1452,17 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
                 <div className="border-t border-gray-200 flex flex-col">
                   {[
                     { label: 'SKU', value: detailsProduct.sku || detailsProduct.name },
-                    { label: 'Collection', value: detailsProduct.collection },
-                    { label: 'Category', value: detailsProduct.category },
-                    { label: 'Colour Family', value: detailsProduct.colour },
+                    { label: 'Collection/ Style', value: detailsProduct.collection },
+                    { label: 'Flooring Product', value: detailsProduct.category },
+                    { label: 'Colour', value: detailsProduct.colour },
                     { label: 'Shade', value: detailsProduct.shade },
-                    { label: 'Material', value: detailsProduct.materials },
+                    {
+                      label: 'User Industry',
+                      // If it's an array, join values visually with a comma, else fallback to direct display
+                      value: Array.isArray(detailsProduct.userIndustry)
+                        ? detailsProduct.userIndustry.join(', ')
+                        : detailsProduct.userIndustry
+                    },
                   ].map(({ label, value }) => (
                     <div key={label} className="flex py-3 sm:py-4 border-b border-gray-100 items-center">
                       <span className="w-1/3 text-sm text-gray-500 font-medium">{label}</span>
@@ -1467,11 +1483,27 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
                 Go to product page
               </a>
               <button
-                onClick={() => { handleTileSelection(detailsProduct); setIsDetailsModalOpen(false); }}
-                className="w-full sm:w-auto bg-[#1877f2] hover:bg-[#1564cd] text-white font-bold py-3 px-6 rounded-lg transition-colors shadow-md flex items-center justify-center gap-2 cursor-pointer"
+                onClick={() => {
+                  if (selectedProduct?.id === detailsProduct?.id && isFloorVisible && !isCompareMode) {
+                    setIsDetailsModalOpen(false); // Just close if it's already active
+                    return;
+                  }
+                  handleTileSelection(detailsProduct);
+                  setIsDetailsModalOpen(false);
+                }}
+                className={`w-full sm:w-auto font-bold py-3 px-6 rounded-lg transition-colors shadow-md flex items-center justify-center gap-2 ${selectedProduct?.id === detailsProduct?.id && isFloorVisible && !isCompareMode
+                    ? 'bg-green-600 text-white cursor-pointer hover:bg-green-700'
+                    : 'bg-[#1877f2] hover:bg-[#1564cd] text-white cursor-pointer'
+                  }`}
               >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
-                Apply to Room
+                {selectedProduct?.id === detailsProduct?.id && isFloorVisible && !isCompareMode ? (
+                  <span>Applied in {detailsProduct?.name}</span>
+                ) : (
+                  <>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                    Apply to Room
+                  </>
+                )}
               </button>
             </div>
           </div>
