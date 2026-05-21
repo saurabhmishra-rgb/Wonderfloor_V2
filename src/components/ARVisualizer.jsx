@@ -731,7 +731,7 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
   };
 
   const filterCategories = [
-    { id: 'accordionCategory', label: 'Flooring Product', options: ['Krayons', 'Durofloor', 'Siggma', 'Orbit', 'Stoneland Monza', 'Meteor', 'Aventus'] },
+    { id: 'accordionCategory', label: 'Product Collections', options: ['Krayons', 'Durofloor', 'Siggma', 'Orbit', 'Stoneland Monza', 'Meteor', 'Aventus'] },
     { id: 'colour', label: 'Colour Family', options: ['Grey', 'Beige', 'Brown', 'Black', 'White', 'Blue', 'Green', 'Lemon', 'Orange', 'Purple', 'Cherry', 'Pink'] },
     { id: 'shade', label: 'Shade', options: ['Light', 'Medium', 'Dark'] },
     { id: 'userIndustry', label: 'User Industry', options: ['Industrial Flooring', 'Office Flooring', 'Residential Flooring', 'School Flooring', 'Sports Flooring', 'Hotel/ Hospitality Flooring'] },
