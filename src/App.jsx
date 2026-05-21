@@ -59,7 +59,7 @@ function App() {
   );
   const [isProductDropdownOpen, setIsProductDropdownOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(
-    localStorage.getItem('savedProduct') || 'FLOORING PRODUCTS'
+    localStorage.getItem('savedProduct') || 'Product Collections'
   );
 
   // 2. Automatically save choices to local storage whenever they change
@@ -164,7 +164,7 @@ function App() {
   ];
 
   const flooringProducts = [
-    "FLOORING PRODUCTS",
+    "Product Collections",
     "Antique",
     "Adventus",
     "Braavo",
@@ -376,10 +376,10 @@ function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Run only once on mount
 
-  const isDefaultView = selectedIndustry === 'ALL INDUSTRY' && selectedProduct === 'FLOORING PRODUCTS';
+  const isDefaultView = selectedIndustry === 'ALL INDUSTRY' && selectedProduct === 'Product Collections';
 
   const displayedRooms = allDemoRooms.filter(room => {
-    if (selectedProduct !== 'FLOORING PRODUCTS') {
+    if (selectedProduct !== 'Product Collections') {
       if (Array.isArray(room.product)) {
         return room.product.includes(selectedProduct);
       }
@@ -527,7 +527,7 @@ function App() {
                 key={index}
                 onClick={() => {
                   setSelectedIndustry(industry);
-                  setSelectedProduct('FLOORING PRODUCTS');
+                  setSelectedProduct('Product Collections');
                 }}
                 className={`shrink-0 cursor-pointer px-5 py-2 rounded-full text-[13px] font-bold tracking-wide transition-all uppercase border ${selectedIndustry === industry
                   ? 'bg-[#f05c3f] text-white border-[#f05c3f] shadow-md'
@@ -557,7 +557,7 @@ function App() {
               <button
                 onClick={() => {
                   setSelectedIndustry('ALL INDUSTRY');
-                  setSelectedProduct('FLOORING PRODUCTS');
+                  setSelectedProduct('Product Collections');
                 }}
                 className="mb-6 flex items-center gap-2 text-sm font-bold text-gray-500 hover:text-[#f05c3f] transition-colors cursor-pointer"
               >
@@ -582,7 +582,7 @@ function App() {
               ) : (
                 <div className="w-full py-12 text-center text-gray-500 bg-gray-50 rounded-lg border border-dashed border-gray-300">
                   <p className="text-lg">
-                    No demo rooms available for {selectedProduct !== 'FLOORING PRODUCTS' ? selectedProduct : selectedIndustry} yet.
+                    No demo rooms available for {selectedProduct !== 'Product Collections' ? selectedProduct : selectedIndustry} yet.
                   </p>
                 </div>
               )}
