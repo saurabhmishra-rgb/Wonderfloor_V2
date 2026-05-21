@@ -5,7 +5,7 @@ import RoomUploader from './RoomUploader';
 import DownloadView from './DownloadView';
 import { initVisualizer } from './script.jsx';
 import AttractiveLoader from './AttractiveLoader';
-
+import { useParams } from 'react-router-dom';
 // 1. IMPORT YOUR LOCAL ASSETS HERE
 import floorActon from '../assets/image1.jpeg';
 import floorHolmes from '../assets/image2.jpeg';
@@ -175,8 +175,7 @@ const CompareView = ({
 
 
 // ── MAIN AR VISUALIZER COMPONENT ──
-const ARVisualizer = ({ closeModal, initialImage }) => {
-  const mockProducts = [
+const mockProducts = [
     { id: 13, name: 'Pastel Green', size: '2mtr x 20mtr (Roll)', img: Krayons1, colour: 'Green', shade: 'Dark', category: 'Krayons', userIndustry: ['School Flooring, Office Flooring', 'Hotel/ Hospitality Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Krayons', sku: 'WF/KR/0001', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons', description: "Wonderfloor Krayons cushion vinyl flooring brings vibrant colours and creative design flexibility to interiors with easy mix-and-match patterns, durable dimensional stability, and a maintenance-free PUR-coated surface.\n\nIdeal for schools, play areas, homes, offices, and hospitality spaces, Krayons adds a cheerful and lively atmosphere while offering long-lasting performance." },
     { id: 14, name: 'Frosty N Beige', size: '2mtr x 20mtr (Roll)', img: Krayons2, colour: 'Beige', shade: 'Dark', category: 'Krayons', userIndustry: ['School Flooring Office Flooring', 'Hotel/ Hospitality Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Krayons', sku: 'WF/KR/0002', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons', description: "Wonderfloor Krayons cushion vinyl flooring brings vibrant colours and creative design flexibility to interiors with easy mix-and-match patterns, durable dimensional stability, and a maintenance-free PUR-coated surface.\n\nIdeal for schools, play areas, homes, offices, and hospitality spaces, Krayons adds a cheerful and lively atmosphere while offering long-lasting performance." },
     { id: 15, name: 'Frosty N Grey', size: '2mtr x 20mtr (Roll)', img: Krayons4, colour: 'Blue', shade: 'Dark', category: 'Krayons', userIndustry: ['School Flooring', 'Office Flooring', 'Hotel/ Hospitality Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Krayons', sku: 'WF/KR/0003', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons', description: "Wonderfloor Krayons cushion vinyl flooring brings vibrant colours and creative design flexibility to interiors with easy mix-and-match patterns, durable dimensional stability, and a maintenance-free PUR-coated surface.\n\nIdeal for schools, play areas, homes, offices, and hospitality spaces, Krayons adds a cheerful and lively atmosphere while offering long-lasting performance." },
@@ -206,11 +205,23 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
     { id: 12, name: 'GDP-559404', size: '30cm x 30cm', img: floorPoppy5, colour: 'White', shade: 'Light', category: 'Tiles', userIndustry: ['Residential Flooring'], collection: 'Classic', accordionCategory: 'Aventus', sku: 'WF000062' },
   ];
 
+const ARVisualizer = ({ closeModal, initialImage }) => {
+  const { productId } = useParams(); // <-- NEW CLEAN URL EXTRACTOR
+
   const productCategories = ['Krayons', 'Durofloor', 'Siggma', 'Orbit', 'Stoneland Monza', 'Meteor', 'Aventus'];
   const [initialPinchDist, setInitialPinchDist] = useState(null);
   const [uploadedRoom, setUploadedRoom] = useState(null);
 
+  // 2. READ URL DIRECTLY INTO INITIAL STATE
   const [selectedProduct, setSelectedProduct] = useState(() => {
+    // Check URL First (highest priority for shared links)
+    if (productId) {
+      const decodedSku = decodeURIComponent(productId); // Fixes encoded slashes
+      const matchedProduct = mockProducts.find(p => p.sku === decodedSku);
+      if (matchedProduct) return matchedProduct;
+    }
+    
+    // Fallback to LocalStorage, then Default
     const savedProduct = localStorage.getItem('savedSelectedProduct');
     return savedProduct ? JSON.parse(savedProduct) : mockProducts[0];
   });
@@ -284,7 +295,14 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
   const imageContainerRef = useRef(null);
   const activeBaseImage = uploadedRoom || initialImage;
   const currentSrc = processedImage || activeBaseImage?.previewUrl || 'https://images.unsplash.com/photo-1595844730298-b960fa25fa48?auto=format&fit=crop&w=1200&q=80';
-
+useEffect(() => {
+    // For 3D rooms (maskUrl), your existing visualizerInstance hook already handles it.
+    // For 2D rooms (rawFile), we need to trigger the python backend once the image is ready.
+    if (activeBaseImage?.rawFile && !activeBaseImage?.maskUrl) {
+      applyFloorOverlay(selectedProduct, floorRotation);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeBaseImage]);
   useEffect(() => {
     setIsProcessing(true);
     const initTimer = setTimeout(() => setIsProcessing(false), 1500);
@@ -620,6 +638,11 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
     setZoomScale(1);
     setPan({ x: 0, y: 0 });
     setErrorMsg(null);
+    
+    // Update the browser URL cleanly without reloading the page
+    const safeSku = encodeURIComponent(product.sku);
+    const safeRoom = encodeURIComponent(initialImage?.id || 'default');
+    window.history.replaceState(null, '', `/visualizer/${safeSku}/${safeRoom}`);
 
     // ── COMPARE MODE BRANCH ──
     if (isCompareMode) {
@@ -716,19 +739,60 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
     return Math.sqrt(Math.pow(touch2.clientX - touch1.clientX, 2) + Math.pow(touch2.clientY - touch1.clientY, 2));
   };
 
-  const handleShare = (platform) => {
-    const shareUrl = encodeURIComponent(window.location.href);
-    const shareText = encodeURIComponent("Check out my new floor design from Wonderfloor!");
-    switch (platform) {
-      case 'copy': navigator.clipboard.writeText(window.location.href); alert("Link copied!"); break;
-      case 'facebook': window.open(`https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`, '_blank'); break;
-      case 'whatsapp': window.open(`https://api.whatsapp.com/send?text=${shareText} ${shareUrl}`, '_blank'); break;
-      case 'pinterest': window.open(`https://pinterest.com/pin/create/button/?url=${shareUrl}&description=${shareText}`, '_blank'); break;
-      case 'email': window.location.href = `mailto:?subject=Wonderfloor Design&body=${shareText} ${shareUrl}`; break;
-      default: break;
+const handleShare = (platform) => {
+  // ✅ Build the clean URL
+  const baseUrl = window.location.origin;
+  const safeSku = encodeURIComponent(selectedProduct.sku); 
+  const safeRoom = encodeURIComponent(initialImage?.id || 'default');
+
+  // The clean URL path
+  const rawUrl = `${baseUrl}/visualizer/${safeSku}/${safeRoom}`;
+  const shareUrl = encodeURIComponent(rawUrl);
+
+  // Note: We completely deleted the `shareText` variable to keep the link clean!
+
+  switch (platform) {
+    case 'copy':
+      navigator.clipboard.writeText(rawUrl); // Only copies the URL
+      alert("Link copied!");
+      break;
+
+    case 'facebook':
+      window.open(
+        `https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`,
+        '_blank'
+      );
+      break;
+
+    case 'whatsapp':
+      // ✅ Only sends the URL so WhatsApp automatically creates a clickable preview card
+      window.open(
+        `https://api.whatsapp.com/send?text=${shareUrl}`,
+        '_blank'
+      );
+      break;
+
+    case 'pinterest': {
+      const pinImg = encodeURIComponent(selectedProduct.img);
+      window.open(
+        `https://pinterest.com/pin/create/button/?url=${shareUrl}&media=${pinImg}`,
+        '_blank'
+      );
+      break;
     }
-    setIsShareMenuOpen(false);
-  };
+    case 'email':
+      // ✅ Only puts the URL in the body of the email
+      window.open(
+        `mailto:?subject=${encodeURIComponent('Wonderfloor Design — ' + selectedProduct.name)}&body=${shareUrl}`
+      );
+      break;
+
+    default:
+      break;
+  }
+
+  setIsShareMenuOpen(false);
+};
 
   const filterCategories = [
     { id: 'accordionCategory', label: 'Product Collections', options: ['Krayons', 'Durofloor', 'Siggma', 'Orbit', 'Stoneland Monza', 'Meteor', 'Aventus'] },
