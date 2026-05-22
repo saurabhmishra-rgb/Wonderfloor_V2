@@ -4,7 +4,7 @@ import ARVisualizer from './components/ARVisualizer';
 import { io } from 'socket.io-client';
 import { QRCodeCanvas } from 'qrcode.react';
 
-import { useLocation,useParams } from 'react-router-dom'; // <-- ADD THIS
+import { useLocation,useParams,useNavigate} from 'react-router-dom'; // <-- ADD THIS
 
 
 // --- 1. Import all local images from your assets folder ---
@@ -227,6 +227,7 @@ function App() {
   const [sessionId, setSessionId] = useState('');
   const location = useLocation();
  const { roomId } = useParams();
+ const navigate = useNavigate();
   const fileInputRef = useRef(null);
   const productDropdownRef = useRef(null);
 
@@ -368,6 +369,9 @@ function App() {
     setIsModalOpen(false);
     setSelectedRoomImage(null);
     localStorage.removeItem('activeDemoRoomId');
+     if (location.pathname.startsWith('/visualizer')) {
+    navigate('/');
+  }
   };
   // Logic for share function 
   // Logic for share function 
