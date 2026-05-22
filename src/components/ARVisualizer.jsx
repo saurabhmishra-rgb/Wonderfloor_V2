@@ -1093,7 +1093,19 @@ const handleShare = (platform) => {
             <div className="flex-1 overflow-y-auto px-4 md:px-5 pb-5 pt-4 flex flex-col relative">
               <div className="flex-1">
                 {displayCategories.map(categoryName => {
-                  const categoryProducts = filteredProducts.filter(p => p.accordionCategory === categoryName);
+                 let categoryProducts = filteredProducts.filter(
+  p => p.accordionCategory === categoryName
+);
+
+if (sortOrder === 'Prod-A-Z') {
+  categoryProducts = [...categoryProducts].sort((a, b) =>
+    a.name.localeCompare(b.name)
+  );
+} else if (sortOrder === 'Prod-Z-A') {
+  categoryProducts = [...categoryProducts].sort((a, b) =>
+    b.name.localeCompare(a.name)
+  );
+}
                   if (categoryProducts.length === 0) return null;
                   const isExpanded = (expandedProductCategory === categoryName) || (searchQuery.trim().length > 0);
                   return (
