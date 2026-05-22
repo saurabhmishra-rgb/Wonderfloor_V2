@@ -1528,7 +1528,7 @@ if (sortOrder === 'Prod-A-Z') {
                 <div className="border-t border-gray-200 flex flex-col">
                   {[
                     { label: 'SKU', value: detailsProduct.sku || detailsProduct.name },
-                    { label: 'Collection/ Style', value: detailsProduct.collection },
+                    { label: 'Style', value: detailsProduct.collection },
                     { label: 'Flooring Product', value: detailsProduct.category },
                     { label: 'Colour', value: detailsProduct.colour },
                     { label: 'Shade', value: detailsProduct.shade },
