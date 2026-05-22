@@ -800,7 +800,7 @@ const handleShare = (platform) => {
     { id: 'shade', label: 'Shade', options: ['Light', 'Medium', 'Dark'] },
     { id: 'userIndustry', label: 'User Industry', options: ['Industrial Flooring', 'Office Flooring', 'Residential Flooring', 'School Flooring', 'Sports Flooring', 'Hotel/ Hospitality Flooring'] },
     { id: 'Pattern/Layout', label: 'Pattern/ Layout', options: ['Harringbone'] },
-    { id: 'collection', label: 'Collection/ Style', options: ['Wood', 'Stone', 'Cushion Vinyl'] },
+    { id: 'collection', label: 'Style', options: ['Wood', 'Stone', 'Cushion Vinyl'] },
   ];
 
   const handleToggleFilter = (categoryId, option) => {
