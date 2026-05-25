@@ -357,7 +357,7 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
   }, [activeBaseImage]);
   useEffect(() => {
     setIsProcessing(true);
-    const initTimer = setTimeout(() => setIsProcessing(false), 1500);
+    const initTimer = setTimeout(() => setIsProcessing(false), 4500);
     return () => clearTimeout(initTimer);
   }, [activeBaseImage]);
 
@@ -663,7 +663,7 @@ const generateCompositeImage = async (productImgUrl, angle = 0) => {
         if (visualizerInstance.current && visualizerInstance.current.updateTexture) {
           visualizerInstance.current.updateTexture(product.img, angle);
         }
-        await new Promise(resolve => setTimeout(resolve, 1500));
+        await new Promise(resolve => setTimeout(resolve, 4500));
         return;
       }
 
@@ -678,7 +678,7 @@ const generateCompositeImage = async (productImgUrl, angle = 0) => {
 
       const [response] = await Promise.all([
         fetch(`${BACKEND_URL}/api/replace-floor`, { method: 'POST', body: formData }),
-        new Promise(resolve => setTimeout(resolve, 1500))
+        new Promise(resolve => setTimeout(resolve, 4500))
       ]);
 
       const data = await response.json();
@@ -1463,7 +1463,7 @@ const generateCompositeImage = async (productImgUrl, angle = 0) => {
             {/* Powered-by badge */}
             <div className="absolute bottom-3 right-3 md:bottom-5 md:right-5 bg-gradient-to-r from-red-600/80 to-rose-500/80 backdrop-blur-xl border border-white/20 px-5 md:px-4 py-1.5 md:py-2 rounded-full z-30 pointer-events-none flex items-center gap-1.5 shadow-lg shadow-red-500/40 ring-1 ring-inset ring-white/10">
               <span className="text-[10px] md:text-[11px] font-normal text-gray-200">Powered by</span>
-              <span className="text-[11px] md:text-[12px] font-bold text-white tracking-wide">Technetty</span>
+              <span className="text-[11px] md:text-[12px] font-bold text-white tracking-wide">Wonderfloor</span>
             </div>
           </div>
 
