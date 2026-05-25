@@ -45,8 +45,8 @@ import Bravo5 from '../assets/braavo-ace-095-neo-silver.jpg';
 import Bravo6 from '../assets/braavo-ace-096-yellow.jpg';
 import Bravo7 from '../assets/braavo-ace-097-iron-grey.jpg';
 
-import Bravo8  from '../assets/braavo-ar-051.jpg';
-import Bravo9  from '../assets/braavo-ar-053.jpg';
+import Bravo8 from '../assets/braavo-ar-051.jpg';
+import Bravo9 from '../assets/braavo-ar-053.jpg';
 import Bravo10 from '../assets/braavo-ar-054.jpg';
 import Bravo11 from '../assets/braavo-ar-055.jpg';
 import Bravo12 from '../assets/braavo-ar-056.jpg';
@@ -205,7 +205,6 @@ const CompareView = ({
 const mockProducts = [
   //Bravo Tiles
 
- 
   { id: 28, name: 'Ace-091-cherry-red', size: '2mtr x 15mtr (Roll)', img: Bravo1, colour: 'cherry-red', shade: 'Dark', category: 'Braavo', userIndustry: ['Sports Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Braavo', sku: 'WF/BR/0001', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=BRAAVO', description: "Wonderfloor Braavo premium sports flooring combines heavy-duty durability with cushioned comfort, making workouts safer, smoother, and more comfortable for gyms, courts, and fitness spaces.\n\nDesigned with resilient wear layers, glass fibre reinforcement, and easy-maintenance PUR coating, Braavo offers excellent shock absorption, acoustic performance, and long-lasting stability for sports, wellness, schools, auditoriums, and libraries." },
   { id: 29, name: 'Ace-092-blue', size: '2mtr x 15mtr (Roll)', img: Bravo2, colour: 'blue', shade: 'Dark', category: 'Braavo', userIndustry: ['Sports Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Braavo', sku: 'WF/BR/0002', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=BRAAVO', description: "Wonderfloor Braavo premium sports flooring combines heavy-duty durability with cushioned comfort, making workouts safer, smoother, and more comfortable for gyms, courts, and fitness spaces.\n\nDesigned with resilient wear layers, glass fibre reinforcement, and easy-maintenance PUR coating, Braavo offers excellent shock absorption, acoustic performance, and long-lasting stability for sports, wellness, schools, auditoriums, and libraries." },
   { id: 30, name: 'Ace-093-orange', size: '2mtr x 15mtr (Roll)', img: Bravo3, colour: 'orange', shade: 'Dark', category: 'Braavo', userIndustry: ['Sports Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Braavo', sku: 'WF/BR/0003', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=BRAAVO', description: "Wonderfloor Braavo premium sports flooring combines heavy-duty durability with cushioned comfort, making workouts safer, smoother, and more comfortable for gyms, courts, and fitness spaces.\n\nDesigned with resilient wear layers, glass fibre reinforcement, and easy-maintenance PUR coating, Braavo offers excellent shock absorption, acoustic performance, and long-lasting stability for sports, wellness, schools, auditoriums, and libraries." },
@@ -261,7 +260,7 @@ const mockProducts = [
 const ARVisualizer = ({ closeModal, initialImage }) => {
   const { productId } = useParams(); // <-- NEW CLEAN URL EXTRACTOR
 
-  const productCategories = ['Braavo','Krayons', 'Durofloor', 'Siggma', 'Orbit', 'Stoneland Monza', 'Meteor', 'Aventus'];
+  const productCategories = ['Braavo', 'Krayons', 'Durofloor', 'Siggma', 'Orbit', 'Stoneland Monza', 'Meteor', 'Aventus'];
   const [initialPinchDist, setInitialPinchDist] = useState(null);
   const [uploadedRoom, setUploadedRoom] = useState(null);
 
@@ -489,18 +488,24 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
   };
 
   // ── FIX: GENERATE LOCAL 3D COMPOSITE (BYPASSES FETCH COMPLETELY) ──
-  const generateCompositeImage = async (productImgUrl, angle = 0) => {
-    return new Promise((resolve) => {
-      if (!activeBaseImage?.maskUrl || !visualizerInstance.current) {
-        return resolve(null);
-      }
+// ── FIX: GENERATE LOCAL 3D COMPOSITE WITH SAFE GPU TIMEOUT ──
+const generateCompositeImage = async (productImgUrl, angle = 0) => {
+  return new Promise((resolve) => {
+    if (!activeBaseImage?.maskUrl || !visualizerInstance.current) {
+      return resolve(null);
+    }
 
-      // 1. Update ThreeJS texture
+    const tilePreloader = new Image();
+    tilePreloader.crossOrigin = 'anonymous';
+
+    tilePreloader.onload = () => {
+      // 1. The image is downloaded. Tell ThreeJS to update the material.
       if (visualizerInstance.current.updateTexture) {
         visualizerInstance.current.updateTexture(productImgUrl, angle);
       }
 
-      // 2. Wait slightly for the scene to render
+      // 2. WAIT FOR THE GPU TO RENDER THE FRAME
+      // 450ms guarantees ThreeJS has time to upload the texture and draw it.
       setTimeout(() => {
         try {
           const canvas = document.createElement('canvas');
@@ -512,21 +517,21 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
             canvas.height = bgImg.height;
             const ctx = canvas.getContext('2d');
 
-            // Draw Base Room
+            // Draw Base Room Background
             ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
 
-            // Draw ThreeJS layer
+            // Draw Updated ThreeJS webgl layer
             const webglCanvas = threeContainerRef.current?.querySelector('canvas');
             if (webglCanvas) {
               ctx.drawImage(webglCanvas, 0, 0, canvas.width, canvas.height);
             }
 
-            // Draw Mask layer
+            // Draw Top Mask layer
             const maskImg = new Image();
             maskImg.crossOrigin = 'anonymous';
             maskImg.onload = () => {
               ctx.drawImage(maskImg, 0, 0, canvas.width, canvas.height);
-              resolve(canvas.toDataURL('image/jpeg', 0.9)); // Return baked image string
+              resolve(canvas.toDataURL('image/jpeg', 0.9)); // Return baked image dataURL
             };
             maskImg.onerror = () => resolve(null);
             maskImg.src = activeBaseImage.maskUrl;
@@ -537,10 +542,17 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
           console.error("Canvas composite failed:", e);
           resolve(null);
         }
-      }, 250); // Wait 250ms for ThreeJS texture update 
-    });
-  };
+      }, 450); // <--- THIS IS THE MAGIC NUMBER THAT FIXES THE DOUBLE CLICK
+    };
 
+    tilePreloader.onerror = () => {
+      console.error("Failed to preload tile texture asset:", productImgUrl);
+      resolve(null);
+    };
+
+    tilePreloader.src = productImgUrl;
+  });
+};
 
   // Canvas-only composite that doesn't need the live ThreeJS instance
   const generateStaticComposite = async (productImgUrl,) => {
@@ -699,6 +711,9 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
 
     // ── COMPARE MODE BRANCH ──
     if (isCompareMode) {
+      const currentSideProduct = activeCompareSide === 'left' ? compareLeftProduct : compareRightProduct;
+      if (currentSideProduct?.id === product.id) return;
+
       if (activeCompareSide === 'left') setCompareLeftProduct(product);
       else setCompareRightProduct(product);
 
@@ -848,8 +863,8 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
   };
 
   const filterCategories = [
-    { id: 'accordionCategory', label: 'Product Collections', options: ['Braavo','Krayons', 'Durofloor', 'Siggma', 'Orbit', 'Stoneland Monza', 'Meteor', 'Aventus'] },
-    { id: 'colour', label: 'Colour Family', options: ['Grey', 'cherry-red','neo-silver', 'Beige', 'Brown', 'Black', 'White', 'Blue', 'Green', 'Lemon', 'Orange', 'Purple', 'Cherry', 'Pink'] },
+    { id: 'accordionCategory', label: 'Product Collections', options: ['Braavo', 'Krayons', 'Durofloor', 'Siggma', 'Orbit', 'Stoneland Monza', 'Meteor', 'Aventus'] },
+    { id: 'colour', label: 'Colour Family', options: ['Grey', 'cherry-red', 'neo-silver', 'Beige', 'Brown', 'Black', 'White', 'Blue', 'Green', 'Lemon', 'Orange', 'Purple', 'Cherry', 'Pink'] },
     { id: 'shade', label: 'Shade', options: ['Light', 'Medium', 'Dark'] },
     { id: 'userIndustry', label: 'User Industry', options: ['Industrial Flooring', 'Office Flooring', 'Residential Flooring', 'School Flooring', 'Sports Flooring', 'Hotel/ Hospitality Flooring'] },
     { id: 'Pattern/Layout', label: 'Pattern/ Layout', options: ['Harringbone'] },
@@ -1279,7 +1294,8 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
         )}
 
         {/* ✅ Normal view ALWAYS rendered — threeContainerRef stays alive */}
-        <div className={`flex-1 flex flex-col h-full overflow-hidden ${isCompareMode ? 'invisible pointer-events-none' : ''}`}>
+        {/* FIXED CODE */}
+        <div className={`flex-1 flex flex-col h-full overflow-hidden ${isCompareMode ? 'pointer-events-none' : ''}`}>
 
           {/* Top Nav Bar */}
           <div className="h-[60px] bg-white border-b border-gray-200 flex justify-between items-center px-2 md:px-4 shadow-sm z-30 shrink-0 w-full relative">
@@ -1418,10 +1434,11 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
                       crossOrigin="anonymous"
                     />
                     {/* LAYER 2: Three.js Floor Canvas */}
+                    {/* FIXED CODE */}
                     <div
                       ref={threeContainerRef}
-                      className={`absolute inset-0 w-full h-full z-10 transition-opacity duration-300 
-                  ${isFloorVisible && !isCompareMode ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+                      className={`absolute inset-0 w-full h-full z-10 transition-opacity duration-300  
+  ${isFloorVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
                     ></div>
                     {/* LAYER 3: Mask Image */}
                     <img
