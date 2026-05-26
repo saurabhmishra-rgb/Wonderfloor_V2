@@ -357,7 +357,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
   }, [activeBaseImage]);
   useEffect(() => {
     setIsProcessing(true);
-    const initTimer = setTimeout(() => setIsProcessing(false), 1500);
+    const initTimer = setTimeout(() => setIsProcessing(false), 4500);
     return () => clearTimeout(initTimer);
   }, [activeBaseImage]);
 
@@ -370,6 +370,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
 
   useEffect(() => {
     const container = imageContainerRef.current;
+    
     if (!container) return;
     const handleWheel = (e) => {
       if (isDetailsModalOpen || isCompareMode) return;
@@ -663,7 +664,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
         if (visualizerInstance.current && visualizerInstance.current.updateTexture) {
           visualizerInstance.current.updateTexture(product.img, angle);
         }
-        await new Promise(resolve => setTimeout(resolve, 1500));
+        await new Promise(resolve => setTimeout(resolve, 4500));
         return;
       }
 
@@ -678,7 +679,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
 
       const [response] = await Promise.all([
         fetch(`${BACKEND_URL}/api/replace-floor`, { method: 'POST', body: formData }),
-        new Promise(resolve => setTimeout(resolve, 1500))
+        new Promise(resolve => setTimeout(resolve, 4500))
       ]);
 
       const data = await response.json();
