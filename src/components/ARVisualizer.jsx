@@ -5,7 +5,7 @@ import RoomUploader from './RoomUploader';
 import DownloadView from './DownloadView';
 import { initVisualizer } from './script.jsx';
 import AttractiveLoader from './AttractiveLoader';
-
+import { useParams } from 'react-router-dom';
 // 1. IMPORT YOUR LOCAL ASSETS HERE
 import floorActon from '../assets/image1.jpeg';
 import floorHolmes from '../assets/image2.jpeg';
@@ -35,6 +35,33 @@ import Krayons13 from '../assets/krayons-frosty-n-orange.jpg';
 import Krayons14 from '../assets/krayons-pastel-purple.jpg';
 import Krayons15 from '../assets/krayons-pastel-cherry.jpg';
 import Krayons16 from '../assets/krayons-pastel-pink.jpg';
+
+//Bravo Tiles
+import Bravo1 from '../assets/braavo-ace-091-cherry-red.jpg';
+import Bravo2 from '../assets/braavo-ace-092-blue.jpg';
+import Bravo3 from '../assets/braavo-ace-093-orange.jpg';
+import Bravo4 from '../assets/braavo-ace-094-green.jpg';
+import Bravo5 from '../assets/braavo-ace-095-neo-silver.jpg';
+import Bravo6 from '../assets/braavo-ace-096-yellow.jpg';
+import Bravo7 from '../assets/braavo-ace-097-iron-grey.jpg';
+
+import Bravo8 from '../assets/braavo-ar-051.jpg';
+import Bravo9 from '../assets/braavo-ar-053.jpg';
+import Bravo10 from '../assets/braavo-ar-054.jpg';
+import Bravo11 from '../assets/braavo-ar-055.jpg';
+import Bravo12 from '../assets/braavo-ar-056.jpg';
+import Bravo13 from '../assets/braavo-ar-057.jpg';
+
+import Bravo14 from '../assets/braavo-elite-blue--082.jpg';
+import Bravo15 from '../assets/braavo-elite-elite-red-081.jpg';
+import Bravo16 from '../assets/braavo-elite-gray--087.jpg';
+import Bravo17 from '../assets/braavo-elite-orange-083.jpg';
+
+import Bravo18 from '../assets/braavo-lite-lite-bood-085a.jpg';
+import Bravo19 from '../assets/braavo-lite-lite-green-084.jpg';
+import Bravo20 from '../assets/braavo-lite-lite-wood--086.jpg';
+
+import Bravo21 from '../assets/braavo-spt-082-meadows-green.jpg';
 
 const BACKEND_URL = 'http://127.0.0.1:8000';
 // const BACKEND_URL = 'https://wonderfloor-backend-1.onrender.com';
@@ -175,42 +202,78 @@ const CompareView = ({
 
 
 // ── MAIN AR VISUALIZER COMPONENT ──
-const ARVisualizer = ({ closeModal, initialImage }) => {
-  const mockProducts = [
-    { id: 13, name: 'Pastel Green', size: '2mtr x 20mtr (Roll)', img: Krayons1, colour: 'Green', shade: 'Dark', category: 'Krayons', userIndustry: ['School Flooring, Office Flooring', 'Hotel/ Hospitality Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Krayons', sku: 'WF/KR/0001', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons', description: "Wonderfloor Krayons cushion vinyl flooring brings vibrant colours and creative design flexibility to interiors with easy mix-and-match patterns, durable dimensional stability, and a maintenance-free PUR-coated surface.\n\nIdeal for schools, play areas, homes, offices, and hospitality spaces, Krayons adds a cheerful and lively atmosphere while offering long-lasting performance." },
-    { id: 14, name: 'Frosty N Beige', size: '2mtr x 20mtr (Roll)', img: Krayons2, colour: 'Beige', shade: 'Dark', category: 'Krayons', userIndustry: ['School Flooring Office Flooring', 'Hotel/ Hospitality Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Krayons', sku: 'WF/KR/0002', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons', description: "Wonderfloor Krayons cushion vinyl flooring brings vibrant colours and creative design flexibility to interiors with easy mix-and-match patterns, durable dimensional stability, and a maintenance-free PUR-coated surface.\n\nIdeal for schools, play areas, homes, offices, and hospitality spaces, Krayons adds a cheerful and lively atmosphere while offering long-lasting performance." },
-    { id: 15, name: 'Frosty N Grey', size: '2mtr x 20mtr (Roll)', img: Krayons4, colour: 'Blue', shade: 'Dark', category: 'Krayons', userIndustry: ['School Flooring', 'Office Flooring', 'Hotel/ Hospitality Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Krayons', sku: 'WF/KR/0003', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons', description: "Wonderfloor Krayons cushion vinyl flooring brings vibrant colours and creative design flexibility to interiors with easy mix-and-match patterns, durable dimensional stability, and a maintenance-free PUR-coated surface.\n\nIdeal for schools, play areas, homes, offices, and hospitality spaces, Krayons adds a cheerful and lively atmosphere while offering long-lasting performance." },
-    { id: 16, name: 'Frosty N Orange', size: '2mtr x 20mtr (Roll)', img: Krayons5, colour: 'Grey', shade: 'Dark', category: 'Krayons', userIndustry: ['School Flooring', 'Office Flooring', 'Hotel/ Hospitality Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Krayons', sku: 'WF/KR/0004', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons', description: "Wonderfloor Krayons cushion vinyl flooring brings vibrant colours and creative design flexibility to interiors with easy mix-and-match patterns, durable dimensional stability, and a maintenance-free PUR-coated surface.\n\nIdeal for schools, play areas, homes, offices, and hospitality spaces, Krayons adds a cheerful and lively atmosphere while offering long-lasting performance." },
-    { id: 17, name: 'Frosty N Red', size: '2mtr x 20mtr (Roll)', img: Krayons6, colour: 'Orange', shade: 'Dark', category: 'Krayons', userIndustry: ['School Flooring', 'Office Flooring', 'Hotel/ Hospitality Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Krayons', sku: 'WF/KR/0005', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons', description: "Wonderfloor Krayons cushion vinyl flooring brings vibrant colours and creative design flexibility to interiors with easy mix-and-match patterns, durable dimensional stability, and a maintenance-free PUR-coated surface.\n\nIdeal for schools, play areas, homes, offices, and hospitality spaces, Krayons adds a cheerful and lively atmosphere while offering long-lasting performance." },
-    { id: 18, name: 'Frosty N Yellow', size: '2mtr x 20mtr (Roll)', img: Krayons7, colour: 'Red', shade: 'Dark', category: 'Krayons', userIndustry: ['School Flooring', 'Office Flooring', 'Hotel/ Hospitality Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Krayons', sku: 'WF/KR/0006', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons', description: "Wonderfloor Krayons cushion vinyl flooring brings vibrant colours and creative design flexibility to interiors with easy mix-and-match patterns, durable dimensional stability, and a maintenance-free PUR-coated surface.\n\nIdeal for schools, play areas, homes, offices, and hospitality spaces, Krayons adds a cheerful and lively atmosphere while offering long-lasting performance." },
-    { id: 19, name: 'Frosty N Sea Blue', size: '2mtr x 20mtr (Roll)', img: Krayons8, colour: 'Yellow', shade: 'Dark', category: 'Krayons', userIndustry: ['School Flooring', 'Office Flooring', 'Hotel/ Hospitality Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Krayons', sku: 'WF/KR/0007', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons', description: "Wonderfloor Krayons cushion vinyl flooring brings vibrant colours and creative design flexibility to interiors with easy mix-and-match patterns, durable dimensional stability, and a maintenance-free PUR-coated surface.\n\nIdeal for schools, play areas, homes, offices, and hospitality spaces, Krayons adds a cheerful and lively atmosphere while offering long-lasting performance." },
-    { id: 20, name: 'Frosty N Blue', size: '2mtr x 20mtr (Roll)', img: Krayons9, colour: 'Blue', shade: 'Dark', category: 'Krayons', userIndustry: ['School Flooring', 'Office Flooring', 'Hotel/ Hospitality Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Krayons', sku: 'WFKRr/0008', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons', description: "Wonderfloor Krayons cushion vinyl flooring brings vibrant colours and creative design flexibility to interiors with easy mix-and-match patterns, durable dimensional stability, and a maintenance-free PUR-coated surface.\n\nIdeal for schools, play areas, homes, offices, and hospitality spaces, Krayons adds a cheerful and lively atmosphere while offering long-lasting performance." },
-    { id: 21, name: 'Pastel Blue', size: '2mtr x 20mtr (Roll)', img: Krayons10, colour: 'Blue', shade: 'Dark', category: 'Krayons', userIndustry: ['School Flooring', 'Office Flooring', 'Hotel/ Hospitality Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Krayons', sku: 'WF/KR/0009', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons', description: "Wonderfloor Krayons cushion vinyl flooring brings vibrant colours and creative design flexibility to interiors with easy mix-and-match patterns, durable dimensional stability, and a maintenance-free PUR-coated surface.\n\nIdeal for schools, play areas, homes, offices, and hospitality spaces, Krayons adds a cheerful and lively atmosphere while offering long-lasting performance." },
-    { id: 22, name: 'Fluoresent', size: '2mtr x 20mtr (Roll)', img: Krayons11, colour: 'Green', shade: 'Dark', category: 'Krayons', userIndustry: ['School Flooring', 'Office Flooring', 'Hotel/ Hospitality Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Krayons', sku: 'WF/KR/00010', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons', description: "Wonderfloor Krayons cushion vinyl flooring brings vibrant colours and creative design flexibility to interiors with easy mix-and-match patterns, durable dimensional stability, and a maintenance-free PUR-coated surface.\n\nIdeal for schools, play areas, homes, offices, and hospitality spaces, Krayons adds a cheerful and lively atmosphere while offering long-lasting performance." },
-    { id: 23, name: 'Pastel Lemon', size: '2mtr x 20mtr (Roll)', img: Krayons12, colour: 'Lemon', shade: 'Dark', category: 'Krayons', userIndustry: ['School Flooring', 'Office Flooring', 'Hotel/ Hospitality Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Krayons', sku: 'WF/KR/00011', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons', description: "Wonderfloor Krayons cushion vinyl flooring brings vibrant colours and creative design flexibility to interiors with easy mix-and-match patterns, durable dimensional stability, and a maintenance-free PUR-coated surface.\n\nIdeal for schools, play areas, homes, offices, and hospitality spaces, Krayons adds a cheerful and lively atmosphere while offering long-lasting performance." },
-    { id: 24, name: 'Pastel Orange', size: '2mtr x 20mtr (Roll)', img: Krayons13, colour: 'Orange', shade: 'Dark', category: 'Krayons', userIndustry: ['School Flooring', 'Office Flooring', 'Hotel/ Hospitality Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Krayons', sku: 'WF/KR/00012', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons', description: "Wonderfloor Krayons cushion vinyl flooring brings vibrant colours and creative design flexibility to interiors with easy mix-and-match patterns, durable dimensional stability, and a maintenance-free PUR-coated surface.\n\nIdeal for schools, play areas, homes, offices, and hospitality spaces, Krayons adds a cheerful and lively atmosphere while offering long-lasting performance." },
-    { id: 25, name: 'Pastel Purple', size: '2mtr x 20mtr (Roll)', img: Krayons14, colour: 'Purple', shade: 'Dark', category: 'Krayons', userIndustry: ['School Flooring', 'Office Flooring', 'Hotel/ Hospitality Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Krayons', sku: 'WF/KR/00013', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons', description: "Wonderfloor Krayons cushion vinyl flooring brings vibrant colours and creative design flexibility to interiors with easy mix-and-match patterns, durable dimensional stability, and a maintenance-free PUR-coated surface.\n\nIdeal for schools, play areas, homes, offices, and hospitality spaces, Krayons adds a cheerful and lively atmosphere while offering long-lasting performance." },
-    { id: 26, name: 'Pastel Cherry', size: '2mtr x 20mtr (Roll)', img: Krayons15, colour: 'Cherry', shade: 'Dark', category: 'Krayons', userIndustry: ['School Flooring', 'Office Flooring', 'Hotel/ Hospitality Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Krayons', sku: 'WF/KR/00014', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons', description: "Wonderfloor Krayons cushion vinyl flooring brings vibrant colours and creative design flexibility to interiors with easy mix-and-match patterns, durable dimensional stability, and a maintenance-free PUR-coated surface.\n\nIdeal for schools, play areas, homes, offices, and hospitality spaces, Krayons adds a cheerful and lively atmosphere while offering long-lasting performance." },
-    { id: 27, name: 'Pastel Pink', size: '2mtr x 20mtr (Roll)', img: Krayons16, colour: 'Pink', shade: 'Dark', category: 'Krayons', userIndustry: ['School Flooring', 'Office Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Krayons', sku: 'WF/kr/0015', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons' },
-    { id: 1, name: 'GDP-550406', size: '30cm x 30cm', img: floorActon, colour: 'Grey', shade: 'Dark', category: 'Tiles', userIndustry: ['Industrial Flooring'], collection: 'GDP', accordionCategory: 'Durofloor', sku: 'WF000051' },
-    { id: 2, name: 'GDP-551004', size: '30cm x 30cm', img: floorHolmes, colour: 'Beige', shade: 'Light', category: 'Planks', userIndustry: ['Office Flooring', 'Residential Flooring'], collection: 'Classic', accordionCategory: 'Durofloor', sku: 'WF000052' },
-    { id: 3, name: 'GDP-551007', size: '30cm x 30cm', img: floorCedar, colour: 'Brown', shade: 'Medium', category: 'Tiles', userIndustry: ['Industrial Flooring'], collection: 'GDP', accordionCategory: 'Siggma', sku: 'WF000053' },
-    { id: 4, name: 'GDP-552107', size: '30cm x 30cm', img: floorCalla, colour: 'Grey', shade: 'Light', category: 'Carpet', userIndustry: ['Office Flooring'], collection: 'Premium', accordionCategory: 'Siggma', sku: 'WF000054' },
-    { id: 5, name: 'GDP-553107', size: '30cm x 30cm', img: floorpoppy6, colour: 'Grey', shade: 'Light', category: 'Carpet', userIndustry: ['Office Flooring'], collection: 'Premium', accordionCategory: 'Siggma', sku: 'WF000055' },
-    { id: 6, name: 'GDP-552112', size: '30cm x 30cm', img: floorTansy, colour: 'Black', shade: 'Dark', category: 'Planks', userIndustry: ['Residential Flooring'], collection: 'Classic', accordionCategory: 'Orbit', sku: 'WF000056' },
-    { id: 7, name: 'GDP-554306', size: '30cm x 30cm', img: floorPoppy, colour: 'White', shade: 'Light', category: 'Tiles', userIndustry: ['Residential Flooring'], collection: 'GDP', accordionCategory: 'Orbit', sku: 'WF000057' },
-    { id: 8, name: 'GDP-555902', size: '30cm x 30cm', img: floorPoppy1, colour: 'Grey', shade: 'Medium', category: 'Carpet', userIndustry: ['Industrial Flooring'], collection: 'Premium', accordionCategory: 'Stoneland Monza', sku: 'WF000058' },
-    { id: 9, name: 'GDP-557304', size: '30cm x 30cm', img: floorPoppy2, colour: 'Beige', shade: 'Medium', category: 'Tiles', userIndustry: ['Office Flooring'], collection: 'Classic', accordionCategory: 'Stoneland Monza', sku: 'WF000059' },
-    { id: 10, name: 'GDP-557703', size: '30cm x 30cm', img: floorPoppy3, colour: 'Brown', shade: 'Dark', category: 'Planks', userIndustry: ['Residential Flooring'], collection: 'Premium', accordionCategory: 'Meteor', sku: 'WF000060' },
-    { id: 11, name: 'GDP-559204', size: '30cm x 30cm', img: floorPoppy4, colour: 'Black', shade: 'Dark', category: 'Carpet', userIndustry: ['Sports Flooring'], collection: 'GDP', accordionCategory: 'Meteor', sku: 'WF000061' },
-    { id: 12, name: 'GDP-559404', size: '30cm x 30cm', img: floorPoppy5, colour: 'White', shade: 'Light', category: 'Tiles', userIndustry: ['Residential Flooring'], collection: 'Classic', accordionCategory: 'Aventus', sku: 'WF000062' },
-  ];
+const mockProducts = [
+  //Bravo Tiles
 
-  const productCategories = ['Krayons', 'Durofloor', 'Siggma', 'Orbit', 'Stoneland Monza', 'Meteor', 'Aventus'];
+  { id: 28, name: 'Ace-091-cherry-red', size: '2mtr x 15mtr (Roll)', img: Bravo1, colour: 'cherry-red', shade: 'Dark', category: 'Braavo', userIndustry: ['Sports Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Braavo', sku: 'WF/BR/0001', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=BRAAVO', description: "Wonderfloor Braavo premium sports flooring combines heavy-duty durability with cushioned comfort, making workouts safer, smoother, and more comfortable for gyms, courts, and fitness spaces.\n\nDesigned with resilient wear layers, glass fibre reinforcement, and easy-maintenance PUR coating, Braavo offers excellent shock absorption, acoustic performance, and long-lasting stability for sports, wellness, schools, auditoriums, and libraries." },
+  { id: 29, name: 'Ace-092-blue', size: '2mtr x 15mtr (Roll)', img: Bravo2, colour: 'blue', shade: 'Dark', category: 'Braavo', userIndustry: ['Sports Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Braavo', sku: 'WF/BR/0002', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=BRAAVO', description: "Wonderfloor Braavo premium sports flooring combines heavy-duty durability with cushioned comfort, making workouts safer, smoother, and more comfortable for gyms, courts, and fitness spaces.\n\nDesigned with resilient wear layers, glass fibre reinforcement, and easy-maintenance PUR coating, Braavo offers excellent shock absorption, acoustic performance, and long-lasting stability for sports, wellness, schools, auditoriums, and libraries." },
+  { id: 30, name: 'Ace-093-orange', size: '2mtr x 15mtr (Roll)', img: Bravo3, colour: 'orange', shade: 'Dark', category: 'Braavo', userIndustry: ['Sports Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Braavo', sku: 'WF/BR/0003', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=BRAAVO', description: "Wonderfloor Braavo premium sports flooring combines heavy-duty durability with cushioned comfort, making workouts safer, smoother, and more comfortable for gyms, courts, and fitness spaces.\n\nDesigned with resilient wear layers, glass fibre reinforcement, and easy-maintenance PUR coating, Braavo offers excellent shock absorption, acoustic performance, and long-lasting stability for sports, wellness, schools, auditoriums, and libraries." },
+  { id: 31, name: 'Ace-094-green', size: '2mtr x 15mtr (Roll)', img: Bravo4, colour: 'green', shade: 'Dark', category: 'Braavo', userIndustry: ['Sports Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Braavo', sku: 'WF/BR/0004', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=BRAAVO', description: "Wonderfloor Braavo premium sports flooring combines heavy-duty durability with cushioned comfort, making workouts safer, smoother, and more comfortable for gyms, courts, and fitness spaces.\n\nDesigned with resilient wear layers, glass fibre reinforcement, and easy-maintenance PUR coating, Braavo offers excellent shock absorption, acoustic performance, and long-lasting stability for sports, wellness, schools, auditoriums, and libraries." },
+  { id: 32, name: 'Light-grey', size: '2mtr x 15mtr (Roll)', img: Bravo5, colour: 'neo-silver', shade: 'Dark', category: 'Braavo', userIndustry: ['Sports Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Braavo', sku: 'WF/BR/0005', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=BRAAVO', description: "Wonderfloor Braavo premium sports flooring combines heavy-duty durability with cushioned comfort, making workouts safer, smoother, and more comfortable for gyms, courts, and fitness spaces.\n\nDesigned with resilient wear layers, glass fibre reinforcement, and easy-maintenance PUR coating, Braavo offers excellent shock absorption, acoustic performance, and long-lasting stability for sports, wellness, schools, auditoriums, and libraries." },
+  { id: 33, name: 'Ace-096-yellow', size: '2mtr x 15mtr (Roll)', img: Bravo6, colour: 'yellow', shade: 'Dark', category: 'Braavo', userIndustry: ['Sports Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Braavo', sku: 'WF/BR/0006', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=BRAAVO', description: "Wonderfloor Braavo premium sports flooring combines heavy-duty durability with cushioned comfort, making workouts safer, smoother, and more comfortable for gyms, courts, and fitness spaces.\n\nDesigned with resilient wear layers, glass fibre reinforcement, and easy-maintenance PUR coating, Braavo offers excellent shock absorption, acoustic performance, and long-lasting stability for sports, wellness, schools, auditoriums, and libraries." },
+  { id: 34, name: 'Ace-097-iron-grey', size: '2mtr x 15mtr (Roll)', img: Bravo7, colour: 'grey', shade: 'Dark', category: 'Braavo', userIndustry: ['Sports Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Braavo', sku: 'WF/BR/0007', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=BRAAVO', description: "Wonderfloor Braavo premium sports flooring combines heavy-duty durability with cushioned comfort, making workouts safer, smoother, and more comfortable for gyms, courts, and fitness spaces.\n\nDesigned with resilient wear layers, glass fibre reinforcement, and easy-maintenance PUR coating, Braavo offers excellent shock absorption, acoustic performance, and long-lasting stability for sports, wellness, schools, auditoriums, and libraries." },
+  { id: 35, name: 'Ar-051', size: '2mtr x 15mtr (Roll)', img: Bravo8, colour: 'orange', shade: 'Dark', category: 'Braavo', userIndustry: ['Sports Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Braavo', sku: 'WF/BR/0008', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=BRAAVO', description: "Wonderfloor Braavo premium sports flooring combines heavy-duty durability with cushioned comfort, making workouts safer, smoother, and more comfortable for gyms, courts, and fitness spaces.\n\nDesigned with resilient wear layers, glass fibre reinforcement, and easy-maintenance PUR coating, Braavo offers excellent shock absorption, acoustic performance, and long-lasting stability for sports, wellness, schools, auditoriums, and libraries." },
+  { id: 36, name: 'Ar-053', size: '2mtr x 15mtr (Roll)', img: Bravo9, colour: 'orange', shade: 'Dark', category: 'Braavo', userIndustry: ['Sports Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Braavo', sku: 'WF/BR/0009', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=BRAAVO', description: "Wonderfloor Braavo premium sports flooring combines heavy-duty durability with cushioned comfort, making workouts safer, smoother, and more comfortable for gyms, courts, and fitness spaces.\n\nDesigned with resilient wear layers, glass fibre reinforcement, and easy-maintenance PUR coating, Braavo offers excellent shock absorption, acoustic performance, and long-lasting stability for sports, wellness, schools, auditoriums, and libraries." },
+  { id: 37, name: 'Ar-054', size: '2mtr x 15mtr (Roll)', img: Bravo10, colour: 'orange', shade: 'Dark', category: 'Braavo', userIndustry: ['Sports Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Braavo', sku: 'WF/BR/0010', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=BRAAVO', description: "Wonderfloor Braavo premium sports flooring combines heavy-duty durability with cushioned comfort, making workouts safer, smoother, and more comfortable for gyms, courts, and fitness spaces.\n\nDesigned with resilient wear layers, glass fibre reinforcement, and easy-maintenance PUR coating, Braavo offers excellent shock absorption, acoustic performance, and long-lasting stability for sports, wellness, schools, auditoriums, and libraries." },
+  { id: 38, name: 'Ar-055', size: '2mtr x 15mtr (Roll)', img: Bravo11, colour: 'grey', shade: 'Dark', category: 'Braavo', userIndustry: ['Sports Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Braavo', sku: 'WF/BR/0011', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=BRAAVO', description: "Wonderfloor Braavo premium sports flooring combines heavy-duty durability with cushioned comfort, making workouts safer, smoother, and more comfortable for gyms, courts, and fitness spaces.\n\nDesigned with resilient wear layers, glass fibre reinforcement, and easy-maintenance PUR coating, Braavo offers excellent shock absorption, acoustic performance, and long-lasting stability for sports, wellness, schools, auditoriums, and libraries." },
+  { id: 39, name: 'Ar-056', size: '2mtr x 15mtr (Roll)', img: Bravo12, colour: 'orange', shade: 'Dark', category: 'Braavo', userIndustry: ['Sports Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Braavo', sku: 'WF/BR/0012', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=BRAAVO', description: "Wonderfloor Braavo premium sports flooring combines heavy-duty durability with cushioned comfort, making workouts safer, smoother, and more comfortable for gyms, courts, and fitness spaces.\n\nDesigned with resilient wear layers, glass fibre reinforcement, and easy-maintenance PUR coating, Braavo offers excellent shock absorption, acoustic performance, and long-lasting stability for sports, wellness, schools, auditoriums, and libraries." },
+  { id: 40, name: 'Ar-057', size: '2mtr x 15mtr (Roll)', img: Bravo13, colour: 'yellow', shade: 'Dark', category: 'Braavo', userIndustry: ['Sports Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Braavo', sku: 'WF/BR/0013', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=BRAAVO', description: "Wonderfloor Braavo premium sports flooring combines heavy-duty durability with cushioned comfort, making workouts safer, smoother, and more comfortable for gyms, courts, and fitness spaces.\n\nDesigned with resilient wear layers, glass fibre reinforcement, and easy-maintenance PUR coating, Braavo offers excellent shock absorption, acoustic performance, and long-lasting stability for sports, wellness, schools, auditoriums, and libraries." },
+  { id: 41, name: 'Elite-blue-082', size: '2mtr x 15mtr (Roll)', img: Bravo14, colour: 'blue', shade: 'Dark', category: 'Braavo', userIndustry: ['Sports Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Braavo', sku: 'WF/BR/0014', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=BRAAVO', description: "Wonderfloor Braavo premium sports flooring combines heavy-duty durability with cushioned comfort, making workouts safer, smoother, and more comfortable for gyms, courts, and fitness spaces.\n\nDesigned with resilient wear layers, glass fibre reinforcement, and easy-maintenance PUR coating, Braavo offers excellent shock absorption, acoustic performance, and long-lasting stability for sports, wellness, schools, auditoriums, and libraries." },
+  { id: 42, name: 'Elite-red-081', size: '2mtr x 15mtr (Roll)', img: Bravo15, colour: 'red', shade: 'Dark', category: 'Braavo', userIndustry: ['Sports Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Braavo', sku: 'WF/BR/0015', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=BRAAVO', description: "Wonderfloor Braavo premium sports flooring combines heavy-duty durability with cushioned comfort, making workouts safer, smoother, and more comfortable for gyms, courts, and fitness spaces.\n\nDesigned with resilient wear layers, glass fibre reinforcement, and easy-maintenance PUR coating, Braavo offers excellent shock absorption, acoustic performance, and long-lasting stability for sports, wellness, schools, auditoriums, and libraries." },
+  { id: 43, name: 'Elite-grey-087', size: '2mtr x 15mtr (Roll)', img: Bravo16, colour: 'grey', shade: 'Dark', category: 'Braavo', userIndustry: ['Sports Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Braavo', sku: 'WF/BR/0016', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=BRAAVO', description: "Wonderfloor Braavo premium sports flooring combines heavy-duty durability with cushioned comfort, making workouts safer, smoother, and more comfortable for gyms, courts, and fitness spaces.\n\nDesigned with resilient wear layers, glass fibre reinforcement, and easy-maintenance PUR coating, Braavo offers excellent shock absorption, acoustic performance, and long-lasting stability for sports, wellness, schools, auditoriums, and libraries." },
+  { id: 44, name: 'Elite-orange-083', size: '2mtr x 15mtr (Roll)', img: Bravo17, colour: 'orange', shade: 'Dark', category: 'Braavo', userIndustry: ['Sports Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Braavo', sku: 'WF/BR/0017', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=BRAAVO', description: "Wonderfloor Braavo premium sports flooring combines heavy-duty durability with cushioned comfort, making workouts safer, smoother, and more comfortable for gyms, courts, and fitness spaces.\n\nDesigned with resilient wear layers, glass fibre reinforcement, and easy-maintenance PUR coating, Braavo offers excellent shock absorption, acoustic performance, and long-lasting stability for sports, wellness, schools, auditoriums, and libraries." },
+  { id: 45, name: 'Elite-Wood-085A', size: '2mtr x 15mtr (Roll)', img: Bravo18, colour: 'yellow', shade: 'Dark', category: 'Braavo', userIndustry: ['Sports Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Braavo', sku: 'WF/BR/0018', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=BRAAVO', description: "Wonderfloor Braavo premium sports flooring combines heavy-duty durability with cushioned comfort, making workouts safer, smoother, and more comfortable for gyms, courts, and fitness spaces.\n\nDesigned with resilient wear layers, glass fibre reinforcement, and easy-maintenance PUR coating, Braavo offers excellent shock absorption, acoustic performance, and long-lasting stability for sports, wellness, schools, auditoriums, and libraries." },
+  { id: 46, name: 'Elite-green-084', size: '2mtr x 15mtr (Roll)', img: Bravo19, colour: 'green', shade: 'Dark', category: 'Braavo', userIndustry: ['Sports Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Braavo', sku: 'WF/BR/0019', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=BRAAVO', description: "Wonderfloor Braavo premium sports flooring combines heavy-duty durability with cushioned comfort, making workouts safer, smoother, and more comfortable for gyms, courts, and fitness spaces.\n\nDesigned with resilient wear layers, glass fibre reinforcement, and easy-maintenance PUR coating, Braavo offers excellent shock absorption, acoustic performance, and long-lasting stability for sports, wellness, schools, auditoriums, and libraries." },
+  { id: 47, name: 'Elite-wood-086', size: '2mtr x 15mtr (Roll)', img: Bravo20, colour: 'brown', shade: 'Dark', category: 'Braavo', userIndustry: ['Sports Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Braavo', sku: 'WF/BR/0020', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=BRAAVO', description: "Wonderfloor Braavo premium sports flooring combines heavy-duty durability with cushioned comfort, making workouts safer, smoother, and more comfortable for gyms, courts, and fitness spaces.\n\nDesigned with resilient wear layers, glass fibre reinforcement, and easy-maintenance PUR coating, Braavo offers excellent shock absorption, acoustic performance, and long-lasting stability for sports, wellness, schools, auditoriums, and libraries." },
+  { id: 48, name: 'Spt-082-meadows-green', size: '2mtr x 15mtr (Roll)', img: Bravo21, colour: 'green', shade: 'Dark', category: 'Braavo', userIndustry: ['Sports Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Braavo', sku: 'WF/BR/0021', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=BRAAVO', description: "Wonderfloor Braavo premium sports flooring combines heavy-duty durability with cushioned comfort, making workouts safer, smoother, and more comfortable for gyms, courts, and fitness spaces.\n\nDesigned with resilient wear layers, glass fibre reinforcement, and easy-maintenance PUR coating, Braavo offers excellent shock absorption, acoustic performance, and long-lasting stability for sports, wellness, schools, auditoriums, and libraries." },
+
+//krayons
+  { id: 13, name: 'Pastel Green', size: '2mtr x 20mtr (Roll)', img: Krayons1, colour: 'Green', shade: 'Dark', category: 'Krayons', userIndustry: ['School Flooring, Office Flooring', 'Hotel/ Hospitality Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Krayons', sku: 'WF/KR/0001', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons', description: "Wonderfloor Krayons cushion vinyl flooring brings vibrant colours and creative design flexibility to interiors with easy mix-and-match patterns, durable dimensional stability, and a maintenance-free PUR-coated surface.\n\nIdeal for schools, play areas, homes, offices, and hospitality spaces, Krayons adds a cheerful and lively atmosphere while offering long-lasting performance." },
+  { id: 14, name: 'Frosty N Beige', size: '2mtr x 20mtr (Roll)', img: Krayons2, colour: 'Beige', shade: 'Dark', category: 'Krayons', userIndustry: ['School Flooring Office Flooring', 'Hotel/ Hospitality Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Krayons', sku: 'WF/KR/0002', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons', description: "Wonderfloor Krayons cushion vinyl flooring brings vibrant colours and creative design flexibility to interiors with easy mix-and-match patterns, durable dimensional stability, and a maintenance-free PUR-coated surface.\n\nIdeal for schools, play areas, homes, offices, and hospitality spaces, Krayons adds a cheerful and lively atmosphere while offering long-lasting performance." },
+  { id: 15, name: 'Frosty N Grey', size: '2mtr x 20mtr (Roll)', img: Krayons4, colour: 'Blue', shade: 'Dark', category: 'Krayons', userIndustry: ['School Flooring', 'Office Flooring', 'Hotel/ Hospitality Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Krayons', sku: 'WF/KR/0003', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons', description: "Wonderfloor Krayons cushion vinyl flooring brings vibrant colours and creative design flexibility to interiors with easy mix-and-match patterns, durable dimensional stability, and a maintenance-free PUR-coated surface.\n\nIdeal for schools, play areas, homes, offices, and hospitality spaces, Krayons adds a cheerful and lively atmosphere while offering long-lasting performance." },
+  { id: 16, name: 'Frosty N Orange', size: '2mtr x 20mtr (Roll)', img: Krayons5, colour: 'Grey', shade: 'Dark', category: 'Krayons', userIndustry: ['School Flooring', 'Office Flooring', 'Hotel/ Hospitality Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Krayons', sku: 'WF/KR/0004', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons', description: "Wonderfloor Krayons cushion vinyl flooring brings vibrant colours and creative design flexibility to interiors with easy mix-and-match patterns, durable dimensional stability, and a maintenance-free PUR-coated surface.\n\nIdeal for schools, play areas, homes, offices, and hospitality spaces, Krayons adds a cheerful and lively atmosphere while offering long-lasting performance." },
+  { id: 17, name: 'Frosty N Red', size: '2mtr x 20mtr (Roll)', img: Krayons6, colour: 'Orange', shade: 'Dark', category: 'Krayons', userIndustry: ['School Flooring', 'Office Flooring', 'Hotel/ Hospitality Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Krayons', sku: 'WF/KR/0005', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons', description: "Wonderfloor Krayons cushion vinyl flooring brings vibrant colours and creative design flexibility to interiors with easy mix-and-match patterns, durable dimensional stability, and a maintenance-free PUR-coated surface.\n\nIdeal for schools, play areas, homes, offices, and hospitality spaces, Krayons adds a cheerful and lively atmosphere while offering long-lasting performance." },
+  { id: 18, name: 'Frosty N Yellow', size: '2mtr x 20mtr (Roll)', img: Krayons7, colour: 'Red', shade: 'Dark', category: 'Krayons', userIndustry: ['School Flooring', 'Office Flooring', 'Hotel/ Hospitality Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Krayons', sku: 'WF/KR/0006', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons', description: "Wonderfloor Krayons cushion vinyl flooring brings vibrant colours and creative design flexibility to interiors with easy mix-and-match patterns, durable dimensional stability, and a maintenance-free PUR-coated surface.\n\nIdeal for schools, play areas, homes, offices, and hospitality spaces, Krayons adds a cheerful and lively atmosphere while offering long-lasting performance." },
+  { id: 19, name: 'Frosty N Sea Blue', size: '2mtr x 20mtr (Roll)', img: Krayons8, colour: 'Yellow', shade: 'Dark', category: 'Krayons', userIndustry: ['School Flooring', 'Office Flooring', 'Hotel/ Hospitality Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Krayons', sku: 'WF/KR/0007', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons', description: "Wonderfloor Krayons cushion vinyl flooring brings vibrant colours and creative design flexibility to interiors with easy mix-and-match patterns, durable dimensional stability, and a maintenance-free PUR-coated surface.\n\nIdeal for schools, play areas, homes, offices, and hospitality spaces, Krayons adds a cheerful and lively atmosphere while offering long-lasting performance." },
+  { id: 20, name: 'Frosty N Blue', size: '2mtr x 20mtr (Roll)', img: Krayons9, colour: 'Blue', shade: 'Dark', category: 'Krayons', userIndustry: ['School Flooring', 'Office Flooring', 'Hotel/ Hospitality Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Krayons', sku: 'WFKRr/0008', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons', description: "Wonderfloor Krayons cushion vinyl flooring brings vibrant colours and creative design flexibility to interiors with easy mix-and-match patterns, durable dimensional stability, and a maintenance-free PUR-coated surface.\n\nIdeal for schools, play areas, homes, offices, and hospitality spaces, Krayons adds a cheerful and lively atmosphere while offering long-lasting performance." },
+  { id: 21, name: 'Pastel Blue', size: '2mtr x 20mtr (Roll)', img: Krayons10, colour: 'Blue', shade: 'Dark', category: 'Krayons', userIndustry: ['School Flooring', 'Office Flooring', 'Hotel/ Hospitality Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Krayons', sku: 'WF/KR/0009', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons', description: "Wonderfloor Krayons cushion vinyl flooring brings vibrant colours and creative design flexibility to interiors with easy mix-and-match patterns, durable dimensional stability, and a maintenance-free PUR-coated surface.\n\nIdeal for schools, play areas, homes, offices, and hospitality spaces, Krayons adds a cheerful and lively atmosphere while offering long-lasting performance." },
+  { id: 22, name: 'Fluoresent', size: '2mtr x 20mtr (Roll)', img: Krayons11, colour: 'Green', shade: 'Dark', category: 'Krayons', userIndustry: ['School Flooring', 'Office Flooring', 'Hotel/ Hospitality Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Krayons', sku: 'WF/KR/00010', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons', description: "Wonderfloor Krayons cushion vinyl flooring brings vibrant colours and creative design flexibility to interiors with easy mix-and-match patterns, durable dimensional stability, and a maintenance-free PUR-coated surface.\n\nIdeal for schools, play areas, homes, offices, and hospitality spaces, Krayons adds a cheerful and lively atmosphere while offering long-lasting performance." },
+  { id: 23, name: 'Pastel Lemon', size: '2mtr x 20mtr (Roll)', img: Krayons12, colour: 'Lemon', shade: 'Dark', category: 'Krayons', userIndustry: ['School Flooring', 'Office Flooring', 'Hotel/ Hospitality Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Krayons', sku: 'WF/KR/00011', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons', description: "Wonderfloor Krayons cushion vinyl flooring brings vibrant colours and creative design flexibility to interiors with easy mix-and-match patterns, durable dimensional stability, and a maintenance-free PUR-coated surface.\n\nIdeal for schools, play areas, homes, offices, and hospitality spaces, Krayons adds a cheerful and lively atmosphere while offering long-lasting performance." },
+  { id: 24, name: 'Pastel Orange', size: '2mtr x 20mtr (Roll)', img: Krayons13, colour: 'Orange', shade: 'Dark', category: 'Krayons', userIndustry: ['School Flooring', 'Office Flooring', 'Hotel/ Hospitality Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Krayons', sku: 'WF/KR/00012', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons', description: "Wonderfloor Krayons cushion vinyl flooring brings vibrant colours and creative design flexibility to interiors with easy mix-and-match patterns, durable dimensional stability, and a maintenance-free PUR-coated surface.\n\nIdeal for schools, play areas, homes, offices, and hospitality spaces, Krayons adds a cheerful and lively atmosphere while offering long-lasting performance." },
+  { id: 25, name: 'Pastel Purple', size: '2mtr x 20mtr (Roll)', img: Krayons14, colour: 'Purple', shade: 'Dark', category: 'Krayons', userIndustry: ['School Flooring', 'Office Flooring', 'Hotel/ Hospitality Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Krayons', sku: 'WF/KR/00013', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons', description: "Wonderfloor Krayons cushion vinyl flooring brings vibrant colours and creative design flexibility to interiors with easy mix-and-match patterns, durable dimensional stability, and a maintenance-free PUR-coated surface.\n\nIdeal for schools, play areas, homes, offices, and hospitality spaces, Krayons adds a cheerful and lively atmosphere while offering long-lasting performance." },
+  { id: 26, name: 'Pastel Cherry', size: '2mtr x 20mtr (Roll)', img: Krayons15, colour: 'Cherry', shade: 'Dark', category: 'Krayons', userIndustry: ['School Flooring', 'Office Flooring', 'Hotel/ Hospitality Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Krayons', sku: 'WF/KR/00014', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons', description: "Wonderfloor Krayons cushion vinyl flooring brings vibrant colours and creative design flexibility to interiors with easy mix-and-match patterns, durable dimensional stability, and a maintenance-free PUR-coated surface.\n\nIdeal for schools, play areas, homes, offices, and hospitality spaces, Krayons adds a cheerful and lively atmosphere while offering long-lasting performance." },
+  { id: 27, name: 'Pastel Pink', size: '2mtr x 20mtr (Roll)', img: Krayons16, colour: 'Pink', shade: 'Dark', category: 'Krayons', userIndustry: ['School Flooring', 'Office Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Krayons', sku: 'WF/kr/0015', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons' },
+  { id: 1, name: 'GDP-550406', size: '30cm x 30cm', img: floorActon, colour: 'Grey', shade: 'Dark', category: 'Tiles', userIndustry: ['Industrial Flooring'], collection: 'GDP', accordionCategory: 'Durofloor', sku: 'WF000051' },
+  { id: 2, name: 'GDP-551004', size: '30cm x 30cm', img: floorHolmes, colour: 'Beige', shade: 'Light', category: 'Planks', userIndustry: ['Office Flooring', 'Residential Flooring'], collection: 'Classic', accordionCategory: 'Durofloor', sku: 'WF000052' },
+  { id: 3, name: 'GDP-551007', size: '30cm x 30cm', img: floorCedar, colour: 'Brown', shade: 'Medium', category: 'Tiles', userIndustry: ['Industrial Flooring'], collection: 'GDP', accordionCategory: 'Siggma', sku: 'WF000053' },
+  { id: 4, name: 'GDP-552107', size: '30cm x 30cm', img: floorCalla, colour: 'Grey', shade: 'Light', category: 'Carpet', userIndustry: ['Office Flooring'], collection: 'Premium', accordionCategory: 'Siggma', sku: 'WF000054' },
+  { id: 5, name: 'GDP-553107', size: '30cm x 30cm', img: floorpoppy6, colour: 'Grey', shade: 'Light', category: 'Carpet', userIndustry: ['Office Flooring'], collection: 'Premium', accordionCategory: 'Siggma', sku: 'WF000055' },
+  { id: 6, name: 'GDP-552112', size: '30cm x 30cm', img: floorTansy, colour: 'Black', shade: 'Dark', category: 'Planks', userIndustry: ['Residential Flooring'], collection: 'Classic', accordionCategory: 'Orbit', sku: 'WF000056' },
+  { id: 7, name: 'GDP-554306', size: '30cm x 30cm', img: floorPoppy, colour: 'White', shade: 'Light', category: 'Tiles', userIndustry: ['Residential Flooring'], collection: 'GDP', accordionCategory: 'Orbit', sku: 'WF000057' },
+  { id: 8, name: 'GDP-555902', size: '30cm x 30cm', img: floorPoppy1, colour: 'Grey', shade: 'Medium', category: 'Carpet', userIndustry: ['Industrial Flooring'], collection: 'Premium', accordionCategory: 'Stoneland Monza', sku: 'WF000058' },
+  { id: 9, name: 'GDP-557304', size: '30cm x 30cm', img: floorPoppy2, colour: 'Beige', shade: 'Medium', category: 'Tiles', userIndustry: ['Office Flooring'], collection: 'Classic', accordionCategory: 'Stoneland Monza', sku: 'WF000059' },
+  { id: 10, name: 'GDP-557703', size: '30cm x 30cm', img: floorPoppy3, colour: 'Brown', shade: 'Dark', category: 'Planks', userIndustry: ['Residential Flooring'], collection: 'Premium', accordionCategory: 'Meteor', sku: 'WF000060' },
+  { id: 11, name: 'GDP-559204', size: '30cm x 30cm', img: floorPoppy4, colour: 'Black', shade: 'Dark', category: 'Carpet', userIndustry: ['Sports Flooring'], collection: 'GDP', accordionCategory: 'Meteor', sku: 'WF000061' },
+  { id: 12, name: 'GDP-559404', size: '30cm x 30cm', img: floorPoppy5, colour: 'White', shade: 'Light', category: 'Tiles', userIndustry: ['Residential Flooring'], collection: 'Classic', accordionCategory: 'Aventus', sku: 'WF000062' },
+];
+
+const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms }) => {
+  const { productId } = useParams(); // <-- NEW CLEAN URL EXTRACTOR
+
+  const productCategories = ['Braavo', 'Krayons', 'Durofloor', 'Siggma', 'Orbit', 'Stoneland Monza', 'Meteor', 'Aventus'];
   const [initialPinchDist, setInitialPinchDist] = useState(null);
   const [uploadedRoom, setUploadedRoom] = useState(null);
 
+  // 2. READ URL DIRECTLY INTO INITIAL STATE
   const [selectedProduct, setSelectedProduct] = useState(() => {
+    // Check URL First (highest priority for shared links)
+    if (productId) {
+      const decodedSku = decodeURIComponent(productId); // Fixes encoded slashes
+      const matchedProduct = mockProducts.find(p => p.sku === decodedSku);
+      if (matchedProduct) return matchedProduct;
+    }
+
+    // Fallback to LocalStorage, then Default
     const savedProduct = localStorage.getItem('savedSelectedProduct');
     return savedProduct ? JSON.parse(savedProduct) : mockProducts[0];
   });
@@ -284,7 +347,14 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
   const imageContainerRef = useRef(null);
   const activeBaseImage = uploadedRoom || initialImage;
   const currentSrc = processedImage || activeBaseImage?.previewUrl || 'https://images.unsplash.com/photo-1595844730298-b960fa25fa48?auto=format&fit=crop&w=1200&q=80';
-
+  useEffect(() => {
+    // For 3D rooms (maskUrl), your existing visualizerInstance hook already handles it.
+    // For 2D rooms (rawFile), we need to trigger the python backend once the image is ready.
+    if (activeBaseImage?.rawFile && !activeBaseImage?.maskUrl) {
+      applyFloorOverlay(selectedProduct, floorRotation);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeBaseImage]);
   useEffect(() => {
     setIsProcessing(true);
     const initTimer = setTimeout(() => setIsProcessing(false), 1500);
@@ -418,18 +488,24 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
   };
 
   // ── FIX: GENERATE LOCAL 3D COMPOSITE (BYPASSES FETCH COMPLETELY) ──
-  const generateCompositeImage = async (productImgUrl, angle = 0) => {
-    return new Promise((resolve) => {
-      if (!activeBaseImage?.maskUrl || !visualizerInstance.current) {
-        return resolve(null);
-      }
+// ── FIX: GENERATE LOCAL 3D COMPOSITE WITH SAFE GPU TIMEOUT ──
+const generateCompositeImage = async (productImgUrl, angle = 0) => {
+  return new Promise((resolve) => {
+    if (!activeBaseImage?.maskUrl || !visualizerInstance.current) {
+      return resolve(null);
+    }
 
-      // 1. Update ThreeJS texture
+    const tilePreloader = new Image();
+    tilePreloader.crossOrigin = 'anonymous';
+
+    tilePreloader.onload = () => {
+      // 1. The image is downloaded. Tell ThreeJS to update the material.
       if (visualizerInstance.current.updateTexture) {
         visualizerInstance.current.updateTexture(productImgUrl, angle);
       }
 
-      // 2. Wait slightly for the scene to render
+      // 2. WAIT FOR THE GPU TO RENDER THE FRAME
+      // 450ms guarantees ThreeJS has time to upload the texture and draw it.
       setTimeout(() => {
         try {
           const canvas = document.createElement('canvas');
@@ -441,21 +517,21 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
             canvas.height = bgImg.height;
             const ctx = canvas.getContext('2d');
 
-            // Draw Base Room
+            // Draw Base Room Background
             ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
 
-            // Draw ThreeJS layer
+            // Draw Updated ThreeJS webgl layer
             const webglCanvas = threeContainerRef.current?.querySelector('canvas');
             if (webglCanvas) {
               ctx.drawImage(webglCanvas, 0, 0, canvas.width, canvas.height);
             }
 
-            // Draw Mask layer
+            // Draw Top Mask layer
             const maskImg = new Image();
             maskImg.crossOrigin = 'anonymous';
             maskImg.onload = () => {
               ctx.drawImage(maskImg, 0, 0, canvas.width, canvas.height);
-              resolve(canvas.toDataURL('image/jpeg', 0.9)); // Return baked image string
+              resolve(canvas.toDataURL('image/jpeg', 0.9)); // Return baked image dataURL
             };
             maskImg.onerror = () => resolve(null);
             maskImg.src = activeBaseImage.maskUrl;
@@ -466,10 +542,17 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
           console.error("Canvas composite failed:", e);
           resolve(null);
         }
-      }, 250); // Wait 250ms for ThreeJS texture update 
-    });
-  };
+      }, 450); // <--- THIS IS THE MAGIC NUMBER THAT FIXES THE DOUBLE CLICK
+    };
 
+    tilePreloader.onerror = () => {
+      console.error("Failed to preload tile texture asset:", productImgUrl);
+      resolve(null);
+    };
+
+    tilePreloader.src = productImgUrl;
+  });
+};
 
   // Canvas-only composite that doesn't need the live ThreeJS instance
   const generateStaticComposite = async (productImgUrl,) => {
@@ -621,8 +704,16 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
     setPan({ x: 0, y: 0 });
     setErrorMsg(null);
 
+    // Update the browser URL cleanly without reloading the page
+    const safeSku = encodeURIComponent(product.sku);
+    const safeRoom = encodeURIComponent(initialImage?.id || 'default');
+    window.history.replaceState(null, '', `/visualizer/${safeSku}/${safeRoom}`);
+
     // ── COMPARE MODE BRANCH ──
     if (isCompareMode) {
+      const currentSideProduct = activeCompareSide === 'left' ? compareLeftProduct : compareRightProduct;
+      if (currentSideProduct?.id === product.id) return;
+
       if (activeCompareSide === 'left') setCompareLeftProduct(product);
       else setCompareRightProduct(product);
 
@@ -694,7 +785,7 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
     setFloorRotation(0);
     setIsFloorVisible(false);
   };
- const handleOpenDetails = (e, product) => {
+  const handleOpenDetails = (e, product) => {
     e.stopPropagation();
     setDetailsProduct(product);
     setIsDetailsModalOpen(true);
@@ -717,26 +808,67 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
   };
 
   const handleShare = (platform) => {
-    const shareUrl = encodeURIComponent(window.location.href);
-    const shareText = encodeURIComponent("Check out my new floor design from Wonderfloor!");
+    // ✅ Build the clean URL
+    const baseUrl = window.location.origin;
+    const safeSku = encodeURIComponent(selectedProduct.sku);
+    const safeRoom = encodeURIComponent(initialImage?.id || 'default');
+
+    // The clean URL path
+    const rawUrl = `${baseUrl}/visualizer/${safeSku}/${safeRoom}`;
+    const shareUrl = encodeURIComponent(rawUrl);
+
+    // Note: We completely deleted the `shareText` variable to keep the link clean!
+
     switch (platform) {
-      case 'copy': navigator.clipboard.writeText(window.location.href); alert("Link copied!"); break;
-      case 'facebook': window.open(`https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`, '_blank'); break;
-      case 'whatsapp': window.open(`https://api.whatsapp.com/send?text=${shareText} ${shareUrl}`, '_blank'); break;
-      case 'pinterest': window.open(`https://pinterest.com/pin/create/button/?url=${shareUrl}&description=${shareText}`, '_blank'); break;
-      case 'email': window.location.href = `mailto:?subject=Wonderfloor Design&body=${shareText} ${shareUrl}`; break;
-      default: break;
+      case 'copy':
+        navigator.clipboard.writeText(rawUrl); // Only copies the URL
+        alert("Link copied!");
+        break;
+
+      case 'facebook':
+        window.open(
+          `https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`,
+          '_blank'
+        );
+        break;
+
+      case 'whatsapp':
+        // ✅ Only sends the URL so WhatsApp automatically creates a clickable preview card
+        window.open(
+          `https://api.whatsapp.com/send?text=${shareUrl}`,
+          '_blank'
+        );
+        break;
+
+      // case 'pinterest': {
+      //   const pinImg = encodeURIComponent(selectedProduct.img);
+      //   window.open(
+      //     `https://pinterest.com/pin/create/button/?url=${shareUrl}&media=${pinImg}`,
+      //     '_blank'
+      //   );
+      //   break;
+      // }
+      case 'email':
+        // ✅ Only puts the URL in the body of the email
+        window.open(
+          `mailto:?subject=${encodeURIComponent('Wonderfloor Design — ' + selectedProduct.name)}&body=${shareUrl}`
+        );
+        break;
+
+      default:
+        break;
     }
+
     setIsShareMenuOpen(false);
   };
 
   const filterCategories = [
-    { id: 'accordionCategory', label: 'Flooring Product', options: ['Krayons', 'Durofloor', 'Siggma', 'Orbit', 'Stoneland Monza', 'Meteor', 'Aventus'] },
-    { id: 'colour', label: 'Colour Family', options: ['Grey', 'Beige', 'Brown', 'Black', 'White', 'Blue', 'Green', 'Lemon', 'Orange', 'Purple', 'Cherry', 'Pink'] },
+    { id: 'accordionCategory', label: 'Product Collections', options: ['Braavo', 'Krayons', 'Durofloor', 'Siggma', 'Orbit', 'Stoneland Monza', 'Meteor', 'Aventus'] },
+    { id: 'colour', label: 'Colour Family', options: ['Grey', 'cherry-red', 'neo-silver', 'Beige', 'Brown', 'Black', 'White', 'Blue', 'Green', 'Lemon', 'Orange', 'Purple', 'Cherry', 'Pink'] },
     { id: 'shade', label: 'Shade', options: ['Light', 'Medium', 'Dark'] },
     { id: 'userIndustry', label: 'User Industry', options: ['Industrial Flooring', 'Office Flooring', 'Residential Flooring', 'School Flooring', 'Sports Flooring', 'Hotel/ Hospitality Flooring'] },
     { id: 'Pattern/Layout', label: 'Pattern/ Layout', options: ['Harringbone'] },
-    { id: 'collection', label: 'Collection/ Style', options: ['Wood', 'Stone', 'Cushion Vinyl'] },
+    { id: 'collection', label: 'Style', options: ['Wood', 'Stone', 'Cushion Vinyl'] },
   ];
 
   const handleToggleFilter = (categoryId, option) => {
@@ -951,13 +1083,15 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
                   >
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="1.5"></circle><circle cx="12" cy="5" r="1.5"></circle><circle cx="12" cy="19" r="1.5"></circle></svg>
                   </button>
-                  {isMenuDropdownOpen && (
-                    <div className="absolute top-[45px] right-0 bg-white shadow-2xl border border-gray-200 rounded-md py-2 w-[180px] z-[100] flex flex-col">
-                      <button onClick={closeModal} className="flex items-center gap-3 px-4 py-3 text-sm hover:bg-gray-50 text-left transition-colors cursor-pointer border-b border-gray-50">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-                        Change Room
-                      </button>
-                      <RoomUploader
+                 {isMenuDropdownOpen && (
+                  <div className="absolute top-[45px] right-0 bg-white shadow-2xl border border-gray-200 rounded-md py-2 w-[180px] z-[100] flex flex-col">
+                    <button onClick={onOpenRecentRooms} className="flex items-center gap-3 px-4 py-3 text-sm hover:bg-gray-50 text-left transition-colors cursor-pointer border-b border-gray-50">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      My History
+                    </button>
+                    <RoomUploader
                         onImageUpload={(newImageData) => {
                           setUploadedRoom(newImageData);
                           setProcessedImage(null);
@@ -1029,7 +1163,19 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
             <div className="flex-1 overflow-y-auto px-4 md:px-5 pb-5 pt-4 flex flex-col relative">
               <div className="flex-1">
                 {displayCategories.map(categoryName => {
-                  const categoryProducts = filteredProducts.filter(p => p.accordionCategory === categoryName);
+                  let categoryProducts = filteredProducts.filter(
+                    p => p.accordionCategory === categoryName
+                  );
+
+                  if (sortOrder === 'Prod-A-Z') {
+                    categoryProducts = [...categoryProducts].sort((a, b) =>
+                      a.name.localeCompare(b.name)
+                    );
+                  } else if (sortOrder === 'Prod-Z-A') {
+                    categoryProducts = [...categoryProducts].sort((a, b) =>
+                      b.name.localeCompare(a.name)
+                    );
+                  }
                   if (categoryProducts.length === 0) return null;
                   const isExpanded = (expandedProductCategory === categoryName) || (searchQuery.trim().length > 0);
                   return (
@@ -1129,9 +1275,11 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
       </div>
 
       {/* ── MAIN CONTENT AREA ── */}
+
       <div className="flex-1 flex flex-col bg-[#e5e7eb] h-full overflow-hidden relative w-full">
 
-        {isCompareMode ? (
+        {/* ✅ CompareView as absolute overlay — keeps normal view in DOM */}
+        {isCompareMode && (
           <>
             <CompareView
               leftImage={compareLeftImage || currentSrc}
@@ -1145,272 +1293,287 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
             />
             {isProcessing && <AttractiveLoader productName={activeCompareSide === 'left' ? compareLeftProduct?.name : compareRightProduct?.name} />}
           </>
-        ) : (
-          <>
-            {/* Top Nav Bar */}
-            <div className="h-[60px] bg-white border-b border-gray-200 flex justify-between items-center px-2 md:px-4 shadow-sm z-30 shrink-0 w-full relative">
-              <div className="flex items-center gap-1 md:gap-2 text-gray-600 hover:text-black text-sm font-medium px-2 border-r border-gray-200 pr-3 md:pr-6 h-full transition-colors">
-                <button onClick={() => setIsSidebarOpen(true)} className="md:hidden p-1.5 rounded-md hover:bg-gray-100 cursor-pointer">
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        )}
+
+        {/* ✅ Normal view ALWAYS rendered — threeContainerRef stays alive */}
+        {/* FIXED CODE */}
+        <div className={`flex-1 flex flex-col h-full overflow-hidden ${isCompareMode ? 'pointer-events-none' : ''}`}>
+
+          {/* Top Nav Bar */}
+          <div className="h-[60px] bg-white border-b border-gray-200 flex justify-between items-center px-2 md:px-4 shadow-sm z-30 shrink-0 w-full relative">
+            <div className="flex items-center gap-1 md:gap-2 text-gray-600 hover:text-black text-sm font-medium px-2 border-r border-gray-200 pr-3 md:pr-6 h-full transition-colors">
+              <button onClick={() => setIsSidebarOpen(true)} className="md:hidden p-1.5 rounded-md hover:bg-gray-100 cursor-pointer">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+              </button>
+              <button onClick={closeModal} className="flex items-center gap-1 md:gap-2 px-3 py-2 rounded-md hover:bg-gray-100 hover:text-gray-900 transition-colors cursor-pointer">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                <span className="hidden sm:inline">Exit</span>
+              </button>
+            </div>
+
+            <div className="flex-1 flex items-center justify-center gap-1 md:gap-2 text-sm text-gray-600 font-medium px-3 whitespace-nowrap h-full">
+              <button onClick={handleEnterCompare} className="flex items-center gap-1.5 px-3 py-2 rounded-md hover:bg-gray-100 hover:text-gray-900 transition-colors cursor-pointer">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M16 3h5v5M4 20L20 4M21 16v5h-5M15 15l6 6M4 4l5 5"></path></svg>
+                <span className="hidden lg:inline">Compare</span>
+              </button>
+
+              <div className="relative flex items-center h-full" ref={shareRef}>
+                <button onClick={() => setIsShareMenuOpen(!isShareMenuOpen)} className="flex items-center gap-1.5 px-3 py-2 rounded-md hover:bg-gray-100 hover:text-gray-900 transition-colors cursor-pointer">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+                  <span className="hidden sm:inline">Share</span>
                 </button>
-                <button onClick={closeModal} className="flex items-center gap-1 md:gap-2 px-3 py-2 rounded-md hover:bg-gray-100 hover:text-gray-900 transition-colors cursor-pointer">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                  <span className="hidden sm:inline">Exit</span>
-                </button>
+                {isShareMenuOpen && (
+                  <div className="absolute top-[50px] left-1/2 -translate-x-1/2 md:translate-x-0 md:left-auto md:right-0 bg-white shadow-xl border border-gray-200 rounded-md py-2 w-[220px] z-50 flex flex-col">
+                    <button onClick={() => handleShare('copy')} className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gray-50 text-left transition-colors cursor-pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg> Copy Link</button>
+                    <button onClick={() => handleShare('facebook')} className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gray-50 text-left transition-colors cursor-pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg> Facebook</button>
+                    <button onClick={() => handleShare('whatsapp')} className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gray-50 text-left transition-colors cursor-pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg> WhatsApp</button>
+                    {/* <button onClick={() => handleShare('pinterest')} className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gray-50 text-left transition-colors cursor-pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500"><line x1="12" y1="22" x2="12" y2="12"></line><line x1="12" y1="2" x2="12" y2="4"></line><line x1="2" y1="12" x2="4" y2="12"></line><line x1="22" y1="12" x2="20" y2="12"></line><circle cx="12" cy="12" r="10"></circle><path d="M8 12a4 4 0 0 0 8 0"></path></svg> Pinterest</button> */}
+                    <button onClick={() => handleShare('email')} className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gray-50 text-left transition-colors cursor-pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg> Email</button>
+                  </div>
+                )}
               </div>
 
-              <div className="flex-1 flex items-center justify-center gap-1 md:gap-2 text-sm text-gray-600 font-medium px-3 whitespace-nowrap h-full">
-                <button onClick={handleEnterCompare} className="flex items-center gap-1.5 px-3 py-2 rounded-md hover:bg-gray-100 hover:text-gray-900 transition-colors cursor-pointer">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M16 3h5v5M4 20L20 4M21 16v5h-5M15 15l6 6M4 4l5 5"></path></svg>
-                  <span className="hidden lg:inline">Compare</span>
+              <div className="relative flex items-center h-full" ref={downloadRef}>
+                <button onClick={() => setIsDownloadMenuOpen(!isDownloadMenuOpen)} className="flex items-center gap-1.5 px-3 py-2 rounded-md hover:bg-gray-100 hover:text-gray-900 transition-colors cursor-pointer">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                  <span className="hidden sm:inline">Download</span>
                 </button>
-
-                <div className="relative flex items-center h-full" ref={shareRef}>
-                  <button onClick={() => setIsShareMenuOpen(!isShareMenuOpen)} className="flex items-center gap-1.5 px-3 py-2 rounded-md hover:bg-gray-100 hover:text-gray-900 transition-colors cursor-pointer">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
-                    <span className="hidden sm:inline">Share</span>
-                  </button>
-                  {isShareMenuOpen && (
-                    <div className="absolute top-[50px] left-1/2 -translate-x-1/2 md:translate-x-0 md:left-auto md:right-0 bg-white shadow-xl border border-gray-200 rounded-md py-2 w-[220px] z-50 flex flex-col">
-                      <button onClick={() => handleShare('copy')} className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gray-50 text-left transition-colors cursor-pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg> Copy Link</button>
-                      <button onClick={() => handleShare('facebook')} className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gray-50 text-left transition-colors cursor-pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg> Facebook</button>
-                      <button onClick={() => handleShare('whatsapp')} className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gray-50 text-left transition-colors cursor-pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg> WhatsApp</button>
-                      <button onClick={() => handleShare('pinterest')} className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gray-50 text-left transition-colors cursor-pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500"><line x1="12" y1="22" x2="12" y2="12"></line><line x1="12" y1="2" x2="12" y2="4"></line><line x1="2" y1="12" x2="4" y2="12"></line><line x1="22" y1="12" x2="20" y2="12"></line><circle cx="12" cy="12" r="10"></circle><path d="M8 12a4 4 0 0 0 8 0"></path></svg> Pinterest</button>
-                      <button onClick={() => handleShare('email')} className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gray-50 text-left transition-colors cursor-pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg> Email</button>
-                    </div>
-                  )}
-                </div>
-
-                <div className="relative flex items-center h-full" ref={downloadRef}>
-                  <button onClick={() => setIsDownloadMenuOpen(!isDownloadMenuOpen)} className="flex items-center gap-1.5 px-3 py-2 rounded-md hover:bg-gray-100 hover:text-gray-900 transition-colors cursor-pointer">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                    <span className="hidden sm:inline">Download</span>
-                  </button>
-                  {isDownloadMenuOpen && (
-                    <div className="absolute top-[50px] left-1/2 -translate-x-1/2 md:translate-x-0 md:left-auto md:right-0 bg-white shadow-xl border border-gray-200 rounded-md py-2 w-[240px] z-50 flex flex-col">
-                      <DownloadView
-                        selectedProduct={selectedProduct}
-                        currentSrc={currentSrc}
-                        compositeRef={activeBaseImage?.maskUrl ? compositeRef : null}
-                        onClose={() => setIsDownloadMenuOpen(false)}
-                      />
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div className="flex items-center gap-1 md:gap-2 border-l border-gray-200 pl-2 md:pl-4 h-full shrink-0">
-                <a href="https://www.wonderfloor.co.in/contact-us" target="_blank" rel="noopener noreferrer" title="Contact Us | Wonderfloor">
-                  <button className="bg-[#0b5e5e] text-white px-3 py-1.5 md:px-4 md:py-2 rounded-md text-xs md:text-sm font-medium hover:bg-[#084747] flex items-center gap-1.5 shadow-sm transition-colors cursor-pointer">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="hidden sm:block"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-                    Contact us
-                  </button>
-                </a>
-                <div className="relative flex items-center h-full" ref={menuRef}>
-                  <button onClick={() => setIsMenuDropdownOpen(!isMenuDropdownOpen)} className="flex text-gray-600 hover:text-gray-900 hover:bg-gray-100 px-2 md:px-3 py-2 rounded-md text-sm font-medium items-center gap-1 transition-colors cursor-pointer">
-                    <span className="hidden sm:inline">Menu</span>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="1.5"></circle><circle cx="12" cy="5" r="1.5"></circle><circle cx="12" cy="19" r="1.5"></circle></svg>
-                  </button>
-                  {isMenuDropdownOpen && (
-                    <div className="absolute top-[50px] right-0 bg-white shadow-xl border border-gray-200 rounded-md py-2 w-[180px] z-50 flex flex-col">
-                      <button onClick={closeModal} className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gray-50 text-left transition-colors cursor-pointer">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-                        Change Room
-                      </button>
-                      <RoomUploader
-                        onImageUpload={(newImageData) => {
-                          setUploadedRoom(newImageData);
-                          setProcessedImage(null);
-                          setIsMenuDropdownOpen(false);
-                        }}
-                        className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gray-50 text-left transition-colors cursor-pointer w-full"
-                      >
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-                        Upload
-                      </RoomUploader>
-                    </div>
-                  )}
-                </div>
+                {isDownloadMenuOpen && (
+                  <div className="absolute top-[50px] left-1/2 -translate-x-1/2 md:translate-x-0 md:left-auto md:right-0 bg-white shadow-xl border border-gray-200 rounded-md py-2 w-[240px] z-50 flex flex-col">
+                    <DownloadView
+                      selectedProduct={selectedProduct}
+                      currentSrc={currentSrc}
+                      compositeRef={activeBaseImage?.maskUrl ? compositeRef : null}
+                      onClose={() => setIsDownloadMenuOpen(false)}
+                    />
+                  </div>
+                )}
               </div>
             </div>
 
-            {/* ── IMAGE VIEWER ── */}
-            <div
-              ref={imageContainerRef}
-              className="flex-1 relative flex items-center justify-center p-2 md:px-3 md:py-4 overflow-hidden touch-none"
-              onMouseDown={handleMouseDown}
-              onMouseMove={handleMouseMove}
-              onMouseUp={handleMouseUpOrLeave}
-              onMouseLeave={handleMouseUpOrLeave}
-              onTouchStart={handleTouchStart}
-              onTouchMove={handleTouchMove}
-              onTouchEnd={handleTouchEnd}
-              onTouchCancel={handleTouchEnd}
-              style={{ cursor: zoomScale > 1 && !isDetailsModalOpen ? (isDragging ? 'grabbing' : 'grab') : 'zoom-in' }}
-            >
-              {/* --- BLURRED BACKGROUND LAYER --- */}
-              <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden bg-gray-300">
-                <img
-                  src={activeBaseImage?.previewUrl || processedImage}
-                  className="w-full h-full object-cover blur-[11px] scale-110 opacity-80"
-                  alt="Blurred Background"
-                  crossOrigin="anonymous"
-                />
-                <div className="absolute inset-0 bg-white/21"></div>
+            <div className="flex items-center gap-1 md:gap-2 border-l border-gray-200 pl-2 md:pl-4 h-full shrink-0">
+              <a href="https://www.wonderfloor.co.in/contact-us" target="_blank" rel="noopener noreferrer" title="Contact Us | Wonderfloor">
+                <button className="bg-[#0b5e5e] text-white px-3 py-1.5 md:px-4 md:py-2 rounded-md text-xs md:text-sm font-medium hover:bg-[#084747] flex items-center gap-1.5 shadow-sm transition-colors cursor-pointer">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="hidden sm:block"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                  Contact us
+                </button>
+              </a>
+             <div className="relative flex items-center h-full" ref={menuRef}>
+                <button onClick={() => setIsMenuDropdownOpen(!isMenuDropdownOpen)} className="flex text-gray-600 hover:text-gray-900 hover:bg-gray-100 px-2 md:px-3 py-2 rounded-md text-sm font-medium items-center gap-1 transition-colors cursor-pointer">
+                  <span className="hidden sm:inline">Menu</span>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="1.5"></circle><circle cx="12" cy="5" r="1.5"></circle><circle cx="12" cy="19" r="1.5"></circle></svg>
+                </button>
+                {isMenuDropdownOpen && (
+                  <div className="absolute top-[50px] right-0 bg-white shadow-xl border border-gray-200 rounded-md py-2 w-[180px] z-50 flex flex-col">
+                    <button onClick={onOpenRecentRooms} className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gray-50 text-left transition-colors cursor-pointer">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    My History
+                    </button>
+                    <RoomUploader
+                      onImageUpload={(newImageData) => {
+                        setUploadedRoom(newImageData);
+                        setProcessedImage(null);
+                        setIsMenuDropdownOpen(false);
+                      }}
+                      className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gray-50 text-left transition-colors cursor-pointer w-full"
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                      Upload
+                    </RoomUploader>
+                  </div>
+                )}
               </div>
+            </div>
+          </div>
 
-              {isProcessing && <AttractiveLoader productName={selectedProduct?.name} />}
+          {/* ── IMAGE VIEWER ── */}
+          <div
+            ref={imageContainerRef}
+            className="flex-1 relative flex items-center justify-center p-2 md:px-3 md:py-4 overflow-hidden touch-none"
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUpOrLeave}
+            onMouseLeave={handleMouseUpOrLeave}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+            onTouchCancel={handleTouchEnd}
+            style={{ cursor: zoomScale > 1 && !isDetailsModalOpen ? (isDragging ? 'grabbing' : 'grab') : 'zoom-in' }}
+          >
+            {/* --- BLURRED BACKGROUND LAYER --- */}
+            <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden bg-gray-300">
+              <img
+                src={activeBaseImage?.previewUrl || processedImage}
+                className="w-full h-full object-cover blur-[11px] scale-110 opacity-80"
+                alt="Blurred Background"
+                crossOrigin="anonymous"
+              />
+              <div className="absolute inset-0 bg-white/21"></div>
+            </div>
 
-              {/* --- MAIN 4/3 CONTAINER --- */}
-              <div
-                className="relative z-10 bg-white shadow-[0_20px_50px_rgba(0,0,0,0.5)] rounded-md overflow-hidden ring-1 ring-black/10"
-                style={{
-                  aspectRatio: '4/3',
-                  height: '100%',
-                  maxWidth: '98%',
-                  transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoomScale})`,
-                  transformOrigin: 'center center',
-                  transition: isDragging ? 'none' : 'transform 0.1s ease-out'
-                }}
-              >
-                <div className="absolute inset-0 overflow-hidden bg-gray-200" ref={compositeRef}>
-                  {activeBaseImage?.maskUrl ? (
-                    <div className="absolute inset-0 w-full h-full pointer-events-none">
-                      {/* LAYER 1: Background Room */}
-                      <img
-                        src={activeBaseImage.previewUrl}
-                        className="absolute inset-0 w-full h-full object-cover z-0 pointer-events-none"
-                        alt="Base Room"
-                        crossOrigin="anonymous"
-                      />
-                      {/* LAYER 2: Three.js Floor Canvas */}
-                      <div
-                        ref={threeContainerRef}
-                        className={`absolute inset-0 w-full h-full z-10 transition-opacity duration-300 
-    ${isFloorVisible && !isCompareMode ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
-                      ></div>
-                      {/* LAYER 3: Mask Image */}
-                      <img
-                        src={activeBaseImage.maskUrl}
-                        className={`absolute inset-0 w-full h-full object-cover z-20 transition-opacity duration-300 pointer-events-none ${isFloorVisible ? 'opacity-100' : 'opacity-0'}`}
-                        alt="Room Mask"
-                        crossOrigin="anonymous"
-                      />
-                    </div>
-                  ) : (
+            {isProcessing && <AttractiveLoader productName={selectedProduct?.name} />}
+
+            {/* --- MAIN 4/3 CONTAINER --- */}
+            <div
+              className="relative z-10 bg-white shadow-[0_20px_50px_rgba(0,0,0,0.5)] rounded-md overflow-hidden ring-1 ring-black/10"
+              style={{
+                aspectRatio: '4/3',
+                height: '100%',
+                maxWidth: '98%',
+                transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoomScale})`,
+                transformOrigin: 'center center',
+                transition: isDragging ? 'none' : 'transform 0.1s ease-out'
+              }}
+            >
+              <div className="absolute inset-0 overflow-hidden bg-gray-200" ref={compositeRef}>
+                {activeBaseImage?.maskUrl ? (
+                  <div className="absolute inset-0 w-full h-full pointer-events-none">
+                    {/* LAYER 1: Background Room */}
                     <img
-                      src={isFloorVisible ? (processedImage || activeBaseImage?.previewUrl) : activeBaseImage?.previewUrl}
-                      alt="Room"
-                      draggable="false"
-                      className="absolute inset-0 w-full h-full object-cover select-none z-0"
+                      src={activeBaseImage.previewUrl}
+                      className="absolute inset-0 w-full h-full object-cover z-0 pointer-events-none"
+                      alt="Base Room"
                       crossOrigin="anonymous"
                     />
-                  )}
-                </div>
-              </div>
-
-              {/* Powered-by badge */}
-              <div className="absolute bottom-3 right-3 md:bottom-5 md:right-5 bg-gradient-to-r from-red-600/80 to-rose-500/80 backdrop-blur-xl border border-white/20 px-5 md:px-4 py-1.5 md:py-2 rounded-full z-30 pointer-events-none flex items-center gap-1.5 shadow-lg shadow-red-500/40 ring-1 ring-inset ring-white/10">
-                <span className="text-[10px] md:text-[11px] font-normal text-gray-200">Powered by</span>
-                <span className="text-[11px] md:text-[12px] font-bold text-white tracking-wide">Technetty</span>
+                    {/* LAYER 2: Three.js Floor Canvas */}
+                    {/* FIXED CODE */}
+                    <div
+                      ref={threeContainerRef}
+                      className={`absolute inset-0 w-full h-full z-10 transition-opacity duration-300  
+  ${isFloorVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+                    ></div>
+                    {/* LAYER 3: Mask Image */}
+                    <img
+                      src={activeBaseImage.maskUrl}
+                      className={`absolute inset-0 w-full h-full object-cover z-20 transition-opacity duration-300 pointer-events-none ${isFloorVisible ? 'opacity-100' : 'opacity-0'}`}
+                      alt="Room Mask"
+                      crossOrigin="anonymous"
+                    />
+                  </div>
+                ) : (
+                  <img
+                    src={isFloorVisible ? (processedImage || activeBaseImage?.previewUrl) : activeBaseImage?.previewUrl}
+                    alt="Room"
+                    draggable="false"
+                    className="absolute inset-0 w-full h-full object-cover select-none z-0"
+                    crossOrigin="anonymous"
+                  />
+                )}
               </div>
             </div>
 
-            {/* ── FOOTER BAR ── */}
-            <div className="bg-white border-t border-gray-200 shrink-0 flex flex-col z-20 w-full">
-              {/* Row 1: Selected Product Info & Basic Actions */}
-              <div className="flex flex-wrap md:flex-nowrap items-center justify-between px-3 md:px-6 py-2 gap-y-2">
-                <div
-                  onClick={(e) => handleOpenDetails(e, selectedProduct)}
-                  className="flex items-center gap-2 md:gap-3 w-full md:w-auto cursor-pointer hover:bg-gray-50 p-1.5 -ml-1.5 rounded-md transition-colors group"
+            {/* Powered-by badge */}
+            <div className="absolute bottom-3 right-3 md:bottom-5 md:right-5 bg-gradient-to-r from-red-600/80 to-rose-500/80 backdrop-blur-xl border border-white/20 px-5 md:px-4 py-1.5 md:py-2 rounded-full z-30 pointer-events-none flex items-center gap-1.5 shadow-lg shadow-red-500/40 ring-1 ring-inset ring-white/10">
+              <span className="text-[10px] md:text-[11px] font-normal text-gray-200">Powered by</span>
+              <span className="text-[11px] md:text-[12px] font-bold text-white tracking-wide">WonderFloor</span>
+            </div>
+          </div>
+
+          {/* ── FOOTER BAR ── */}
+          <div className="bg-white border-t border-gray-200 shrink-0 flex flex-col z-20 w-full">
+            {/* Row 1: Selected Product Info & Basic Actions */}
+            <div className="flex flex-wrap md:flex-nowrap items-center justify-between px-3 md:px-6 py-2 gap-y-2">
+              <div
+                onClick={(e) => handleOpenDetails(e, selectedProduct)}
+                className="flex items-center gap-2 md:gap-3 w-full md:w-auto cursor-pointer hover:bg-gray-50 p-1.5 -ml-1.5 rounded-md transition-colors group"
+              >
+                <img src={selectedProduct.img} alt="Selected" className="w-8 h-8 md:w-10 md:h-10 object-cover rounded border border-gray-200" />
+                <div className="flex flex-col mr-auto md:mr-0">
+                  <span className="font-bold text-sm md:text-base text-gray-900 leading-tight group-hover:text-[#0b5e5e] transition-colors">{selectedProduct.name}</span>
+                  <span className="text-[10px] md:text-xs text-gray-400">{selectedProduct.size}</span>
+                </div>
+                <div className="flex items-center gap-3 md:gap-6 text-xs md:text-sm text-gray-600 font-medium md:ml-6 md:border-l border-gray-200 pl-2 md:pl-6 h-full py-1">
+                  <button
+                    onClick={(e) => { e.stopPropagation(); handleReset(); }}
+                    disabled={!isFloorVisible}
+                    className={`flex items-center gap-1 md:gap-2 px-2 py-1.5 md:py-2 rounded-md transition-colors ${isFloorVisible
+                      ? 'hover:bg-gray-100 hover:text-gray-900 cursor-pointer text-gray-600'
+                      : 'opacity-50 cursor-not-allowed text-gray-400'
+                      }`}
+                  >
+                    <span className="hidden sm:inline">Reset</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="md:w-4 md:h-4"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><polyline points="3 3 3 8 8 8"></polyline></svg>
+                  </button>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); handleRotate(); }}
+                    disabled={!isFloorVisible}
+                    className={`flex items-center gap-1 md:gap-2 px-2 py-1.5 md:py-2 rounded-md transition-colors group ${isFloorVisible
+                      ? 'hover:bg-gray-100 hover:text-gray-900 cursor-pointer'
+                      : 'opacity-50 cursor-not-allowed text-gray-400'
+                      }`}
+                  >
+                    <span className="hidden sm:inline">Rotate</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="md:w-4 md:h-4"><path d="M21 2v6h-6"></path><path d="M3 12a9 9 0 0 1 15-6.7L21 8"></path><path d="M3 22v-6h6"></path><path d="M21 12a9 9 0 0 1-15 6.7L3 16"></path></svg>
+                    {floorRotation !== 0 && (
+                      <span className="ml-1 px-1.5 py-0.5 text-[10px] md:text-xs font-bold text-[#0b5e5e] bg-[#0b5e5e]/10 rounded-full group-hover:bg-[#0b5e5e]/20 transition-colors">
+                        {floorRotation}&deg;
+                      </span>
+                    )}
+                  </button>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-md hover:bg-gray-100 hover:text-gray-900 transition-colors cursor-default text-xs md:text-sm text-gray-600">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                  <span className="hidden sm:inline">Zoom</span> {zoomScale > 1 ? `(${zoomScale.toFixed(1)}x)` : ''}
+                </button>
+                <button
+                  onClick={() => { setZoomScale(1); setPan({ x: 0, y: 0 }); }}
+                  disabled={zoomScale === 1}
+                  className={`text-xs md:text-sm px-3 py-1.5 rounded-md transition-colors ${zoomScale === 1
+                    ? 'text-gray-400 cursor-not-allowed opacity-50'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100 cursor-pointer'
+                    }`}
                 >
-                  <img src={selectedProduct.img} alt="Selected" className="w-8 h-8 md:w-10 md:h-10 object-cover rounded border border-gray-200" />
-                  <div className="flex flex-col mr-auto md:mr-0">
-                    <span className="font-bold text-sm md:text-base text-gray-900 leading-tight group-hover:text-[#0b5e5e] transition-colors">{selectedProduct.name}</span>
-                    <span className="text-[10px] md:text-xs text-gray-400">{selectedProduct.size}</span>
-                  </div>
-                  <div className="flex items-center gap-3 md:gap-6 text-xs md:text-sm text-gray-600 font-medium md:ml-6 md:border-l border-gray-200 pl-2 md:pl-6 h-full py-1">
-                    <button
-                      onClick={(e) => { e.stopPropagation(); handleReset(); }}
-                      disabled={!isFloorVisible}
-                      className={`flex items-center gap-1 md:gap-2 px-2 py-1.5 md:py-2 rounded-md transition-colors ${isFloorVisible
-                        ? 'hover:bg-gray-100 hover:text-gray-900 cursor-pointer text-gray-600'
-                        : 'opacity-50 cursor-not-allowed text-gray-400'
-                        }`}
-                    >
-                      <span className="hidden sm:inline">Reset</span>
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="md:w-4 md:h-4"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><polyline points="3 3 3 8 8 8"></polyline></svg>
-                    </button>
-                    <button
-                      onClick={(e) => { e.stopPropagation(); handleRotate(); }}
-                      disabled={!isFloorVisible}
-                      className={`flex items-center gap-1 md:gap-2 px-2 py-1.5 md:py-2 rounded-md transition-colors group ${isFloorVisible
-                        ? 'hover:bg-gray-100 hover:text-gray-900 cursor-pointer'
-                        : 'opacity-50 cursor-not-allowed text-gray-400'
-                        }`}
-                    >
-                      <span className="hidden sm:inline">Rotate</span>
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="md:w-4 md:h-4"><path d="M21 2v6h-6"></path><path d="M3 12a9 9 0 0 1 15-6.7L21 8"></path><path d="M3 22v-6h6"></path><path d="M21 12a9 9 0 0 1-15 6.7L3 16"></path></svg>
-                      {floorRotation !== 0 && (
-                        <span className="ml-1 px-1.5 py-0.5 text-[10px] md:text-xs font-bold text-[#0b5e5e] bg-[#0b5e5e]/10 rounded-full group-hover:bg-[#0b5e5e]/20 transition-colors">
-                          {floorRotation}&deg;
-                        </span>
-                      )}
-                    </button>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-md hover:bg-gray-100 hover:text-gray-900 transition-colors cursor-default text-xs md:text-sm text-gray-600">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                    <span className="hidden sm:inline">Zoom</span> {zoomScale > 1 ? `(${zoomScale.toFixed(1)}x)` : ''}
-                  </button>
-                  <button onClick={() => { setZoomScale(1); setPan({ x: 0, y: 0 }); }} className="text-xs md:text-sm px-3 py-1.5 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors cursor-pointer">
-                    Reset Zoom
-                  </button>
-                </div>
-              </div>
-
-              {/* Row 2: Quick Selector (mobile only) */}
-              <div className="flex md:hidden flex-col w-full border-t border-gray-100 px-3 md:px-6 py-2 bg-gray-50/50">
-                <div className="flex overflow-x-auto gap-2 pb-2 items-center [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-                  <span className="text-[10px] md:text-xs font-bold text-gray-500 uppercase tracking-wider mr-1 shrink-0">Collections:</span>
-                  {displayCategories.map(cat => (
-                    <button
-                      key={cat}
-                      onClick={(e) => { e.stopPropagation(); setActiveFooterCategory(cat); }}
-                      className={`shrink-0 text-[11px] md:text-xs px-3 py-1 rounded-full font-medium transition-colors cursor-pointer border ${activeFooterCategory === cat ? 'bg-[#0b5e5e] text-white border-[#0b5e5e] shadow-sm' : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-100'}`}
-                    >
-                      {cat}
-                    </button>
-                  ))}
-                </div>
-                <div className="flex overflow-x-auto gap-3 py-1 items-center [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-                  {mockProducts.filter(p => p.accordionCategory === activeFooterCategory).map(prod => {
-                    const isSelected = selectedProduct.id === prod.id;
-                    return (
-                      <div
-                        key={prod.id}
-                        onClick={(e) => { e.stopPropagation(); handleTileSelection(prod); }}
-                        className={`relative shrink-0 w-12 h-12 md:w-14 md:h-14 rounded-md cursor-pointer border-2 transition-all duration-200 overflow-hidden ${isSelected ? 'border-[#0b5e5e] shadow-md scale-105 z-10' : 'border-transparent hover:border-gray-300'}`}
-                        title={prod.name}
-                      >
-                        <img src={prod.img} alt={prod.name} className="w-full h-full object-cover" />
-                        {isSelected && (
-                          <div className="absolute inset-0 bg-[#0b5e5e]/10 flex items-center justify-center">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" className="drop-shadow-md">
-                              <polyline points="20 6 9 17 4 12"></polyline>
-                            </svg>
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
+                  Reset Zoom
+                </button>
               </div>
             </div>
-          </>
-        )}
-      </div>
+
+            {/* Row 2: Quick Selector (mobile only) */}
+            <div className="flex md:hidden flex-col w-full border-t border-gray-100 px-3 md:px-6 py-2 bg-gray-50/50">
+              <div className="flex overflow-x-auto gap-2 pb-2 items-center [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                <span className="text-[10px] md:text-xs font-bold text-gray-500 uppercase tracking-wider mr-1 shrink-0">Collections:</span>
+                {displayCategories.map(cat => (
+                  <button
+                    key={cat}
+                    onClick={(e) => { e.stopPropagation(); setActiveFooterCategory(cat); }}
+                    className={`shrink-0 text-[11px] md:text-xs px-3 py-1 rounded-full font-medium transition-colors cursor-pointer border ${activeFooterCategory === cat ? 'bg-[#0b5e5e] text-white border-[#0b5e5e] shadow-sm' : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-100'}`}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
+              <div className="flex overflow-x-auto gap-3 py-1 items-center [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                {mockProducts.filter(p => p.accordionCategory === activeFooterCategory).map(prod => {
+                  const isSelected = selectedProduct.id === prod.id;
+                  return (
+                    <div
+                      key={prod.id}
+                      onClick={(e) => { e.stopPropagation(); handleTileSelection(prod); }}
+                      className={`relative shrink-0 w-12 h-12 md:w-14 md:h-14 rounded-md cursor-pointer border-2 transition-all duration-200 overflow-hidden ${isSelected ? 'border-[#0b5e5e] shadow-md scale-105 z-10' : 'border-transparent hover:border-gray-300'}`}
+                      title={prod.name}
+                    >
+                      <img src={prod.img} alt={prod.name} className="w-full h-full object-cover" />
+                      {isSelected && (
+                        <div className="absolute inset-0 bg-[#0b5e5e]/10 flex items-center justify-center">
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" className="drop-shadow-md">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                          </svg>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+
+        </div>{/* ← closes the always-rendered normal view wrapper */}
+
+      </div>{/* ← closes the main content area */}
 
       {/* ── PRODUCT DETAILS MODAL ── */}
       {isDetailsModalOpen && detailsProduct && (
@@ -1484,20 +1647,17 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
               </a>
               <button
                 onClick={() => {
-                  if (selectedProduct?.id === detailsProduct?.id && isFloorVisible && !isCompareMode) {
-                    setIsDetailsModalOpen(false); // Just close if it's already active
-                    return;
-                  }
                   handleTileSelection(detailsProduct);
                   setIsDetailsModalOpen(false);
                 }}
+                disabled={selectedProduct?.id === detailsProduct?.id && isFloorVisible && !isCompareMode}
                 className={`w-full sm:w-auto font-bold py-3 px-6 rounded-lg transition-colors shadow-md flex items-center justify-center gap-2 ${selectedProduct?.id === detailsProduct?.id && isFloorVisible && !isCompareMode
-                    ? 'bg-green-600 text-white cursor-pointer hover:bg-green-700'
-                    : 'bg-[#1877f2] hover:bg-[#1564cd] text-white cursor-pointer'
+                  ? 'bg-green-600 text-white opacity-60 cursor-not-allowed'
+                  : 'bg-[#1877f2] hover:bg-[#1564cd] text-white cursor-pointer'
                   }`}
               >
                 {selectedProduct?.id === detailsProduct?.id && isFloorVisible && !isCompareMode ? (
-                  <span>Applied in {detailsProduct?.name}</span>
+                  <span>Currently In Use</span>
                 ) : (
                   <>
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
