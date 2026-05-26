@@ -256,8 +256,4 @@ const DownloadView = ({ selectedProduct, currentSrc, compositeRef, onClose }) =>
   );
 };
 
-<<<<<<< HEAD
 export default DownloadView;
-=======
-export default DownloadView;
->>>>>>> fa1a36b12595fe13b52f32f11a62d0142e8be25a
