@@ -227,7 +227,7 @@ const mockProducts = [
   { id: 47, name: 'Elite-wood-086', size: '2mtr x 15mtr (Roll)', img: Bravo20, colour: 'brown', shade: 'Dark', category: 'Braavo', userIndustry: ['Sports Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Braavo', sku: 'WF/BR/0020', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=BRAAVO', description: "Wonderfloor Braavo premium sports flooring combines heavy-duty durability with cushioned comfort, making workouts safer, smoother, and more comfortable for gyms, courts, and fitness spaces.\n\nDesigned with resilient wear layers, glass fibre reinforcement, and easy-maintenance PUR coating, Braavo offers excellent shock absorption, acoustic performance, and long-lasting stability for sports, wellness, schools, auditoriums, and libraries." },
   { id: 48, name: 'Spt-082-meadows-green', size: '2mtr x 15mtr (Roll)', img: Bravo21, colour: 'green', shade: 'Dark', category: 'Braavo', userIndustry: ['Sports Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Braavo', sku: 'WF/BR/0021', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=BRAAVO', description: "Wonderfloor Braavo premium sports flooring combines heavy-duty durability with cushioned comfort, making workouts safer, smoother, and more comfortable for gyms, courts, and fitness spaces.\n\nDesigned with resilient wear layers, glass fibre reinforcement, and easy-maintenance PUR coating, Braavo offers excellent shock absorption, acoustic performance, and long-lasting stability for sports, wellness, schools, auditoriums, and libraries." },
 
-//krayons
+  //krayons
   { id: 13, name: 'Pastel Green', size: '2mtr x 20mtr (Roll)', img: Krayons1, colour: 'Green', shade: 'Dark', category: 'Krayons', userIndustry: ['School Flooring, Office Flooring', 'Hotel/ Hospitality Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Krayons', sku: 'WF/KR/0001', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons', description: "Wonderfloor Krayons cushion vinyl flooring brings vibrant colours and creative design flexibility to interiors with easy mix-and-match patterns, durable dimensional stability, and a maintenance-free PUR-coated surface.\n\nIdeal for schools, play areas, homes, offices, and hospitality spaces, Krayons adds a cheerful and lively atmosphere while offering long-lasting performance." },
   { id: 14, name: 'Frosty N Beige', size: '2mtr x 20mtr (Roll)', img: Krayons2, colour: 'Beige', shade: 'Dark', category: 'Krayons', userIndustry: ['School Flooring Office Flooring', 'Hotel/ Hospitality Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Krayons', sku: 'WF/KR/0002', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons', description: "Wonderfloor Krayons cushion vinyl flooring brings vibrant colours and creative design flexibility to interiors with easy mix-and-match patterns, durable dimensional stability, and a maintenance-free PUR-coated surface.\n\nIdeal for schools, play areas, homes, offices, and hospitality spaces, Krayons adds a cheerful and lively atmosphere while offering long-lasting performance." },
   { id: 15, name: 'Frosty N Grey', size: '2mtr x 20mtr (Roll)', img: Krayons4, colour: 'Blue', shade: 'Dark', category: 'Krayons', userIndustry: ['School Flooring', 'Office Flooring', 'Hotel/ Hospitality Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Krayons', sku: 'WF/KR/0003', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons', description: "Wonderfloor Krayons cushion vinyl flooring brings vibrant colours and creative design flexibility to interiors with easy mix-and-match patterns, durable dimensional stability, and a maintenance-free PUR-coated surface.\n\nIdeal for schools, play areas, homes, offices, and hospitality spaces, Krayons adds a cheerful and lively atmosphere while offering long-lasting performance." },
@@ -257,7 +257,7 @@ const mockProducts = [
   { id: 12, name: 'GDP-559404', size: '30cm x 30cm', img: floorPoppy5, colour: 'White', shade: 'Light', category: 'Tiles', userIndustry: ['Residential Flooring'], collection: 'Classic', accordionCategory: 'Aventus', sku: 'WF000062' },
 ];
 
-const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms }) => {
+const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCount = 0 }) => {
   const { productId } = useParams(); // <-- NEW CLEAN URL EXTRACTOR
 
   const productCategories = ['Braavo', 'Krayons', 'Durofloor', 'Siggma', 'Orbit', 'Stoneland Monza', 'Meteor', 'Aventus'];
@@ -488,71 +488,71 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms }) => {
   };
 
   // ── FIX: GENERATE LOCAL 3D COMPOSITE (BYPASSES FETCH COMPLETELY) ──
-// ── FIX: GENERATE LOCAL 3D COMPOSITE WITH SAFE GPU TIMEOUT ──
-const generateCompositeImage = async (productImgUrl, angle = 0) => {
-  return new Promise((resolve) => {
-    if (!activeBaseImage?.maskUrl || !visualizerInstance.current) {
-      return resolve(null);
-    }
-
-    const tilePreloader = new Image();
-    tilePreloader.crossOrigin = 'anonymous';
-
-    tilePreloader.onload = () => {
-      // 1. The image is downloaded. Tell ThreeJS to update the material.
-      if (visualizerInstance.current.updateTexture) {
-        visualizerInstance.current.updateTexture(productImgUrl, angle);
+  // ── FIX: GENERATE LOCAL 3D COMPOSITE WITH SAFE GPU TIMEOUT ──
+  const generateCompositeImage = async (productImgUrl, angle = 0) => {
+    return new Promise((resolve) => {
+      if (!activeBaseImage?.maskUrl || !visualizerInstance.current) {
+        return resolve(null);
       }
 
-      // 2. WAIT FOR THE GPU TO RENDER THE FRAME
-      // 450ms guarantees ThreeJS has time to upload the texture and draw it.
-      setTimeout(() => {
-        try {
-          const canvas = document.createElement('canvas');
-          const bgImg = new Image();
-          bgImg.crossOrigin = 'anonymous';
+      const tilePreloader = new Image();
+      tilePreloader.crossOrigin = 'anonymous';
 
-          bgImg.onload = () => {
-            canvas.width = bgImg.width;
-            canvas.height = bgImg.height;
-            const ctx = canvas.getContext('2d');
-
-            // Draw Base Room Background
-            ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
-
-            // Draw Updated ThreeJS webgl layer
-            const webglCanvas = threeContainerRef.current?.querySelector('canvas');
-            if (webglCanvas) {
-              ctx.drawImage(webglCanvas, 0, 0, canvas.width, canvas.height);
-            }
-
-            // Draw Top Mask layer
-            const maskImg = new Image();
-            maskImg.crossOrigin = 'anonymous';
-            maskImg.onload = () => {
-              ctx.drawImage(maskImg, 0, 0, canvas.width, canvas.height);
-              resolve(canvas.toDataURL('image/jpeg', 0.9)); // Return baked image dataURL
-            };
-            maskImg.onerror = () => resolve(null);
-            maskImg.src = activeBaseImage.maskUrl;
-          };
-          bgImg.onerror = () => resolve(null);
-          bgImg.src = activeBaseImage.previewUrl;
-        } catch (e) {
-          console.error("Canvas composite failed:", e);
-          resolve(null);
+      tilePreloader.onload = () => {
+        // 1. The image is downloaded. Tell ThreeJS to update the material.
+        if (visualizerInstance.current.updateTexture) {
+          visualizerInstance.current.updateTexture(productImgUrl, angle);
         }
-      }, 450); // <--- THIS IS THE MAGIC NUMBER THAT FIXES THE DOUBLE CLICK
-    };
 
-    tilePreloader.onerror = () => {
-      console.error("Failed to preload tile texture asset:", productImgUrl);
-      resolve(null);
-    };
+        // 2. WAIT FOR THE GPU TO RENDER THE FRAME
+        // 450ms guarantees ThreeJS has time to upload the texture and draw it.
+        setTimeout(() => {
+          try {
+            const canvas = document.createElement('canvas');
+            const bgImg = new Image();
+            bgImg.crossOrigin = 'anonymous';
 
-    tilePreloader.src = productImgUrl;
-  });
-};
+            bgImg.onload = () => {
+              canvas.width = bgImg.width;
+              canvas.height = bgImg.height;
+              const ctx = canvas.getContext('2d');
+
+              // Draw Base Room Background
+              ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
+
+              // Draw Updated ThreeJS webgl layer
+              const webglCanvas = threeContainerRef.current?.querySelector('canvas');
+              if (webglCanvas) {
+                ctx.drawImage(webglCanvas, 0, 0, canvas.width, canvas.height);
+              }
+
+              // Draw Top Mask layer
+              const maskImg = new Image();
+              maskImg.crossOrigin = 'anonymous';
+              maskImg.onload = () => {
+                ctx.drawImage(maskImg, 0, 0, canvas.width, canvas.height);
+                resolve(canvas.toDataURL('image/jpeg', 0.9)); // Return baked image dataURL
+              };
+              maskImg.onerror = () => resolve(null);
+              maskImg.src = activeBaseImage.maskUrl;
+            };
+            bgImg.onerror = () => resolve(null);
+            bgImg.src = activeBaseImage.previewUrl;
+          } catch (e) {
+            console.error("Canvas composite failed:", e);
+            resolve(null);
+          }
+        }, 450); // <--- THIS IS THE MAGIC NUMBER THAT FIXES THE DOUBLE CLICK
+      };
+
+      tilePreloader.onerror = () => {
+        console.error("Failed to preload tile texture asset:", productImgUrl);
+        resolve(null);
+      };
+
+      tilePreloader.src = productImgUrl;
+    });
+  };
 
   // Canvas-only composite that doesn't need the live ThreeJS instance
   const generateStaticComposite = async (productImgUrl,) => {
@@ -1083,15 +1083,20 @@ const generateCompositeImage = async (productImgUrl, angle = 0) => {
                   >
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="1.5"></circle><circle cx="12" cy="5" r="1.5"></circle><circle cx="12" cy="19" r="1.5"></circle></svg>
                   </button>
-                 {isMenuDropdownOpen && (
-                  <div className="absolute top-[45px] right-0 bg-white shadow-2xl border border-gray-200 rounded-md py-2 w-[180px] z-[100] flex flex-col">
-                    <button onClick={onOpenRecentRooms} className="flex items-center gap-3 px-4 py-3 text-sm hover:bg-gray-50 text-left transition-colors cursor-pointer border-b border-gray-50">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                      My History
-                    </button>
-                    <RoomUploader
+                  {isMenuDropdownOpen && (
+                    <div className="absolute top-[45px] right-0 bg-white shadow-2xl border border-gray-200 rounded-md py-2 w-[180px] z-[100] flex flex-col">
+                      <button onClick={onOpenRecentRooms} className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gray-50 text-left transition-colors cursor-pointer w-full">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500 shrink-0">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        My History
+                        {historyCount > 0 && (
+                          <span className="ml-1 bg-[#f05c3f] text-white text-[11px] font-bold rounded-full w-5 h-5 flex items-center justify-center shrink-0">
+                            {historyCount > 9 ? '9+' : historyCount}
+                          </span>
+                        )}
+                      </button>
+                      <RoomUploader
                         onImageUpload={(newImageData) => {
                           setUploadedRoom(newImageData);
                           setProcessedImage(null);
@@ -1358,18 +1363,23 @@ const generateCompositeImage = async (productImgUrl, angle = 0) => {
                   Contact us
                 </button>
               </a>
-             <div className="relative flex items-center h-full" ref={menuRef}>
+              <div className="relative flex items-center h-full" ref={menuRef}>
                 <button onClick={() => setIsMenuDropdownOpen(!isMenuDropdownOpen)} className="flex text-gray-600 hover:text-gray-900 hover:bg-gray-100 px-2 md:px-3 py-2 rounded-md text-sm font-medium items-center gap-1 transition-colors cursor-pointer">
                   <span className="hidden sm:inline">Menu</span>
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="1.5"></circle><circle cx="12" cy="5" r="1.5"></circle><circle cx="12" cy="19" r="1.5"></circle></svg>
                 </button>
                 {isMenuDropdownOpen && (
                   <div className="absolute top-[50px] right-0 bg-white shadow-xl border border-gray-200 rounded-md py-2 w-[180px] z-50 flex flex-col">
-                    <button onClick={onOpenRecentRooms} className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gray-50 text-left transition-colors cursor-pointer">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500">
+                    <button onClick={onOpenRecentRooms} className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gray-50 text-left transition-colors cursor-pointer w-full">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500 shrink-0">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
-                    My History
+                      My History
+                      {historyCount > 0 && (
+                        <span className="ml-1 bg-[#f05c3f] text-white text-[11px] font-bold rounded-full w-5 h-5 flex items-center justify-center shrink-0">
+                          {historyCount > 9 ? '9+' : historyCount}
+                        </span>
+                      )}
                     </button>
                     <RoomUploader
                       onImageUpload={(newImageData) => {
