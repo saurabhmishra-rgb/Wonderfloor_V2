@@ -227,11 +227,7 @@ const mockProducts = [
   { id: 47, name: 'Elite-wood-086', size: '2mtr x 15mtr (Roll)', img: Bravo20, colour: 'brown', shade: 'Dark', category: 'Braavo', userIndustry: ['Sports Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Braavo', sku: 'WF/BR/0020', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=BRAAVO', description: "Wonderfloor Braavo premium sports flooring combines heavy-duty durability with cushioned comfort, making workouts safer, smoother, and more comfortable for gyms, courts, and fitness spaces.\n\nDesigned with resilient wear layers, glass fibre reinforcement, and easy-maintenance PUR coating, Braavo offers excellent shock absorption, acoustic performance, and long-lasting stability for sports, wellness, schools, auditoriums, and libraries." },
   { id: 48, name: 'Spt-082-meadows-green', size: '2mtr x 15mtr (Roll)', img: Bravo21, colour: 'green', shade: 'Dark', category: 'Braavo', userIndustry: ['Sports Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Braavo', sku: 'WF/BR/0021', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=BRAAVO', description: "Wonderfloor Braavo premium sports flooring combines heavy-duty durability with cushioned comfort, making workouts safer, smoother, and more comfortable for gyms, courts, and fitness spaces.\n\nDesigned with resilient wear layers, glass fibre reinforcement, and easy-maintenance PUR coating, Braavo offers excellent shock absorption, acoustic performance, and long-lasting stability for sports, wellness, schools, auditoriums, and libraries." },
 
-<<<<<<< HEAD
 //krayons
-=======
-
->>>>>>> fa1a36b12595fe13b52f32f11a62d0142e8be25a
   { id: 13, name: 'Pastel Green', size: '2mtr x 20mtr (Roll)', img: Krayons1, colour: 'Green', shade: 'Dark', category: 'Krayons', userIndustry: ['School Flooring, Office Flooring', 'Hotel/ Hospitality Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Krayons', sku: 'WF/KR/0001', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons', description: "Wonderfloor Krayons cushion vinyl flooring brings vibrant colours and creative design flexibility to interiors with easy mix-and-match patterns, durable dimensional stability, and a maintenance-free PUR-coated surface.\n\nIdeal for schools, play areas, homes, offices, and hospitality spaces, Krayons adds a cheerful and lively atmosphere while offering long-lasting performance." },
   { id: 14, name: 'Frosty N Beige', size: '2mtr x 20mtr (Roll)', img: Krayons2, colour: 'Beige', shade: 'Dark', category: 'Krayons', userIndustry: ['School Flooring Office Flooring', 'Hotel/ Hospitality Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Krayons', sku: 'WF/KR/0002', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons', description: "Wonderfloor Krayons cushion vinyl flooring brings vibrant colours and creative design flexibility to interiors with easy mix-and-match patterns, durable dimensional stability, and a maintenance-free PUR-coated surface.\n\nIdeal for schools, play areas, homes, offices, and hospitality spaces, Krayons adds a cheerful and lively atmosphere while offering long-lasting performance." },
   { id: 15, name: 'Frosty N Grey', size: '2mtr x 20mtr (Roll)', img: Krayons4, colour: 'Blue', shade: 'Dark', category: 'Krayons', userIndustry: ['School Flooring', 'Office Flooring', 'Hotel/ Hospitality Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Krayons', sku: 'WF/KR/0003', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons', description: "Wonderfloor Krayons cushion vinyl flooring brings vibrant colours and creative design flexibility to interiors with easy mix-and-match patterns, durable dimensional stability, and a maintenance-free PUR-coated surface.\n\nIdeal for schools, play areas, homes, offices, and hospitality spaces, Krayons adds a cheerful and lively atmosphere while offering long-lasting performance." },
@@ -261,11 +257,7 @@ const mockProducts = [
   { id: 12, name: 'GDP-559404', size: '30cm x 30cm', img: floorPoppy5, colour: 'White', shade: 'Light', category: 'Tiles', userIndustry: ['Residential Flooring'], collection: 'Classic', accordionCategory: 'Aventus', sku: 'WF000062' },
 ];
 
-<<<<<<< HEAD
 const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms }) => {
-=======
-const ARVisualizer = ({ closeModal, initialImage }) => {
->>>>>>> fa1a36b12595fe13b52f32f11a62d0142e8be25a
   const { productId } = useParams(); // <-- NEW CLEAN URL EXTRACTOR
 
   const productCategories = ['Braavo', 'Krayons', 'Durofloor', 'Siggma', 'Orbit', 'Stoneland Monza', 'Meteor', 'Aventus'];
@@ -365,11 +357,7 @@ const ARVisualizer = ({ closeModal, initialImage }) => {
   }, [activeBaseImage]);
   useEffect(() => {
     setIsProcessing(true);
-<<<<<<< HEAD
     const initTimer = setTimeout(() => setIsProcessing(false), 1500);
-=======
-    const initTimer = setTimeout(() => setIsProcessing(false), 4500);
->>>>>>> fa1a36b12595fe13b52f32f11a62d0142e8be25a
     return () => clearTimeout(initTimer);
   }, [activeBaseImage]);
 
@@ -675,11 +663,7 @@ const generateCompositeImage = async (productImgUrl, angle = 0) => {
         if (visualizerInstance.current && visualizerInstance.current.updateTexture) {
           visualizerInstance.current.updateTexture(product.img, angle);
         }
-<<<<<<< HEAD
         await new Promise(resolve => setTimeout(resolve, 1500));
-=======
-        await new Promise(resolve => setTimeout(resolve, 4500));
->>>>>>> fa1a36b12595fe13b52f32f11a62d0142e8be25a
         return;
       }
 
@@ -694,11 +678,7 @@ const generateCompositeImage = async (productImgUrl, angle = 0) => {
 
       const [response] = await Promise.all([
         fetch(`${BACKEND_URL}/api/replace-floor`, { method: 'POST', body: formData }),
-<<<<<<< HEAD
         new Promise(resolve => setTimeout(resolve, 1500))
-=======
-        new Promise(resolve => setTimeout(resolve, 4500))
->>>>>>> fa1a36b12595fe13b52f32f11a62d0142e8be25a
       ]);
 
       const data = await response.json();
@@ -860,7 +840,6 @@ const generateCompositeImage = async (productImgUrl, angle = 0) => {
         );
         break;
 
-<<<<<<< HEAD
       // case 'pinterest': {
       //   const pinImg = encodeURIComponent(selectedProduct.img);
       //   window.open(
@@ -869,16 +848,6 @@ const generateCompositeImage = async (productImgUrl, angle = 0) => {
       //   );
       //   break;
       // }
-=======
-      case 'pinterest': {
-        const pinImg = encodeURIComponent(selectedProduct.img);
-        window.open(
-          `https://pinterest.com/pin/create/button/?url=${shareUrl}&media=${pinImg}`,
-          '_blank'
-        );
-        break;
-      }
->>>>>>> fa1a36b12595fe13b52f32f11a62d0142e8be25a
       case 'email':
         // ✅ Only puts the URL in the body of the email
         window.open(
@@ -1114,7 +1083,6 @@ const generateCompositeImage = async (productImgUrl, angle = 0) => {
                   >
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="1.5"></circle><circle cx="12" cy="5" r="1.5"></circle><circle cx="12" cy="19" r="1.5"></circle></svg>
                   </button>
-<<<<<<< HEAD
                  {isMenuDropdownOpen && (
                   <div className="absolute top-[45px] right-0 bg-white shadow-2xl border border-gray-200 rounded-md py-2 w-[180px] z-[100] flex flex-col">
                     <button onClick={onOpenRecentRooms} className="flex items-center gap-3 px-4 py-3 text-sm hover:bg-gray-50 text-left transition-colors cursor-pointer border-b border-gray-50">
@@ -1124,15 +1092,6 @@ const generateCompositeImage = async (productImgUrl, angle = 0) => {
                       My History
                     </button>
                     <RoomUploader
-=======
-                  {isMenuDropdownOpen && (
-                    <div className="absolute top-[45px] right-0 bg-white shadow-2xl border border-gray-200 rounded-md py-2 w-[180px] z-[100] flex flex-col">
-                      <button onClick={closeModal} className="flex items-center gap-3 px-4 py-3 text-sm hover:bg-gray-50 text-left transition-colors cursor-pointer border-b border-gray-50">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-                        Change Room
-                      </button>
-                      <RoomUploader
->>>>>>> fa1a36b12595fe13b52f32f11a62d0142e8be25a
                         onImageUpload={(newImageData) => {
                           setUploadedRoom(newImageData);
                           setProcessedImage(null);
@@ -1368,11 +1327,7 @@ const generateCompositeImage = async (productImgUrl, angle = 0) => {
                     <button onClick={() => handleShare('copy')} className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gray-50 text-left transition-colors cursor-pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg> Copy Link</button>
                     <button onClick={() => handleShare('facebook')} className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gray-50 text-left transition-colors cursor-pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg> Facebook</button>
                     <button onClick={() => handleShare('whatsapp')} className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gray-50 text-left transition-colors cursor-pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg> WhatsApp</button>
-<<<<<<< HEAD
                     {/* <button onClick={() => handleShare('pinterest')} className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gray-50 text-left transition-colors cursor-pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500"><line x1="12" y1="22" x2="12" y2="12"></line><line x1="12" y1="2" x2="12" y2="4"></line><line x1="2" y1="12" x2="4" y2="12"></line><line x1="22" y1="12" x2="20" y2="12"></line><circle cx="12" cy="12" r="10"></circle><path d="M8 12a4 4 0 0 0 8 0"></path></svg> Pinterest</button> */}
-=======
-                    <button onClick={() => handleShare('pinterest')} className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gray-50 text-left transition-colors cursor-pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500"><line x1="12" y1="22" x2="12" y2="12"></line><line x1="12" y1="2" x2="12" y2="4"></line><line x1="2" y1="12" x2="4" y2="12"></line><line x1="22" y1="12" x2="20" y2="12"></line><circle cx="12" cy="12" r="10"></circle><path d="M8 12a4 4 0 0 0 8 0"></path></svg> Pinterest</button>
->>>>>>> fa1a36b12595fe13b52f32f11a62d0142e8be25a
                     <button onClick={() => handleShare('email')} className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gray-50 text-left transition-colors cursor-pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg> Email</button>
                   </div>
                 )}
@@ -1403,28 +1358,18 @@ const generateCompositeImage = async (productImgUrl, angle = 0) => {
                   Contact us
                 </button>
               </a>
-<<<<<<< HEAD
              <div className="relative flex items-center h-full" ref={menuRef}>
-=======
-              <div className="relative flex items-center h-full" ref={menuRef}>
->>>>>>> fa1a36b12595fe13b52f32f11a62d0142e8be25a
                 <button onClick={() => setIsMenuDropdownOpen(!isMenuDropdownOpen)} className="flex text-gray-600 hover:text-gray-900 hover:bg-gray-100 px-2 md:px-3 py-2 rounded-md text-sm font-medium items-center gap-1 transition-colors cursor-pointer">
                   <span className="hidden sm:inline">Menu</span>
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="1.5"></circle><circle cx="12" cy="5" r="1.5"></circle><circle cx="12" cy="19" r="1.5"></circle></svg>
                 </button>
                 {isMenuDropdownOpen && (
                   <div className="absolute top-[50px] right-0 bg-white shadow-xl border border-gray-200 rounded-md py-2 w-[180px] z-50 flex flex-col">
-<<<<<<< HEAD
                     <button onClick={onOpenRecentRooms} className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gray-50 text-left transition-colors cursor-pointer">
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
                     My History
-=======
-                    <button onClick={closeModal} className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gray-50 text-left transition-colors cursor-pointer">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-                      Change Room
->>>>>>> fa1a36b12595fe13b52f32f11a62d0142e8be25a
                     </button>
                     <RoomUploader
                       onImageUpload={(newImageData) => {
@@ -1522,11 +1467,7 @@ const generateCompositeImage = async (productImgUrl, angle = 0) => {
             {/* Powered-by badge */}
             <div className="absolute bottom-3 right-3 md:bottom-5 md:right-5 bg-gradient-to-r from-red-600/80 to-rose-500/80 backdrop-blur-xl border border-white/20 px-5 md:px-4 py-1.5 md:py-2 rounded-full z-30 pointer-events-none flex items-center gap-1.5 shadow-lg shadow-red-500/40 ring-1 ring-inset ring-white/10">
               <span className="text-[10px] md:text-[11px] font-normal text-gray-200">Powered by</span>
-<<<<<<< HEAD
               <span className="text-[11px] md:text-[12px] font-bold text-white tracking-wide">WonderFloor</span>
-=======
-              <span className="text-[11px] md:text-[12px] font-bold text-white tracking-wide">Wonderfloor</span>
->>>>>>> fa1a36b12595fe13b52f32f11a62d0142e8be25a
             </div>
           </div>
 
@@ -1732,8 +1673,4 @@ const generateCompositeImage = async (productImgUrl, angle = 0) => {
   );
 };
 
-<<<<<<< HEAD
 export default ARVisualizer;
-=======
-export default ARVisualizer;
->>>>>>> fa1a36b12595fe13b52f32f11a62d0142e8be25a
