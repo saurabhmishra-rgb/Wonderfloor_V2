@@ -4,6 +4,7 @@ import ARVisualizer from './components/ARVisualizer';
 import { io } from 'socket.io-client';
 import { QRCodeCanvas } from 'qrcode.react';
 
+<<<<<<< HEAD
 import { useImageHistory } from './hooks/useImageHistory';
 import ImageHistoryDrawer from './components/ImageHistoryDrawer'; // <-- Correct path // <-- Correct path
 
@@ -164,10 +165,245 @@ function App() {
   const [selectedIndustry, setSelectedIndustry] = useState(
     localStorage.getItem('savedIndustry') || 'ALL INDUSTRY'
   );
+=======
+import { useLocation,useParams,useNavigate} from 'react-router-dom'; // <-- ADD THIS
+
+
+// --- 1. Import all local images from your assets folder ---
+import Hospital from './assets/Hospital_02.jpg';
+import office02 from './assets/Office-Flooring_02.jpg';
+import residential03 from './assets/Residential-Flooring_02.jpg';
+import school03 from './assets/School-Flooring_02.jpg';
+import superMarket01 from './assets/Super-Market-Flooring_01.jpg';
+import HeroImage from './assets/hero.png';
+import Sport from './assets/Sports-Flooring_01.jpg';
+import Transport from './assets/Transport-Flooring_03.jpg';
+import Auditorial from './assets/Auditorium-Flooring_01.jpg';
+import Hotel from './assets/Hotel_Hospitality-Flooring_01.jpg';
+import Industrial from './assets/Industrial-Flooring_02.jpg';
+import DefaultImage from './assets/Default.jpg';
+import Logo from './assets/logo.png';
+import room1 from './assets/room1.jpg';
+import room2 from './assets/room2.jpg';
+import room1copy from './assets/room1copy.png';
+import room2copy from './assets/room2copy.png';
+import schoolcopy1 from './assets/School-Flooring_02 copy.png'
+import schoolcopy2 from './assets/School-Flooring_03 copy.png'
+import schoolcopy3 from './assets/School-Flooring_04 copy.png'
+import schoolcopy4 from './assets/School-Flooring_05 copy.png'
+import schoolcopy5 from './assets/School-Flooring_06 copy.png'
+import schoolcopy6 from './assets/School-Flooring_07.png'
+import school01 from './assets/school1.jpg';
+import school02 from './assets/school2.jpg';
+import school04 from './assets/school3.jpg';
+import school05 from './assets/school4.jpg';
+import school06 from './assets/school6.jpg';
+// import schoolcopy7 from './assets/School-Flooring_08.png'
+// import room3copy from './assets/room3copy.png';
+// import room3 from './assets/room3.jpg';
+// --- CONNECT TO PYTHON BACKEND (RENDER) ---
+// IMPORTANT: Replace this placeholder with your actual Render URL!
+// App.jsx — add this line near the top of your App() function
+const socket = io('https://python-floor-backend.onrender.com', {
+  transports: ['polling', 'websocket'], // Let it try polling first, then upgrade
+});
+
+const industries = [
+    "ALL INDUSTRY",
+    "Industrial Flooring",
+    "Office Flooring",
+    "Residential Flooring",
+    "School Flooring",
+    "Sports Flooring",
+    "Supermarket Flooring",
+    "Transport Flooring",
+    "Hospital Flooring",
+    "Auditorium Flooring",
+    "Hotel/ Hospitality Flooring",
+    "Luxury Vinyl Tile"
+  ];
+
+  const flooringProducts = [
+    "Product Collections",
+    "Antique",
+    "Adventus",
+    "Braavo",
+    "Durofloor",
+    "Duratek",
+    "D'ZINER",
+    "Galaxxy",
+    "GDP",
+    "Hi-Tech",
+    "Krayons",
+    "Luxuria",
+    "Matrixx",
+    "Meteor",
+    "Ornate",
+    "Orbit",
+    "Oriion",
+    "Rangolie",
+    "Rhythm",
+    "Robust",
+    "Siggma",
+    "Stoneland Monza",
+    "Traction / Safety",
+    "Trendo wood",
+    "Trendo Chips",
+    "Uttsav",
+  ];
+
+  const allDemoRooms = [
+    { id: 'ind-1', name: 'Industrial Flooring Option 1', img: Industrial, category: 'Industrial Flooring', product: ['Durofloor', 'Antique'] },
+    { id: 'ind-2', name: 'Industrial Flooring Option 2', img: DefaultImage, category: 'Industrial Flooring', product: 'Siggma' },
+    { id: 'ind-3', name: 'Industrial Flooring Option 3', img: DefaultImage, category: 'Industrial Flooring', product: 'Siggma' },
+    { id: 'ind-4', name: 'Industrial Flooring Option 4', img: DefaultImage, category: 'Industrial Flooring', product: 'Siggma' },
+
+    { id: 'off-1', name: 'Office Flooring Option 1', img: office02, category: 'Office Flooring', product: ['Siggma', 'Trendo wood', 'Ornate', 'Antique', 'Hi-Tech', 'Trendo Chips', 'Stoneland Monza', 'Adventus'] },
+    { id: 'off-2', name: 'Office Flooring Option 2', img: DefaultImage, category: 'Office Flooring', product: ['Siggma', 'Trendo wood', 'Ornate', 'Antique', 'Hi-Tech', 'Trendo Chips', 'Stoneland Monza', 'Adventus'] },
+    { id: 'off-3', name: 'Office Flooring Option 3', img: DefaultImage, category: 'Office Flooring', product: ['Siggma', 'Trendo wood', 'Ornate', 'Antique', 'Hi-Tech', 'Trendo Chips', 'Stoneland Monza', 'Adventus'] },
+    { id: 'off-4', name: 'Office Flooring Option 4', img: DefaultImage, category: 'Office Flooring', product: ['Siggma', 'Trendo wood', 'Ornate', 'Antique', 'Hi-Tech', 'Trendo Chips', 'Stoneland Monza', 'Adventus'] },
+    //  {
+    //   id: 'res-5',
+    //   name: 'Residential Flooring Option 5',
+    //   img: room3,
+    //   mask: room3copy,
+    //   category: 'Office Flooring',
+    //   product:['Siggma', 'Trendo wood', 'Ornate', 'Antique', 'Hi-Tech', 'Trendo Chips', 'Stoneland Monza', 'Adventus'] },
+    { id: 'res-1', name: 'Residential Flooring Option 1', img: residential03, category: 'Residential Flooring', product: ['Trendo wood', 'Ornate', 'Duratek', 'Galaxxy', 'Luxuria', 'Antique', 'GDP', 'Hi-Tech', 'Uttsav', 'Oriion', 'Rangolie',] },
+    { id: 'res-2', name: 'Residential Flooring Option 2', img: DefaultImage, category: 'Residential Flooring', product: ['Trendo wood', 'Ornate', 'Duratek', 'Galaxxy', 'Luxuria', 'Antique', 'GDP', 'Hi-Tech', 'Uttsav', 'Oriion', 'Rangolie',] },
+    { id: 'res-3', name: 'Residential Flooring Option 3', img: DefaultImage, category: 'Residential Flooring', product: ['Trendo wood', 'Ornate', 'Duratek', 'Galaxxy', 'Luxuria', 'Antique', 'GDP', 'Hi-Tech', 'Uttsav', 'Oriion', 'Rangolie',] },
+    { id: 'res-4', name: 'Residential Flooring Option 4', img: DefaultImage, category: 'Residential Flooring', product: ['Trendo wood', 'Ornate', 'Duratek', 'Galaxxy', 'Luxuria', 'Antique', 'GDP', 'Hi-Tech', 'Uttsav', 'Oriion', 'Rangolie',] },
+    {
+      id: 'res-6',
+      name: 'Residential Flooring Option 5',
+      img: room1,
+      mask: room1copy,
+      category: 'Residential Flooring',
+      product: ['Trendo wood', 'Ornate', 'Duratek', 'Galaxxy', 'Luxuria', 'Antique', 'GDP', 'Hi-Tech', 'Uttsav', 'Oriion', 'Rangolie',]
+    },
+    {
+      id: 'res-7',
+      name: 'Residential Flooring Option 6',
+      img: room2,
+      mask: room2copy,
+      category: 'Residential Flooring',
+      product: ['Trendo wood', 'Ornate', 'Duratek', 'Galaxxy', 'Luxuria', 'Antique', 'GDP', 'Hi-Tech', 'Uttsav', 'Oriion', 'Rangolie',]
+    },
+
+
+    {
+      id: 'sch-1',
+      name: 'School Flooring Option 1',
+      mask: schoolcopy1,
+      img: school03,
+      category: 'School Flooring',
+      product: ['Krayons', 'Rhythm', 'Trendo Chips']
+    },
+    {
+      id: 'sch-2',
+      name: 'School Flooring Option 2',
+      mask: schoolcopy2,
+      img: school02,
+      category: 'School Flooring',
+      product: ['Krayons', 'Rhythm', 'Trendo Chips']
+    },
+    {
+      id: 'sch-3',
+      name: 'School Flooring Option 3',
+      mask: schoolcopy3,
+      img: school01,
+      category: 'School Flooring',
+      product: ['Krayons', 'Rhythm', 'Trendo Chips']
+    },
+    {
+      id: 'sch-4',
+      name: 'School Flooring Option 4',
+      mask: schoolcopy4,
+      img: school04,
+      category: 'School Flooring',
+      product: ['Krayons', 'Rhythm', 'Trendo Chips']
+    },
+    {
+      id: 'sch-5',
+      name: 'School Flooring Option 5',
+      mask: schoolcopy5,
+      img: school05,
+      category: 'School Flooring',
+      product: ['Krayons', 'Rhythm', 'Trendo Chips']
+    },
+    {
+      id: 'sch-6',
+      name: 'School Flooring Option 6',
+      mask: schoolcopy6,
+      img: school06,
+      category: 'School Flooring',
+      product: ['Krayons', 'Rhythm', 'Trendo Chips']
+    },
+    // { 
+    //   id: 'sch-7', 
+    //   name: 'School Flooring Option 7', 
+    //   mask: schoolcopy7, 
+    //   img: DefaultImage, 
+    //   category: 'School Flooring', 
+    //   product: ['Krayons', 'Rhythm', 'Trendo Chips'] 
+    // },
+
+
+    { id: 'spo-1', name: 'Sports Flooring Option 1', img: Sport, category: 'Sports Flooring', product: ['Ornate', 'Braavo'] },
+    { id: 'spo-2', name: 'Sports Flooring Option 2', img: DefaultImage, category: 'Sports Flooring', product: ['Ornate', 'Braavo'] },
+    { id: 'spo-3', name: 'Sports Flooring Option 3', img: DefaultImage, category: 'Sports Flooring', product: ['Ornate', 'Braavo'] },
+    { id: 'spo-4', name: 'Sports Flooring Option 4', img: DefaultImage, category: 'Sports Flooring', product: ['Ornate', 'Braavo'] },
+
+    { id: 'sup-1', name: 'Supermarket Flooring Option 1', img: superMarket01, category: 'Supermarket Flooring', product: ['Durofloor', 'Siggma', 'Timberland Exotica 2mm', 'Trendo wood', 'Ornate', 'Trendo Chips', 'Oriion'] },
+    { id: 'sup-2', name: 'Supermarket Flooring Option 2', img: DefaultImage, category: 'Supermarket Flooring', product: ['Durofloor', 'Siggma', 'Timberland Exotica 2mm', 'Trendo wood', 'Ornate', 'Trendo Chips', 'Oriion'] },
+    { id: 'sup-3', name: 'Supermarket Flooring Option 3', img: DefaultImage, category: 'Supermarket Flooring', product: ['Durofloor', 'Siggma', 'Timberland Exotica 2mm', 'Trendo wood', 'Ornate', 'Trendo Chips', 'Oriion'] },
+    { id: 'sup-4', name: 'Supermarket Flooring Option 4', img: DefaultImage, category: 'Supermarket Flooring', product: ['Durofloor', 'Siggma', 'Timberland Exotica 2mm', 'Trendo wood', 'Ornate', 'Trendo Chips', 'Oriion'] },
+
+    { id: 'tra-1', name: 'Transport Flooring Option 1', img: Transport, category: 'Transport Flooring', product: ['Traction / Safety', 'Matrixx (Export)', 'D’ziner',] },
+    { id: 'tra-2', name: 'Transport Flooring Option 2', img: DefaultImage, category: 'Transport Flooring', product: ['Traction / Safety', 'Matrixx (Export)', 'D’ziner',] },
+    { id: 'tra-3', name: 'Transport Flooring Option 3', img: DefaultImage, category: 'Transport Flooring', product: ['Traction / Safety', 'Matrixx (Export)', 'D’ziner',] },
+    { id: 'tra-4', name: 'Transport Flooring Option 4', img: DefaultImage, category: 'Transport Flooring', product: ['Traction / Safety', 'Matrixx (Export)', 'D’ziner',] },
+
+    { id: 'hos-1', name: 'Hospital Flooring Option 1', img: Hospital, category: 'Hospital Flooring', product: ['Siggma', 'Orbit', 'Trendo Chips', 'Wallspro Plus', 'Adventus'] },
+    { id: 'hos-2', name: 'Hospital Flooring Option 2', img: DefaultImage, category: 'Hospital Flooring', product: ['Siggma', 'Orbit', 'Trendo Chips', 'Wallspro Plus', 'Adventus'] },
+    { id: 'hos-3', name: 'Hospital Flooring Option 3', img: DefaultImage, category: 'Hospital Flooring', product: ['Siggma', 'Orbit', 'Trendo Chips', 'Wallspro Plus', 'Adventus'] },
+    { id: 'hos-4', name: 'Hospital Flooring Option 4', img: DefaultImage, category: 'Hospital Flooring', product: ['Siggma', 'Orbit', 'Trendo Chips', 'Wallspro Plus', 'Adventus'] },
+
+    { id: 'aud-1', name: 'Auditorium Flooring Option 1', img: Auditorial, category: 'Auditorium Flooring', product: ['Timberland Exotica 2mm', 'Trendo wood', 'Braavo', 'Stoneland Monza', 'Timberland Herringbone 2mm'] },
+    { id: 'aud-2', name: 'Auditorium Flooring Option 2', img: DefaultImage, category: 'Auditorium Flooring', product: ['Timberland Exotica 2mm', 'Trendo wood', 'Braavo', 'Stoneland Monza', 'Timberland Herringbone 2mm'] },
+    { id: 'aud-3', name: 'Auditorium Flooring Option 3', img: DefaultImage, category: 'Auditorium Flooring', product: ['Timberland Exotica 2mm', 'Trendo wood', 'Braavo', 'Stoneland Monza', 'Timberland Herringbone 2mm'] },
+    { id: 'aud-4', name: 'Auditorium Flooring Option 4', img: DefaultImage, category: 'Auditorium Flooring', product: ['Timberland Exotica 2mm', 'Trendo wood', 'Braavo', 'Stoneland Monza', 'Timberland Herringbone 2mm'] },
+
+    { id: 'hot-1', name: 'Hotel Flooring Option 1', img: Hotel, category: 'Hotel/ Hospitality Flooring', product: ['Timberland Exotica 2mm', 'Trendo wood', 'Ornate', 'Braavo', 'Timberworld 1.5 mm', 'Stoneland Monza', 'Meteor', 'Timberland Herringbone 2mm', 'Grandeure Premium Luxury Planks 2mm'] },
+    { id: 'hot-2', name: 'Hotel Flooring Option 2', img: DefaultImage, category: 'Hotel/ Hospitality Flooring', product: ['Timberland Exotica 2mm', 'Trendo wood', 'Ornate', 'Braavo', 'Timberworld 1.5 mm', 'Stoneland Monza', 'Meteor', 'Timberland Herringbone 2mm', 'Grandeure Premium Luxury Planks 2mm'] },
+    { id: 'hot-3', name: 'Hotel Flooring Option 3', img: DefaultImage, category: 'Hotel/ Hospitality Flooring', product: ['Timberland Exotica 2mm', 'Trendo wood', 'Ornate', 'Braavo', 'Timberworld 1.5 mm', 'Stoneland Monza', 'Meteor', 'Timberland Herringbone 2mm', 'Grandeure Premium Luxury Planks 2mm'] },
+    { id: 'hot-4', name: 'Hotel Flooring Option 4', img: DefaultImage, category: 'Hotel/ Hospitality Flooring', product: ['Timberland Exotica 2mm', 'Trendo wood', 'Ornate', 'Braavo', 'Timberworld 1.5 mm', 'Stoneland Monza', 'Meteor', 'Timberland Herringbone 2mm', 'Grandeure Premium Luxury Planks 2mm'] },
+  ];
+  
+function App() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedRoomImage, setSelectedRoomImage] = useState(null);
+ 
+  // --- QR Code & Session State ---
+  const [showQR, setShowQR] = useState(false);
+  const [sessionId, setSessionId] = useState('');
+  const location = useLocation();
+ const { roomId } = useParams();
+ const navigate = useNavigate();
+  const fileInputRef = useRef(null);
+  const productDropdownRef = useRef(null);
+
+  // 1. Tell React to check local storage first before defaulting
+  const [selectedIndustry, setSelectedIndustry] = useState(
+    localStorage.getItem('savedIndustry') || 'ALL INDUSTRY'
+  );
+  const [isProductDropdownOpen, setIsProductDropdownOpen] = useState(false);
+>>>>>>> fa1a36b12595fe13b52f32f11a62d0142e8be25a
   const [selectedProduct, setSelectedProduct] = useState(
     localStorage.getItem('savedProduct') || 'Product Collections'
   );
 
+<<<<<<< HEAD
   // ── Refs ───────────────────────────────────────────────────────────────────
   const fileInputRef       = useRef(null);
   const productDropdownRef = useRef(null);
@@ -201,10 +437,50 @@ function App() {
     const handleImageUploaded = async (base64Data) => {
       console.log('Image received from mobile!');
       try {
+=======
+  // 2. Automatically save choices to local storage whenever they change
+  useEffect(() => {
+    localStorage.setItem('savedIndustry', selectedIndustry);
+    localStorage.setItem('savedProduct', selectedProduct);
+  }, [selectedIndustry, selectedProduct]);
+
+  // --- Lock body scroll when modals are open to make mobile perfect ---
+  useEffect(() => {
+    if (isModalOpen || showQR) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    }
+  }, [isModalOpen, showQR]);
+
+  // --- Real-time Mobile Sync Logic ---
+  useEffect(() => {
+    // 1. Re-join session if socket reconnects
+    const handleConnect = () => {
+      if (sessionId) {
+        console.log("Socket reconnected! Re-joining session:", sessionId);
+        socket.emit('join_session', sessionId);
+      }
+    };
+    socket.on('connect', handleConnect);
+
+    // 2. Handle incoming mobile image
+    const handleImageUploaded = async (base64Data) => {
+      console.log("Image received from mobile! Processing...");
+      // Log the first 50 characters to check formatting in your browser console
+      console.log("Raw data start:", base64Data.substring(0, 50));
+
+      try {
+        // FIX: Ensure it's a valid Data URL before fetching
+>>>>>>> fa1a36b12595fe13b52f32f11a62d0142e8be25a
         const dataUrl = base64Data.startsWith('data:image')
           ? base64Data
           : `data:image/jpeg;base64,${base64Data}`;
 
+<<<<<<< HEAD
         const res  = await fetch(dataUrl);
         const blob = await res.blob();
         const file = new File([blob], 'mobile_upload.jpg', { type: blob.type || 'image/jpeg' });
@@ -365,6 +641,31 @@ function App() {
 };
 
   /** QR code generation */
+=======
+        const res = await fetch(dataUrl);
+        const blob = await res.blob();
+        const file = new File([blob], "mobile_upload.jpg", { type: blob.type || "image/jpeg" });
+
+        // Use the corrected dataUrl here
+        setSelectedRoomImage({ previewUrl: dataUrl, isDemo: false, rawFile: file });
+        setShowQR(false);
+        setIsModalOpen(true);
+        console.log("Visualizer opened successfully!");
+      } catch (error) {
+        console.error("Failed to process the mobile image:", error);
+        alert("Received the image, but it was unable to be processed.");
+      }
+    };
+
+    socket.on('image_uploaded_from_mobile', handleImageUploaded);
+
+    return () => {
+      socket.off('connect', handleConnect);
+      socket.off('image_uploaded_from_mobile', handleImageUploaded);
+    };
+  }, [sessionId]); // Add sessionId as dependency so it always has the latest one
+
+>>>>>>> fa1a36b12595fe13b52f32f11a62d0142e8be25a
   const handleGenerateQR = () => {
     const newSessionId = Math.random().toString(36).substring(2, 10);
     setSessionId(newSessionId);
@@ -377,14 +678,111 @@ function App() {
     }
   };
 
+<<<<<<< HEAD
   // ── Derived values ────────────────────────────────────────────────────────
+=======
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (productDropdownRef.current && !productDropdownRef.current.contains(event.target)) {
+        setIsProductDropdownOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [productDropdownRef]);
+
+  
+
+  const handleUploadClick = () => fileInputRef.current.click();
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSelectedRoomImage({ previewUrl: URL.createObjectURL(file), isDemo: false, rawFile: file });
+      setIsModalOpen(true);
+      // Ensure we clear memory on custom uploads so it doesn't try to auto-reload a local file
+      localStorage.removeItem('activeDemoRoomId');
+    }
+  };
+
+ const handleDemoRoomClick = async (room) => {
+    try {
+      const response = await fetch(room.img);
+      const blob = await response.blob();
+      const file = new File([blob], "demo_room.jpg", { type: "image/jpeg" });
+
+      setSelectedRoomImage({
+        id: room.id,           // <--- ADD THIS LINE RIGHT HERE!
+        previewUrl: room.img,
+        isDemo: true,
+        rawFile: file,
+        maskUrl: room.mask || null
+      });
+      setIsModalOpen(true);
+
+      // Save the room ID so it survives the refresh
+      localStorage.setItem('activeDemoRoomId', room.id);
+
+    } catch (error) {
+      console.error("Failed to load demo image:", error);
+      alert("Could not load the demo room. Check if the image path is correct.");
+    }
+  };
+
+  // Close modal and wipe memory
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedRoomImage(null);
+    localStorage.removeItem('activeDemoRoomId');
+     if (location.pathname.startsWith('/visualizer')) {
+    navigate('/');
+  }
+  };
+  // Logic for share function 
+  // Logic for share function 
+  useEffect(() => {
+    if (location.pathname.startsWith('/visualizer')) {
+      if (roomId && roomId !== 'default') {
+        const matchedRoom = allDemoRooms.find(r => r.id === roomId);
+        if (matchedRoom) {
+          handleDemoRoomClick(matchedRoom);
+        } else {
+          handleDemoRoomClick(allDemoRooms[0]);
+        }
+      } else if (roomId === 'default') {
+        handleDemoRoomClick(allDemoRooms[0]);
+      }
+    }
+  }, [location.pathname, roomId]);
+  // Auto-reload the demo room when the page gets refreshed
+  useEffect(() => {
+    const savedRoomId = localStorage.getItem('activeDemoRoomId');
+    if (savedRoomId && allDemoRooms) {
+      const roomToLoad = allDemoRooms.find(r => r.id === savedRoomId);
+      if (roomToLoad) {
+        // Add .catch() to satisfy the async promise linter rules
+        handleDemoRoomClick(roomToLoad).catch(console.error);
+      }
+    }
+    // Tell the linter to ignore missing dependencies because we ONLY want this to run on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Run only once on mount
+
+>>>>>>> fa1a36b12595fe13b52f32f11a62d0142e8be25a
   const isDefaultView = selectedIndustry === 'ALL INDUSTRY' && selectedProduct === 'Product Collections';
 
   const displayedRooms = allDemoRooms.filter(room => {
     if (selectedProduct !== 'Product Collections') {
+<<<<<<< HEAD
       return Array.isArray(room.product)
         ? room.product.includes(selectedProduct)
         : room.product === selectedProduct;
+=======
+      if (Array.isArray(room.product)) {
+        return room.product.includes(selectedProduct);
+      }
+      return room.product === selectedProduct;
+>>>>>>> fa1a36b12595fe13b52f32f11a62d0142e8be25a
     }
     return room.category === selectedIndustry;
   });
@@ -397,10 +795,15 @@ function App() {
       uniqueCategories.push(room);
     }
   }
+<<<<<<< HEAD
 
   const isVisualizerRoute = location.pathname.startsWith('/visualizer');
 
   // ── Loading spinner while the /visualizer route initialises ──────────────
+=======
+const isVisualizerRoute = location.pathname.startsWith('/visualizer');
+
+>>>>>>> fa1a36b12595fe13b52f32f11a62d0142e8be25a
   if (isVisualizerRoute && !isModalOpen) {
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-white">
@@ -414,6 +817,7 @@ function App() {
       </div>
     );
   }
+<<<<<<< HEAD
 
   // ── Render ────────────────────────────────────────────────────────────────
   return (
@@ -427,10 +831,22 @@ function App() {
           <div className="w-full lg:w-[480px] flex flex-col gap-4 shrink-0 mt-8 lg:mt-0 lg:-mt-2">
             <img src={Logo} alt="Wonderfloor Logo" className="w-[200px] h-auto mb-1 mx-auto lg:mx-0" />
 
+=======
+  return (
+    <div className="w-full min-h-screen mt-[-5%] bg-white overflow-x-hidden">
+
+      {/* --- Main Content Container --- */}
+      <div className="relative inset-0 w-full max-w-[1300px] mx-auto px-4 sm:px-6 py-15 font-sans text-gray-800 flex flex-col">
+
+        <div className="flex flex-col lg:flex-row items-center lg:items-start justify-between gap-8 lg:gap-16 mt-16 sm:mt-20 md:mt-24 mb-16 sm:mb-24 w-full">
+          <div className="w-full lg:w-[480px] flex flex-col gap-4 shrink-0 mt-8 lg:mt-0 lg:-mt-2">
+            <img src={Logo} alt="Wonderfloor Logo" className="w-[200px] h-auto mb-1 mx-auto lg:mx-0" />
+>>>>>>> fa1a36b12595fe13b52f32f11a62d0142e8be25a
             <h1 className="text-[32px] sm:text-[36px] lg:text-[42px] font-bold text-[#202938] mb-1 tracking-tight text-center lg:text-left leading-[1.15] break-words">
               See live floor transformation in your room
             </h1>
 
+<<<<<<< HEAD
             <p className="text-[15px] sm:text-[16px] text-gray-800 font-normal mb-1 text-center lg:text-left">
               Upload a photo of your room
             </p>
@@ -439,17 +855,31 @@ function App() {
             <button
               onClick={handleUploadClick}
               className="cursor-pointer bg-[#f05c3f] hover:bg-[#f05c4f] text-white font-bold py-3.5 px-6 rounded-[4px] text-[16px] tracking-wide transition duration-200 w-full lg:w-[280px] flex items-center justify-center gap-2 shadow-sm mt-2"
+=======
+            <div className="text-[15px] sm:text-[16px] text-gray-800 space-y-1 font-normal mb-1">
+              <p className="text-center lg:text-left">Upload a photo of your room</p>
+            </div>
+
+            <button
+              onClick={handleUploadClick}
+              className="cursor-pointer bg-[#f05c3f] hover:bg-[#f05c4f] text-[#ffffff] font-bold py-3.5 px-6 rounded-[4px] text-[16px] tracking-wide transition duration-200 w-full lg:w-[280px] flex items-center justify-center gap-2 shadow-sm mt-2"
+>>>>>>> fa1a36b12595fe13b52f32f11a62d0142e8be25a
             >
               Upload
             </button>
 
             <input type="file" accept="image/*" className="hidden" ref={fileInputRef} onChange={handleFileChange} />
 
+<<<<<<< HEAD
             {/* QR code button */}
+=======
+            {/* QR CODE BUTTON */}
+>>>>>>> fa1a36b12595fe13b52f32f11a62d0142e8be25a
             <button
               onClick={handleGenerateQR}
               className="cursor-pointer bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 py-3.5 px-6 rounded-[4px] text-[14px] transition duration-200 w-full lg:w-[280px] flex items-center justify-center gap-2 mt-1 shadow-sm"
             >
+<<<<<<< HEAD
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
               </svg>
@@ -463,34 +893,68 @@ function App() {
             {showQR && (
               <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm transition-opacity">
                 <div className="bg-white p-8 rounded-2xl shadow-2xl flex flex-col items-center relative max-w-sm w-full mx-4 border-t-4 border-[#f05c3f]">
+=======
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+              Or scan a QR code to upload
+            </button>
+
+            {showQR && (
+              <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm transition-opacity">
+                <div className="bg-white p-8 rounded-2xl shadow-2xl flex flex-col items-center relative max-w-sm w-full mx-4 border-t-4 border-[#f05c3f] animate-fade-in-up">
+
+>>>>>>> fa1a36b12595fe13b52f32f11a62d0142e8be25a
                   <button
                     onClick={() => setShowQR(false)}
                     className="absolute top-4 right-4 text-gray-400 hover:text-gray-800 transition-colors cursor-pointer"
                   >
+<<<<<<< HEAD
                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                   </button>
+=======
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                  </button>
+
+>>>>>>> fa1a36b12595fe13b52f32f11a62d0142e8be25a
                   <h3 className="text-xl font-bold text-[#202938] mb-2">Scan to Upload</h3>
                   <p className="text-sm text-gray-500 mb-6 text-center leading-relaxed">
                     Use your phone's camera to scan this QR code and snap a photo of your room.
                   </p>
+<<<<<<< HEAD
                   <div className="p-3 border-4 border-gray-100 rounded-xl bg-white mb-6 shadow-sm">
+=======
+
+                  <div className="p-3 border-4 border-gray-100 rounded-xl bg-white mb-6 shadow-sm">
+                    {/* --- PRODUCTION VERCEL URL HERE --- */}
+>>>>>>> fa1a36b12595fe13b52f32f11a62d0142e8be25a
                     <QRCodeCanvas
                       value={`https://wonderfloor-v2.vercel.app/mobile-upload?session=${sessionId}`}
                       size={180}
                     />
                   </div>
+<<<<<<< HEAD
                   <div className="flex items-center gap-2 text-[#f05c3f]">
                     <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+=======
+
+                  <div className="flex items-center gap-2 text-[#f05c3f]">
+                    <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+>>>>>>> fa1a36b12595fe13b52f32f11a62d0142e8be25a
                     </svg>
                     <p className="text-sm font-bold tracking-wide">Waiting for image...</p>
                   </div>
                 </div>
               </div>
             )}
+<<<<<<< HEAD
+=======
+
+>>>>>>> fa1a36b12595fe13b52f32f11a62d0142e8be25a
           </div>
 
           <div className="hidden lg:flex flex-1 w-full h-[421px] rounded-lg overflow-hidden shadow-xl select-none">
@@ -498,13 +962,17 @@ function App() {
           </div>
         </div>
 
+<<<<<<< HEAD
       {/* ── Demo rooms section ── */}
+=======
+>>>>>>> fa1a36b12595fe13b52f32f11a62d0142e8be25a
         <div className="flex-grow">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 relative z-30 gap-4">
             <h3 className="text-[18px] sm:text-[20px] font-bold text-gray-400">
               Don't have a picture? Try our demo rooms instead
             </h3>
 
+<<<<<<< HEAD
             {/* NEW WRAPPER: Groups the Recent Rooms button and Product Dropdown on the right */}
             <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
               
@@ -533,6 +1001,18 @@ function App() {
                   {selectedProduct}
                   <svg className={`w-4 h-4 transition-transform ${isProductDropdownOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" />
+=======
+            <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+              {/* Flooring Products Dropdown */}
+              <div className="relative w-full sm:w-auto" ref={productDropdownRef}>
+                <button
+                  onClick={() => setIsProductDropdownOpen(!isProductDropdownOpen)}
+                  className="cursor-pointer flex items-center justify-between sm:justify-center gap-2 bg-[#6a6a6a] text-white px-5 py-3 sm:py-2.5 rounded text-[13px] font-bold tracking-wide transition-colors hover:bg-gray-600 uppercase w-full sm:w-auto"
+                >
+                  {selectedProduct}
+                  <svg className={`w-4 h-4 transition-transform ${isProductDropdownOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7"></path>
+>>>>>>> fa1a36b12595fe13b52f32f11a62d0142e8be25a
                   </svg>
                 </button>
 
@@ -546,11 +1026,18 @@ function App() {
                           setSelectedIndustry('ALL INDUSTRY');
                           setIsProductDropdownOpen(false);
                         }}
+<<<<<<< HEAD
                         className={`cursor-pointer w-full text-left px-5 py-2.5 text-[15px] transition-colors ${
                           selectedProduct === product
                             ? 'text-[#fc6c3f] bg-gray-50'
                             : 'text-gray-600 hover:text-[#fc6c3f] hover:bg-gray-50'
                         }`}
+=======
+                        className={`cursor-pointer w-full text-left px-5 py-2.5 text-[15px] transition-colors ${selectedProduct === product
+                          ? 'text-[#fc6c3f] bg-gray-50'
+                          : 'text-gray-600 hover:text-[#fc6c3f] hover:bg-gray-50'
+                          }`}
+>>>>>>> fa1a36b12595fe13b52f32f11a62d0142e8be25a
                       >
                         {product}
                       </button>
@@ -561,7 +1048,11 @@ function App() {
             </div>
           </div>
 
+<<<<<<< HEAD
           {/* Industry filter pills */}
+=======
+          {/* NEW: Category Flex Buttons Below Header */}
+>>>>>>> fa1a36b12595fe13b52f32f11a62d0142e8be25a
           <div
             className="flex overflow-x-auto gap-3 mb-8 pb-2 w-full"
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
@@ -573,17 +1064,25 @@ function App() {
                   setSelectedIndustry(industry);
                   setSelectedProduct('Product Collections');
                 }}
+<<<<<<< HEAD
                 className={`shrink-0 cursor-pointer px-5 py-2 rounded-full text-[13px] font-bold tracking-wide transition-all uppercase border ${
                   selectedIndustry === industry
                     ? 'bg-[#f05c3f] text-white border-[#f05c3f] shadow-md'
                     : 'bg-white text-gray-500 border-gray-300 hover:border-[#f05c3f] hover:text-[#f05c3f]'
                 }`}
+=======
+                className={`shrink-0 cursor-pointer px-5 py-2 rounded-full text-[13px] font-bold tracking-wide transition-all uppercase border ${selectedIndustry === industry
+                  ? 'bg-[#f05c3f] text-white border-[#f05c3f] shadow-md'
+                  : 'bg-white text-gray-500 border-gray-300 hover:border-[#f05c3f] hover:text-[#f05c3f]'
+                  }`}
+>>>>>>> fa1a36b12595fe13b52f32f11a62d0142e8be25a
               >
                 {industry}
               </button>
             ))}
           </div>
 
+<<<<<<< HEAD
           {/* Room grid */}
           {isDefaultView ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-5 gap-y-10 relative z-10">
@@ -593,6 +1092,12 @@ function App() {
                   className="cursor-pointer group flex flex-col gap-3"
                   onClick={() => setSelectedIndustry(cat.category)}
                 >
+=======
+          {isDefaultView ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-5 gap-y-10 relative z-10">
+              {uniqueCategories.map((cat) => (
+                <div key={`cat-${cat.id}`} className="cursor-pointer group flex flex-col gap-3" onClick={() => setSelectedIndustry(cat.category)}>
+>>>>>>> fa1a36b12595fe13b52f32f11a62d0142e8be25a
                   <div className="overflow-hidden rounded-none bg-gray-100">
                     <img src={cat.img} alt={cat.category} className="w-full h-[200px] object-cover hover:opacity-90 transition-opacity duration-200" />
                   </div>
@@ -611,20 +1116,29 @@ function App() {
                 }}
                 className="mb-6 flex items-center gap-2 text-sm font-bold text-gray-500 hover:text-[#f05c3f] transition-colors cursor-pointer"
               >
+<<<<<<< HEAD
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                 </svg>
+=======
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+>>>>>>> fa1a36b12595fe13b52f32f11a62d0142e8be25a
                 Go Back
               </button>
 
               {displayedRooms.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-5 gap-y-10 relative z-10">
                   {displayedRooms.map((room, index) => (
+<<<<<<< HEAD
                     <div
                       key={`${room.id}-${index}`}
                       className="cursor-pointer group flex flex-col gap-3"
                      onClick={() => navigate(`/visualizer/${room.id}`)}
                     >
+=======
+                    // <div key={`${room.id}-${index}`} className="cursor-pointer group flex flex-col gap-3" onClick={() => handleDemoRoomClick(room.img)}>
+                    <div key={`${room.id}-${index}`} className="cursor-pointer group flex flex-col gap-3" onClick={() => handleDemoRoomClick(room)}>
+>>>>>>> fa1a36b12595fe13b52f32f11a62d0142e8be25a
                       <div className="overflow-hidden rounded-none bg-gray-100">
                         <img src={room.img} alt={room.name} className="w-full h-[200px] object-cover hover:opacity-90 transition-opacity duration-200" />
                       </div>
@@ -646,6 +1160,7 @@ function App() {
         </div>
       </div>
 
+<<<<<<< HEAD
       {/* ── History drawer (NEW) ── */}
       <ImageHistoryDrawer
         isOpen={isHistoryOpen}
@@ -669,8 +1184,19 @@ function App() {
           onOpenRecentRooms={() => setIsHistoryOpen(true)} 
         />
       )}
+=======
+      {/* ARVisualizer placed safely outside the width-restricted container */}
+      {isModalOpen && (
+        <ARVisualizer closeModal={handleCloseModal} initialImage={selectedRoomImage} />
+      )}
+
+>>>>>>> fa1a36b12595fe13b52f32f11a62d0142e8be25a
     </div>
   );
 }
 
+<<<<<<< HEAD
 export default App;
+=======
+export default App;
+>>>>>>> fa1a36b12595fe13b52f32f11a62d0142e8be25a
