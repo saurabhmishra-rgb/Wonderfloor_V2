@@ -667,6 +667,7 @@ function App() {
           closeModal={handleCloseModal} 
           initialImage={selectedRoomImage} 
           onOpenRecentRooms={() => setIsHistoryOpen(true)} 
+           historyCount={history.length}  
         />
       )}
     </div>
