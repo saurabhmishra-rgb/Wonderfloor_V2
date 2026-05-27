@@ -2,7 +2,7 @@
 
 const STORAGE_KEY = 'wonderfloor_recent_rooms';
 
-// ── NEW: Helper to convert large files into tiny, storage-safe Base64 thumbnails
+// Helper to convert large files into tiny, storage-safe Base64 thumbnails
 const generateThumbnail = (file) => {
   return new Promise((resolve) => {
     const reader = new FileReader();
@@ -12,7 +12,7 @@ const generateThumbnail = (file) => {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
 
-        // Compress down to a max 300px box so we don't blow up localStorage
+        // Compress down to a max 800px box so we don't blow up localStorage
         const MAX_SIZE = 800;
         let width = img.width;
         let height = img.height;
@@ -30,7 +30,8 @@ const generateThumbnail = (file) => {
         }
         canvas.width = width;
         canvas.height = height;
-        // ✅ Enable image smoothing for better downscaling quality
+        
+        // Enable image smoothing for better downscaling quality
         ctx.imageSmoothingEnabled = true;
         ctx.imageSmoothingQuality = 'high';
 
@@ -70,11 +71,13 @@ export const getHistory = () => {
   }
 };
 
+// src/store/imageHistoryStore.js
+
 export const addHistoryEntry = async (imageObj) => {
   const history = getHistory();
   let finalThumbnail = imageObj.previewUrl;
 
-  // ── NEW: If it's a raw user upload, generate a safe thumbnail string 
+  // Generate thumbnail for raw uploads
   if (!imageObj.isDemo && imageObj.rawFile) {
     try {
       finalThumbnail = await generateThumbnail(imageObj.rawFile);
@@ -83,17 +86,42 @@ export const addHistoryEntry = async (imageObj) => {
     }
   }
 
+  // Identify if this is a demo room and what its core ID is
+  const isDemo = imageObj.isDemo || imageObj.type === 'demo';
+  const expectedRoomId = imageObj.roomId || imageObj.id;
+
+  // ── SMART CHECK: Find existing entry to prevent duplicates ──
+  const existingIndex = history.findIndex(item => {
+    if (isDemo) {
+      // For demo rooms, match by the static roomId so they merge properly
+      return item.type === 'demo' && item.roomId === expectedRoomId;
+    }
+    // For user uploads, match by the standard ID
+    return item.id === (imageObj.historyEntryId || imageObj.id);
+  });
+
+  let previousProduct = null;
+  let targetId = imageObj.historyEntryId || imageObj.id || `upload-${Date.now()}`;
+
+  // If the room is already in history, grab the old tile chip so it doesn't vanish
+  if (existingIndex !== -1) {
+    previousProduct = history[existingIndex].lastProduct;
+    targetId = history[existingIndex].id; // Ensure we keep the exact same ID
+  }
+
   const newEntry = {
-    id: imageObj.id || `upload-${Date.now()}`,
-    name: imageObj.name || 'Uploaded Room',
+    id: targetId,
+    name: imageObj.name || (isDemo ? 'Demo Room' : 'Uploaded Room'),
     thumbnail: finalThumbnail,
     timestamp: Date.now(),
-    roomId: imageObj.isDemo ? imageObj.id : null,
-    type: imageObj.isDemo ? 'demo' : 'upload'
+    roomId: isDemo ? expectedRoomId : null,
+    type: isDemo ? 'demo' : 'upload',
+    // ── CRITICAL: Use the incoming product, or fallback to the saved chip ──
+    lastProduct: imageObj.lastProduct || previousProduct || null, 
   };
 
-  const filteredHistory = history.filter(item => item.id !== newEntry.id);
-  // Keep only the last 10 entries to ensure we don't exceed the browser 5MB limit
+  // Filter out the old entry so the fresh one bumps to the top
+  const filteredHistory = history.filter(item => item.id !== targetId);
   const updatedHistory = [newEntry, ...filteredHistory].slice(0, 10);
 
   localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedHistory));
@@ -109,4 +137,23 @@ export const removeHistoryEntry = async (entryId) => {
 
 export const clearHistory = () => {
   localStorage.removeItem(STORAGE_KEY);
+};
+
+export const updateHistoryEntryProduct = (entryId, product) => {
+  const history = getHistory();
+  const updated = history.map(item =>
+    item.id === entryId
+      ? {
+          ...item,
+          lastProduct: {
+            id:   product.id,
+            name: product.name,
+            img:  product.img,
+            sku:  product.sku,
+          }
+        }
+      : item
+  );
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+  return updated;
 };
