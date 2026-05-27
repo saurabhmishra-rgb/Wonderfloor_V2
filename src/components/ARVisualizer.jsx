@@ -5,7 +5,7 @@ import RoomUploader from './RoomUploader';
 import DownloadView from './DownloadView';
 import { initVisualizer } from './script.jsx';
 import AttractiveLoader from './AttractiveLoader';
-import { useParams } from 'react-router-dom';
+import { useParams,useNavigate } from 'react-router-dom';
 // 1. IMPORT YOUR LOCAL ASSETS HERE
 import floorActon from '../assets/image1.jpeg';
 import floorHolmes from '../assets/image2.jpeg';
@@ -257,30 +257,85 @@ const mockProducts = [
   { id: 12, name: 'GDP-559404', size: '30cm x 30cm', img: floorPoppy5, colour: 'White', shade: 'Light', category: 'Tiles', userIndustry: ['Residential Flooring'], collection: 'Classic', accordionCategory: 'Aventus', sku: 'WF000062' },
 ];
 
-const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCount = 0 }) => {
+const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCount = 0, onProductChange,    }) => {
   const { productId } = useParams(); // <-- NEW CLEAN URL EXTRACTOR
+  const navigate = useNavigate();
 
   const productCategories = ['Braavo', 'Krayons', 'Durofloor', 'Siggma', 'Orbit', 'Stoneland Monza', 'Meteor', 'Aventus'];
   const [initialPinchDist, setInitialPinchDist] = useState(null);
   const [uploadedRoom, setUploadedRoom] = useState(null);
 
   // 2. READ URL DIRECTLY INTO INITIAL STATE
-  const [selectedProduct, setSelectedProduct] = useState(() => {
-    // Check URL First (highest priority for shared links)
+ const [selectedProduct, setSelectedProduct] = useState(() => {
+    // Priority 1: Explicitly clicked History Item (fixes the wrong tile bug)
+    if (initialImage?.historyEntryId && initialImage?.lastProduct) {
+      const match = mockProducts.find(p => p.id === initialImage.lastProduct.id);
+      if (match) return match;
+    }
+
+    // Priority 2: URL param (highest priority for newly shared links)
     if (productId) {
       const decodedSku = decodeURIComponent(productId); // Fixes encoded slashes
       const matchedProduct = mockProducts.find(p => p.sku === decodedSku);
       if (matchedProduct) return matchedProduct;
     }
+ 
+    // Priority 3: General last used tile saved in history
+    if (initialImage?.lastProduct) {
+      const match = mockProducts.find(p => p.id === initialImage.lastProduct.id);
+      if (match) return match;
+    }
 
-    // Fallback to LocalStorage, then Default
+    // Priority 4: Fallback to LocalStorage, then Default
     const savedProduct = localStorage.getItem('savedSelectedProduct');
     return savedProduct ? JSON.parse(savedProduct) : mockProducts[0];
   });
+// ── NEW: 1. Track absolute latest product to prevent 3D loading glitches ──
+  const latestProductRef = useRef(selectedProduct);
+  useEffect(() => {
+    latestProductRef.current = selectedProduct;
+  }, [selectedProduct]);
+
+  // ── NEW: 2. Auto-stamp the current tile to history so chips never vanish ──
+useEffect(() => {
+    // Give App.jsx 500ms to actually create the history item before we try to attach a chip to it!
+    const timer = setTimeout(() => {
+      const targetHistoryId = initialImage?.historyEntryId || initialImage?.id;
+      if (onProductChange && targetHistoryId && selectedProduct) {
+        onProductChange(targetHistoryId, selectedProduct);
+      }
+    }, 500); 
+    
+    return () => clearTimeout(timer);
+  }, [initialImage?.historyEntryId, initialImage?.id, selectedProduct, onProductChange]);
 
   useEffect(() => {
     localStorage.setItem('savedSelectedProduct', JSON.stringify(selectedProduct));
   }, [selectedProduct]);
+
+ // ── UPDATE: Force update when History is clicked & sync React Router ──
+ useEffect(() => {
+    if (initialImage?.historyEntryId && initialImage?.lastProduct) {
+      const historyProduct = mockProducts.find(p => p.id === initialImage.lastProduct.id);
+      
+      // If the history tile is different from what is currently on screen
+      if (historyProduct && historyProduct.id !== selectedProduct?.id) {
+        setSelectedProduct(historyProduct);
+        setFloorRotation(0);
+        
+        const safeSku = encodeURIComponent(historyProduct.sku);
+        const safeRoom = encodeURIComponent(initialImage?.id || 'default');
+        navigate(`/visualizer/${safeSku}/${safeRoom}`, { replace: true });
+        
+        // Only apply instantly IF the visualizer is fully alive. 
+        // Otherwise, the boot-up process will catch it.
+        if (visualizerInstance.current && visualizerInstance.current.updateTexture) {
+          visualizerInstance.current.updateTexture(historyProduct.img, 0);
+        }
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialImage]);
 
   const [processedImage, setProcessedImage] = useState(null);
   const [isProcessing, setIsProcessing] = useState(true);
@@ -370,7 +425,6 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
 
   useEffect(() => {
     const container = imageContainerRef.current;
-    
     if (!container) return;
     const handleWheel = (e) => {
       if (isDetailsModalOpen || isCompareMode) return;
@@ -408,16 +462,16 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
   }, [isCompareMode]);
 
   // Separate the compare-mode guard from the visualizer lifecycle
-  useEffect(() => {
+useEffect(() => {
     if (!activeBaseImage?.maskUrl || !threeContainerRef.current) return;
 
     const timer = setTimeout(() => {
       if (threeContainerRef.current) {
         const instance = initVisualizer(threeContainerRef.current);
         if (instance) {
-          visualizerInstance.current = instance;
-          if (selectedProduct && instance.updateTexture) {
-            instance.updateTexture(selectedProduct.img, floorRotation);
+          visualizerInstance.current = instance; // ✅ ADD THIS LINE
+          if (latestProductRef.current && instance.updateTexture) {
+            instance.updateTexture(latestProductRef.current.img, floorRotation);
           }
         }
       }
@@ -430,7 +484,6 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
       }
       visualizerInstance.current = null;
     };
-    // ✅ Removed isCompareMode from deps — visualizer stays alive
   }, [activeBaseImage, activeBaseImage?.maskUrl]);
   const handleMouseDown = (e) => { if (zoomScale > 1 && !isDetailsModalOpen && !isCompareMode) { setIsDragging(true); setDragStart({ x: e.clientX - pan.x, y: e.clientY - pan.y }); } };
   const handleMouseMove = (e) => { if (isDragging && !isDetailsModalOpen && !isCompareMode) setPan({ x: e.clientX - dragStart.x, y: e.clientY - dragStart.y }); };
@@ -708,7 +761,8 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
     // Update the browser URL cleanly without reloading the page
     const safeSku = encodeURIComponent(product.sku);
     const safeRoom = encodeURIComponent(initialImage?.id || 'default');
-    window.history.replaceState(null, '', `/visualizer/${safeSku}/${safeRoom}`);
+    navigate(`/visualizer/${safeSku}/${safeRoom}`, { replace: true });
+    // window.history.replaceState(null, '', `/visualizer/${safeSku}/${safeRoom}`);
 
     // ── COMPARE MODE BRANCH ──
     if (isCompareMode) {
@@ -776,7 +830,14 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
       window.scrollTo(0, 0);
       document.body.scrollTop = 0;
     }, 100);
+    const targetHistoryId = initialImage?.historyEntryId || initialImage?.id;
+
+  if (onProductChange && targetHistoryId) {
+    onProductChange(targetHistoryId, product);
+  }
   };
+
+
 
   const handleReset = () => {
     setProcessedImage(null);
