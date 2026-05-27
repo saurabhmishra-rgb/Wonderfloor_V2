@@ -157,7 +157,7 @@ function App() {
   const [isProductDropdownOpen, setIsProductDropdownOpen] = useState(false);
 
   // ── History state (INSIDE the component — hooks must always be here) ───────
-  const { history, addToHistory, removeEntry, clearHistory } = useImageHistory();
+  const { history, addToHistory, removeEntry, clearHistory,  updateEntryProduct} = useImageHistory();
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
 
   // ── Saved filter preferences ───────────────────────────────────────────────
@@ -317,6 +317,7 @@ function App() {
         rawFile:    file, // <--- This prevents the ARVisualizer crash
         maskUrl:    room.mask || null,
         name:       room.name,
+        lastProduct: room.lastProduct || null,
       };
 
       setSelectedRoomImage(imageObj);
@@ -337,14 +338,22 @@ function App() {
     if (entry.type === 'demo' && entry.roomId) {
       // Demo: look up full room data (mask, img, etc.) from allDemoRooms
       const room = allDemoRooms.find(r => r.id === entry.roomId);
-      if (room) handleDemoRoomClick(room);
-    } else {
-      // Upload: use the stored compressed thumbnail
-      setSelectedRoomImage({
-        previewUrl: entry.thumbnail,
-        isDemo:     false,
-        rawFile:    null,
+        if (room) {
+      handleDemoRoomClick({
+        ...room,
+        historyEntryId: entry.id, // ← pass history entry ID for later lookup
+        lastProduct: entry.lastProduct || null, // ← pass saved tile
       });
+    }
+    } else {
+    setSelectedRoomImage({
+      previewUrl:  entry.thumbnail,
+      id:          entry.id,
+      historyEntryId: entry.id, // ← NEW: Keep it consistent for uploads too
+      isDemo:      false,
+      rawFile:     null,
+      lastProduct: entry.lastProduct || null, 
+    });
       setIsModalOpen(true);
     }
     setIsHistoryOpen(false);
@@ -667,8 +676,9 @@ function App() {
           closeModal={handleCloseModal} 
           initialImage={selectedRoomImage} 
           onOpenRecentRooms={() => setIsHistoryOpen(true)} 
-           historyCount={history.length}  
-        />
+           historyCount={history.length}  // ← ADD THIS
+            onProductChange={updateEntryProduct}   // ← NEW prop
+  />
       )}
     </div>
   );
