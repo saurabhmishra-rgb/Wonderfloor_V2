@@ -7,11 +7,15 @@ import {
   addHistoryEntry,
   removeHistoryEntry,
   clearHistory as clearStore,
+  updateHistoryEntryProduct, // ← import new function
 } from '../store/imageHistoryStore'; 
 
 export function useImageHistory() {
   const [history, setHistory] = useState(() => getHistory());
-
+ // ← NEW: call this whenever the user picks a tile
+  const updateEntryProduct = (entryId, product) => {
+    setHistory(updateHistoryEntryProduct(entryId, product));
+  };
   const addToHistory = useCallback(async (imageObj) => {
     const updatedHistory = await addHistoryEntry(imageObj);
     setHistory(updatedHistory || getHistory());
@@ -27,5 +31,5 @@ export function useImageHistory() {
     setHistory([]);
   }, []);
 
-  return { history, addToHistory, removeEntry, clearHistory };
+  return { history, addToHistory, removeEntry, clearHistory, updateEntryProduct };
 }
