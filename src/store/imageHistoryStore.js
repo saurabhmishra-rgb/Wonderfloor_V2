@@ -11,9 +11,9 @@ const generateThumbnail = (file) => {
       img.onload = () => {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
-        
+
         // Compress down to a max 300px box so we don't blow up localStorage
-        const MAX_SIZE = 300;
+        const MAX_SIZE = 800;
         let width = img.width;
         let height = img.height;
 
@@ -30,10 +30,29 @@ const generateThumbnail = (file) => {
         }
         canvas.width = width;
         canvas.height = height;
+        // ✅ Enable image smoothing for better downscaling quality
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+
+        let srcCanvas = document.createElement('canvas');
+        let srcCtx = srcCanvas.getContext('2d');
+        srcCanvas.width = img.width;
+        srcCanvas.height = img.height;
+        srcCtx.drawImage(img, 0, 0);
+
+        // Step down in halves until close to target size
+        while (srcCanvas.width / 2 > width) {
+          const half = document.createElement('canvas');
+          half.width = Math.floor(srcCanvas.width / 2);
+          half.height = Math.floor(srcCanvas.height / 2);
+          half.getContext('2d').drawImage(srcCanvas, 0, 0, half.width, half.height);
+          srcCanvas = half;
+        }
+
         ctx.drawImage(img, 0, 0, width, height);
-        
+
         // Export as a lightweight JPEG
-        resolve(canvas.toDataURL('image/jpeg', 0.6)); 
+        resolve(canvas.toDataURL('image/jpeg', 0.85));
       };
       img.src = e.target.result;
     };
@@ -76,7 +95,7 @@ export const addHistoryEntry = async (imageObj) => {
   const filteredHistory = history.filter(item => item.id !== newEntry.id);
   // Keep only the last 10 entries to ensure we don't exceed the browser 5MB limit
   const updatedHistory = [newEntry, ...filteredHistory].slice(0, 10);
-  
+
   localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedHistory));
   return updatedHistory;
 };
