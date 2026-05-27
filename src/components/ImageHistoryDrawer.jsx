@@ -45,7 +45,7 @@ export default function ImageHistoryDrawer({ isOpen, history, onSelect, onRemove
                   className="relative group rounded-lg border border-gray-200 overflow-hidden hover:border-[#f05c3f] transition-all duration-200 cursor-pointer bg-white shadow-sm hover:shadow-md flex flex-col"
                 >
                   {/* Image Click Area */}
-                  <div className="w-full h-28 bg-gray-100 overflow-hidden" onClick={() => onSelect(item)}>
+                  <div className="w-full h-28 bg-gray-100 overflow-hidden relative" onClick={() => onSelect(item)}>
                     {item.thumbnail ? (
                       <img 
                         src={item.thumbnail} 
@@ -55,6 +55,20 @@ export default function ImageHistoryDrawer({ isOpen, history, onSelect, onRemove
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-[11px] text-gray-400 font-medium">
                         No Preview
+                      </div>
+                    )}
+
+                    {/* ── NEW: tile chip in the corner ── */}
+                    {item.lastProduct && (
+                      <div className="absolute bottom-2 left-2 flex items-center gap-1.5 bg-white/90 backdrop-blur-sm border border-gray-200 rounded-full pl-1 pr-2.5 py-1 shadow-sm">
+                        <img
+                          src={item.lastProduct.img}
+                          alt={item.lastProduct.name}
+                          className="w-5 h-5 rounded-full object-cover border border-gray-300"
+                        />
+                        <span className="text-[10px] font-semibold text-gray-700 truncate max-w-[80px]">
+                          {item.lastProduct.name}
+                        </span>
                       </div>
                     )}
                   </div>
