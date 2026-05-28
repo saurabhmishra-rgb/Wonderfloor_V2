@@ -1513,7 +1513,7 @@ useEffect(() => {
                     {/* FIXED CODE */}
                     <div
                       ref={threeContainerRef}
-                      className={`absolute inset-0 w-full h-full z-10 transition-opacity duration-300  
+                      className={`absolute inset-0 w-full h-full z-10 
   ${isFloorVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
                     ></div>
                     {/* LAYER 3: Mask Image */}
