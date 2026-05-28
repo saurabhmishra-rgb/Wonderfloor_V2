@@ -51,7 +51,7 @@ export const initVisualizer = (container) => {
       camera.aspect = container.clientWidth / container.clientHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(container.clientWidth, container.clientHeight);
-      // ✅ FIX 1: Explicitly render immediately after a resize clears the buffer
+      // Explicitly render immediately after a resize clears the buffer
       renderer.render(scene, camera);
     };
 
@@ -60,26 +60,33 @@ export const initVisualizer = (container) => {
     });
     resizeObserver.observe(container);
 
-    // ✅ FIX 2: Return a Promise so React can definitively wait for the texture
+    // ✅ THE FIX: Return a Promise so ARVisualization.jsx can definitively wait for the texture
     const updateTexture = (textureUrl, angleInDegrees = 0) => {
       return new Promise((resolve) => {
-        loader.load(textureUrl, (tex) => {
-          tex.colorSpace = THREE.SRGBColorSpace;
-          tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-          tex.repeat.set(240, 240); 
-          
-          tex.center.set(0.5, 0.5);
-          tex.rotation = (angleInDegrees * Math.PI) / 180;
-          floorMaterial.map = tex;
-          floorMaterial.needsUpdate = true;
+        loader.load(
+          textureUrl, 
+          (tex) => {
+            tex.colorSpace = THREE.SRGBColorSpace;
+            tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+            tex.repeat.set(240, 240); 
+            
+            tex.center.set(0.5, 0.5);
+            tex.rotation = (angleInDegrees * Math.PI) / 180;
+            floorMaterial.map = tex;
+            floorMaterial.needsUpdate = true;
 
-          // Force an explicit render frame immediately to guarantee it is drawn
-          renderer.render(scene, camera);
-          resolve(true); // Tell React the floor is officially ready
-        }, undefined, (err) => {
-          console.error("Texture load failed", err);
-          resolve(false);
-        });
+            // Force an explicit render frame immediately to guarantee it is drawn
+            renderer.render(scene, camera);
+            
+            // ✅ Tell ARVisualization.jsx the floor is officially ready!
+            resolve(true); 
+          }, 
+          undefined, 
+          (err) => {
+            console.error("Texture load failed", err);
+            resolve(false); // Fails gracefully instead of freezing
+          }
+        );
       });
     };
 
