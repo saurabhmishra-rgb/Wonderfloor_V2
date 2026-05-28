@@ -5,7 +5,7 @@ import RoomUploader from './RoomUploader';
 import DownloadView from './DownloadView';
 import { initVisualizer } from './script.jsx';
 import AttractiveLoader from './AttractiveLoader';
-import { useParams,useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 // 1. IMPORT YOUR LOCAL ASSETS HERE
 import floorActon from '../assets/image1.jpeg';
 import floorHolmes from '../assets/image2.jpeg';
@@ -257,7 +257,7 @@ const mockProducts = [
   { id: 12, name: 'GDP-559404', size: '30cm x 30cm', img: floorPoppy5, colour: 'White', shade: 'Light', category: 'Tiles', userIndustry: ['Residential Flooring'], collection: 'Classic', accordionCategory: 'Aventus', sku: 'WF000062' },
 ];
 
-const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCount = 0, onProductChange,    }) => {
+const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCount = 0, onProductChange, }) => {
   const { productId } = useParams(); // <-- NEW CLEAN URL EXTRACTOR
   const navigate = useNavigate();
 
@@ -266,7 +266,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
   const [uploadedRoom, setUploadedRoom] = useState(null);
 
   // 2. READ URL DIRECTLY INTO INITIAL STATE
- const [selectedProduct, setSelectedProduct] = useState(() => {
+  const [selectedProduct, setSelectedProduct] = useState(() => {
     // Priority 1: Explicitly clicked History Item (fixes the wrong tile bug)
     if (initialImage?.historyEntryId && initialImage?.lastProduct) {
       const match = mockProducts.find(p => p.id === initialImage.lastProduct.id);
@@ -279,7 +279,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
       const matchedProduct = mockProducts.find(p => p.sku === decodedSku);
       if (matchedProduct) return matchedProduct;
     }
- 
+
     // Priority 3: General last used tile saved in history
     if (initialImage?.lastProduct) {
       const match = mockProducts.find(p => p.id === initialImage.lastProduct.id);
@@ -290,22 +290,22 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
     const savedProduct = localStorage.getItem('savedSelectedProduct');
     return savedProduct ? JSON.parse(savedProduct) : mockProducts[0];
   });
-// ── NEW: 1. Track absolute latest product to prevent 3D loading glitches ──
+  // ── NEW: 1. Track absolute latest product to prevent 3D loading glitches ──
   const latestProductRef = useRef(selectedProduct);
   useEffect(() => {
     latestProductRef.current = selectedProduct;
   }, [selectedProduct]);
 
   // ── NEW: 2. Auto-stamp the current tile to history so chips never vanish ──
-useEffect(() => {
+  useEffect(() => {
     // Give App.jsx 500ms to actually create the history item before we try to attach a chip to it!
     const timer = setTimeout(() => {
       const targetHistoryId = initialImage?.historyEntryId || initialImage?.id;
       if (onProductChange && targetHistoryId && selectedProduct) {
         onProductChange(targetHistoryId, selectedProduct);
       }
-    }, 500); 
-    
+    }, 500);
+
     return () => clearTimeout(timer);
   }, [initialImage?.historyEntryId, initialImage?.id, selectedProduct, onProductChange]);
 
@@ -313,20 +313,20 @@ useEffect(() => {
     localStorage.setItem('savedSelectedProduct', JSON.stringify(selectedProduct));
   }, [selectedProduct]);
 
- // ── UPDATE: Force update when History is clicked & sync React Router ──
- useEffect(() => {
+  // ── UPDATE: Force update when History is clicked & sync React Router ──
+  useEffect(() => {
     if (initialImage?.historyEntryId && initialImage?.lastProduct) {
       const historyProduct = mockProducts.find(p => p.id === initialImage.lastProduct.id);
-      
+
       // If the history tile is different from what is currently on screen
       if (historyProduct && historyProduct.id !== selectedProduct?.id) {
         setSelectedProduct(historyProduct);
         setFloorRotation(0);
-        
+
         const safeSku = encodeURIComponent(historyProduct.sku);
         const safeRoom = encodeURIComponent(initialImage?.id || 'default');
         navigate(`/visualizer/${safeSku}/${safeRoom}`, { replace: true });
-        
+
         // Only apply instantly IF the visualizer is fully alive. 
         // Otherwise, the boot-up process will catch it.
         if (visualizerInstance.current && visualizerInstance.current.updateTexture) {
@@ -383,6 +383,12 @@ useEffect(() => {
   const [isShareMenuOpen, setIsShareMenuOpen] = useState(false);
   const [isDownloadMenuOpen, setIsDownloadMenuOpen] = useState(false);
   const [isMenuDropdownOpen, setIsMenuDropdownOpen] = useState(false);
+
+  // FullScreen Mode
+
+  const [isImmersiveMode, setIsImmersiveMode] = useState(false);
+
+
 
   const shareRef = useRef(null);
   const downloadRef = useRef(null);
@@ -462,7 +468,7 @@ useEffect(() => {
   }, [isCompareMode]);
 
   // Separate the compare-mode guard from the visualizer lifecycle
-useEffect(() => {
+  useEffect(() => {
     if (!activeBaseImage?.maskUrl || !threeContainerRef.current) return;
 
     const timer = setTimeout(() => {
@@ -832,9 +838,9 @@ useEffect(() => {
     }, 100);
     const targetHistoryId = initialImage?.historyEntryId || initialImage?.id;
 
-  if (onProductChange && targetHistoryId) {
-    onProductChange(targetHistoryId, product);
-  }
+    if (onProductChange && targetHistoryId) {
+      onProductChange(targetHistoryId, product);
+    }
   };
 
 
@@ -992,6 +998,7 @@ useEffect(() => {
         bottom-0 left-0 w-full h-[85vh] rounded-t-3xl shadow-[0_-10px_40px_rgba(0,0,0,0.15)]
         ${isSidebarOpen ? 'translate-y-0' : 'translate-y-full'} 
         md:w-[320px] md:h-full md:rounded-none md:shadow-sm md:translate-y-0
+         ${isImmersiveMode ? 'md:hidden' : ''}
       `}>
 
         {isFavoritesViewOpen ? (
@@ -1169,6 +1176,16 @@ useEffect(() => {
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
                         Upload
                       </RoomUploader>
+                    
+                      <button
+                        onClick={() => { setIsImmersiveMode(true); setIsMenuDropdownOpen(false); setIsSidebarOpen(false); }}
+                        className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gray-50 text-left transition-colors cursor-pointer w-full"
+                      >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500 shrink-0">
+                          <path d="M2 3h20v14H2z" /><path d="M8 21h8" /><path d="M12 17v4" />
+                        </svg>
+                        Immersive View
+                      </button>
                     </div>
                   )}
                 </div>
@@ -1367,98 +1384,111 @@ useEffect(() => {
         <div className={`flex-1 flex flex-col h-full overflow-hidden ${isCompareMode ? 'pointer-events-none' : ''}`}>
 
           {/* Top Nav Bar */}
-          <div className="h-[60px] bg-white border-b border-gray-200 flex justify-between items-center px-2 md:px-4 shadow-sm z-30 shrink-0 w-full relative">
-            <div className="flex items-center gap-1 md:gap-2 text-gray-600 hover:text-black text-sm font-medium px-2 border-r border-gray-200 pr-3 md:pr-6 h-full transition-colors">
-              <button onClick={() => setIsSidebarOpen(true)} className="md:hidden p-1.5 rounded-md hover:bg-gray-100 cursor-pointer">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
-              </button>
-              <button onClick={closeModal} className="flex items-center gap-1 md:gap-2 px-3 py-2 rounded-md hover:bg-gray-100 hover:text-gray-900 transition-colors cursor-pointer">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                <span className="hidden sm:inline">Exit</span>
-              </button>
-            </div>
-
-            <div className="flex-1 flex items-center justify-center gap-1 md:gap-2 text-sm text-gray-600 font-medium px-3 whitespace-nowrap h-full">
-              <button onClick={handleEnterCompare} className="flex items-center gap-1.5 px-3 py-2 rounded-md hover:bg-gray-100 hover:text-gray-900 transition-colors cursor-pointer">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M16 3h5v5M4 20L20 4M21 16v5h-5M15 15l6 6M4 4l5 5"></path></svg>
-                <span className="hidden lg:inline">Compare</span>
-              </button>
-
-              <div className="relative flex items-center h-full" ref={shareRef}>
-                <button onClick={() => setIsShareMenuOpen(!isShareMenuOpen)} className="flex items-center gap-1.5 px-3 py-2 rounded-md hover:bg-gray-100 hover:text-gray-900 transition-colors cursor-pointer">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
-                  <span className="hidden sm:inline">Share</span>
+          {!isImmersiveMode && (
+            <div className="h-[60px] bg-white border-b border-gray-200 flex justify-between items-center px-2 md:px-4 shadow-sm z-30 shrink-0 w-full relative">
+              <div className="flex items-center gap-1 md:gap-2 text-gray-600 hover:text-black text-sm font-medium px-2 border-r border-gray-200 pr-3 md:pr-6 h-full transition-colors">
+                <button onClick={() => setIsSidebarOpen(true)} className="md:hidden p-1.5 rounded-md hover:bg-gray-100 cursor-pointer">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
                 </button>
-                {isShareMenuOpen && (
-                  <div className="absolute top-[50px] left-1/2 -translate-x-1/2 md:translate-x-0 md:left-auto md:right-0 bg-white shadow-xl border border-gray-200 rounded-md py-2 w-[220px] z-50 flex flex-col">
-                    <button onClick={() => handleShare('copy')} className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gray-50 text-left transition-colors cursor-pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg> Copy Link</button>
-                    <button onClick={() => handleShare('facebook')} className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gray-50 text-left transition-colors cursor-pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg> Facebook</button>
-                    <button onClick={() => handleShare('whatsapp')} className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gray-50 text-left transition-colors cursor-pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg> WhatsApp</button>
-                    {/* <button onClick={() => handleShare('pinterest')} className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gray-50 text-left transition-colors cursor-pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500"><line x1="12" y1="22" x2="12" y2="12"></line><line x1="12" y1="2" x2="12" y2="4"></line><line x1="2" y1="12" x2="4" y2="12"></line><line x1="22" y1="12" x2="20" y2="12"></line><circle cx="12" cy="12" r="10"></circle><path d="M8 12a4 4 0 0 0 8 0"></path></svg> Pinterest</button> */}
-                    <button onClick={() => handleShare('email')} className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gray-50 text-left transition-colors cursor-pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg> Email</button>
-                  </div>
-                )}
+                <button onClick={closeModal} className="flex items-center gap-1 md:gap-2 px-3 py-2 rounded-md hover:bg-gray-100 hover:text-gray-900 transition-colors cursor-pointer">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                  <span className="hidden sm:inline">Exit</span>
+                </button>
               </div>
 
-              <div className="relative flex items-center h-full" ref={downloadRef}>
-                <button onClick={() => setIsDownloadMenuOpen(!isDownloadMenuOpen)} className="flex items-center gap-1.5 px-3 py-2 rounded-md hover:bg-gray-100 hover:text-gray-900 transition-colors cursor-pointer">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                  <span className="hidden sm:inline">Download</span>
+              <div className="flex-1 flex items-center justify-center gap-1 md:gap-2 text-sm text-gray-600 font-medium px-3 whitespace-nowrap h-full">
+                <button onClick={handleEnterCompare} className="flex items-center gap-1.5 px-3 py-2 rounded-md hover:bg-gray-100 hover:text-gray-900 transition-colors cursor-pointer">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M16 3h5v5M4 20L20 4M21 16v5h-5M15 15l6 6M4 4l5 5"></path></svg>
+                  <span className="hidden lg:inline">Compare</span>
                 </button>
-                {isDownloadMenuOpen && (
-                  <div className="absolute top-[50px] left-1/2 -translate-x-1/2 md:translate-x-0 md:left-auto md:right-0 bg-white shadow-xl border border-gray-200 rounded-md py-2 w-[240px] z-50 flex flex-col">
-                    <DownloadView
-                      selectedProduct={selectedProduct}
-                      currentSrc={currentSrc}
-                      compositeRef={activeBaseImage?.maskUrl ? compositeRef : null}
-                      onClose={() => setIsDownloadMenuOpen(false)}
-                    />
-                  </div>
-                )}
-              </div>
-            </div>
 
-            <div className="flex items-center gap-1 md:gap-2 border-l border-gray-200 pl-2 md:pl-4 h-full shrink-0">
-              <a href="https://www.wonderfloor.co.in/contact-us" target="_blank" rel="noopener noreferrer" title="Contact Us | Wonderfloor">
-                <button className="bg-[#0b5e5e] text-white px-3 py-1.5 md:px-4 md:py-2 rounded-md text-xs md:text-sm font-medium hover:bg-[#084747] flex items-center gap-1.5 shadow-sm transition-colors cursor-pointer">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="hidden sm:block"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-                  Contact us
-                </button>
-              </a>
-              <div className="relative flex items-center h-full" ref={menuRef}>
-                <button onClick={() => setIsMenuDropdownOpen(!isMenuDropdownOpen)} className="flex text-gray-600 hover:text-gray-900 hover:bg-gray-100 px-2 md:px-3 py-2 rounded-md text-sm font-medium items-center gap-1 transition-colors cursor-pointer">
-                  <span className="hidden sm:inline">Menu</span>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="1.5"></circle><circle cx="12" cy="5" r="1.5"></circle><circle cx="12" cy="19" r="1.5"></circle></svg>
-                </button>
-                {isMenuDropdownOpen && (
-                  <div className="absolute top-[50px] right-0 bg-white shadow-xl border border-gray-200 rounded-md py-2 w-[180px] z-50 flex flex-col">
-                    <button onClick={onOpenRecentRooms} className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gray-50 text-left transition-colors cursor-pointer w-full">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500 shrink-0">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                      My History
-                      {historyCount > 0 && (
-                        <span className="ml-1 bg-[#f05c3f] text-white text-[11px] font-bold rounded-full w-5 h-5 flex items-center justify-center shrink-0">
-                          {historyCount > 9 ? '9+' : historyCount}
-                        </span>
-                      )}
-                    </button>
-                    <RoomUploader
-                      onImageUpload={(newImageData) => {
-                        setUploadedRoom(newImageData);
-                        setProcessedImage(null);
-                        setIsMenuDropdownOpen(false);
-                      }}
-                      className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gray-50 text-left transition-colors cursor-pointer w-full"
-                    >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-                      Upload
-                    </RoomUploader>
-                  </div>
-                )}
+                <div className="relative flex items-center h-full" ref={shareRef}>
+                  <button onClick={() => setIsShareMenuOpen(!isShareMenuOpen)} className="flex items-center gap-1.5 px-3 py-2 rounded-md hover:bg-gray-100 hover:text-gray-900 transition-colors cursor-pointer">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+                    <span className="hidden sm:inline">Share</span>
+                  </button>
+                  {isShareMenuOpen && (
+                    <div className="absolute top-[50px] left-1/2 -translate-x-1/2 md:translate-x-0 md:left-auto md:right-0 bg-white shadow-xl border border-gray-200 rounded-md py-2 w-[220px] z-50 flex flex-col">
+                      <button onClick={() => handleShare('copy')} className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gray-50 text-left transition-colors cursor-pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg> Copy Link</button>
+                      <button onClick={() => handleShare('facebook')} className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gray-50 text-left transition-colors cursor-pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg> Facebook</button>
+                      <button onClick={() => handleShare('whatsapp')} className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gray-50 text-left transition-colors cursor-pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg> WhatsApp</button>
+                      {/* <button onClick={() => handleShare('pinterest')} className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gray-50 text-left transition-colors cursor-pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500"><line x1="12" y1="22" x2="12" y2="12"></line><line x1="12" y1="2" x2="12" y2="4"></line><line x1="2" y1="12" x2="4" y2="12"></line><line x1="22" y1="12" x2="20" y2="12"></line><circle cx="12" cy="12" r="10"></circle><path d="M8 12a4 4 0 0 0 8 0"></path></svg> Pinterest</button> */}
+                      <button onClick={() => handleShare('email')} className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gray-50 text-left transition-colors cursor-pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg> Email</button>
+                    </div>
+                  )}
+                </div>
+
+                <div className="relative flex items-center h-full" ref={downloadRef}>
+                  <button onClick={() => setIsDownloadMenuOpen(!isDownloadMenuOpen)} className="flex items-center gap-1.5 px-3 py-2 rounded-md hover:bg-gray-100 hover:text-gray-900 transition-colors cursor-pointer">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                    <span className="hidden sm:inline">Download</span>
+                  </button>
+                  {isDownloadMenuOpen && (
+                    <div className="absolute top-[50px] left-1/2 -translate-x-1/2 md:translate-x-0 md:left-auto md:right-0 bg-white shadow-xl border border-gray-200 rounded-md py-2 w-[240px] z-50 flex flex-col">
+                      <DownloadView
+                        selectedProduct={selectedProduct}
+                        currentSrc={currentSrc}
+                        compositeRef={activeBaseImage?.maskUrl ? compositeRef : null}
+                        onClose={() => setIsDownloadMenuOpen(false)}
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex items-center gap-1 md:gap-2 border-l border-gray-200 pl-2 md:pl-4 h-full shrink-0">
+                <a href="https://www.wonderfloor.co.in/contact-us" target="_blank" rel="noopener noreferrer" title="Contact Us | Wonderfloor">
+                  <button className="bg-[#0b5e5e] text-white px-3 py-1.5 md:px-4 md:py-2 rounded-md text-xs md:text-sm font-medium hover:bg-[#084747] flex items-center gap-1.5 shadow-sm transition-colors cursor-pointer">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="hidden sm:block"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                    Contact us
+                  </button>
+                </a>
+                <div className="relative flex items-center h-full" ref={menuRef}>
+                  <button onClick={() => setIsMenuDropdownOpen(!isMenuDropdownOpen)} className="flex text-gray-600 hover:text-gray-900 hover:bg-gray-100 px-2 md:px-3 py-2 rounded-md text-sm font-medium items-center gap-1 transition-colors cursor-pointer">
+                    <span className="hidden sm:inline">Menu</span>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="1.5"></circle><circle cx="12" cy="5" r="1.5"></circle><circle cx="12" cy="19" r="1.5"></circle></svg>
+                  </button>
+                  {isMenuDropdownOpen && (
+                    <div className="absolute top-[50px] right-0 bg-white shadow-xl border border-gray-200 rounded-md py-2 w-[180px] z-50 flex flex-col">
+                      <button onClick={onOpenRecentRooms} className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gray-50 text-left transition-colors cursor-pointer w-full">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500 shrink-0">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        My History
+                        {historyCount > 0 && (
+                          <span className="ml-1 bg-[#f05c3f] text-white text-[11px] font-bold rounded-full w-5 h-5 flex items-center justify-center shrink-0">
+                            {historyCount > 9 ? '9+' : historyCount}
+                          </span>
+                        )}
+                      </button>
+                      <RoomUploader
+                        onImageUpload={(newImageData) => {
+                          setUploadedRoom(newImageData);
+                          setProcessedImage(null);
+                          setIsMenuDropdownOpen(false);
+                        }}
+                        className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gray-50 text-left transition-colors cursor-pointer w-full"
+                      >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                        Upload
+                      </RoomUploader>
+
+                     
+                      <button
+                        onClick={() => { setIsImmersiveMode(true); setIsMenuDropdownOpen(false); setIsSidebarOpen(false); }}
+                        className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gray-50 text-left transition-colors cursor-pointer w-full"
+                      >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500 shrink-0">
+                          <path d="M2 3h20v14H2z" /><path d="M8 21h8" /><path d="M12 17v4" />
+                        </svg>
+                        Immersive View
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
+          )}
 
           {/* ── IMAGE VIEWER ── */}
           <div
@@ -1486,6 +1516,19 @@ useEffect(() => {
             </div>
 
             {isProcessing && <AttractiveLoader productName={selectedProduct?.name} />}
+
+            {isImmersiveMode && (
+              <button
+                onClick={() => setIsImmersiveMode(false)}
+                className="absolute top-4 right-4 z-50 flex items-center gap-2 bg-black/50 hover:bg-black/70 text-white text-sm font-medium px-4 py-2 rounded-full backdrop-blur-sm transition-colors cursor-pointer shadow-lg"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M8 3v3a2 2 0 0 1-2 2H3" /><path d="M21 8h-3a2 2 0 0 1-2-2V3" />
+                  <path d="M3 16h3a2 2 0 0 1 2 2v3" /><path d="M16 21v-3a2 2 0 0 1 2-2h3" />
+                </svg>
+                Exit Immersive
+              </button>
+            )}
 
             {/* --- MAIN 4/3 CONTAINER --- */}
             <div
@@ -1544,105 +1587,107 @@ useEffect(() => {
           </div>
 
           {/* ── FOOTER BAR ── */}
-          <div className="bg-white border-t border-gray-200 shrink-0 flex flex-col z-20 w-full">
-            {/* Row 1: Selected Product Info & Basic Actions */}
-            <div className="flex flex-wrap md:flex-nowrap items-center justify-between px-3 md:px-6 py-2 gap-y-2">
-              <div
-                onClick={(e) => handleOpenDetails(e, selectedProduct)}
-                className="flex items-center gap-2 md:gap-3 w-full md:w-auto cursor-pointer hover:bg-gray-50 p-1.5 -ml-1.5 rounded-md transition-colors group"
-              >
-                <img src={selectedProduct.img} alt="Selected" className="w-8 h-8 md:w-10 md:h-10 object-cover rounded border border-gray-200" />
-                <div className="flex flex-col mr-auto md:mr-0">
-                  <span className="font-bold text-sm md:text-base text-gray-900 leading-tight group-hover:text-[#0b5e5e] transition-colors">{selectedProduct.name}</span>
-                  <span className="text-[10px] md:text-xs text-gray-400">{selectedProduct.size}</span>
-                </div>
-                <div className="flex items-center gap-3 md:gap-6 text-xs md:text-sm text-gray-600 font-medium md:ml-6 md:border-l border-gray-200 pl-2 md:pl-6 h-full py-1">
-                  <button
-                    onClick={(e) => { e.stopPropagation(); handleReset(); }}
-                    disabled={!isFloorVisible}
-                    className={`flex items-center gap-1 md:gap-2 px-2 py-1.5 md:py-2 rounded-md transition-colors ${isFloorVisible
-                      ? 'hover:bg-gray-100 hover:text-gray-900 cursor-pointer text-gray-600'
-                      : 'opacity-50 cursor-not-allowed text-gray-400'
-                      }`}
-                  >
-                    <span className="hidden sm:inline">Reset</span>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="md:w-4 md:h-4"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><polyline points="3 3 3 8 8 8"></polyline></svg>
-                  </button>
-                  <button
-                    onClick={(e) => { e.stopPropagation(); handleRotate(); }}
-                    disabled={!isFloorVisible}
-                    className={`flex items-center gap-1 md:gap-2 px-2 py-1.5 md:py-2 rounded-md transition-colors group ${isFloorVisible
-                      ? 'hover:bg-gray-100 hover:text-gray-900 cursor-pointer'
-                      : 'opacity-50 cursor-not-allowed text-gray-400'
-                      }`}
-                  >
-                    <span className="hidden sm:inline">Rotate</span>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="md:w-4 md:h-4"><path d="M21 2v6h-6"></path><path d="M3 12a9 9 0 0 1 15-6.7L21 8"></path><path d="M3 22v-6h6"></path><path d="M21 12a9 9 0 0 1-15 6.7L3 16"></path></svg>
-                    {floorRotation !== 0 && (
-                      <span className="ml-1 px-1.5 py-0.5 text-[10px] md:text-xs font-bold text-[#0b5e5e] bg-[#0b5e5e]/10 rounded-full group-hover:bg-[#0b5e5e]/20 transition-colors">
-                        {floorRotation}&deg;
-                      </span>
-                    )}
-                  </button>
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-md hover:bg-gray-100 hover:text-gray-900 transition-colors cursor-default text-xs md:text-sm text-gray-600">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                  <span className="hidden sm:inline">Zoom</span> {zoomScale > 1 ? `(${zoomScale.toFixed(1)}x)` : ''}
-                </button>
-                <button
-                  onClick={() => { setZoomScale(1); setPan({ x: 0, y: 0 }); }}
-                  disabled={zoomScale === 1}
-                  className={`text-xs md:text-sm px-3 py-1.5 rounded-md transition-colors ${zoomScale === 1
-                    ? 'text-gray-400 cursor-not-allowed opacity-50'
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100 cursor-pointer'
-                    }`}
+          {!isImmersiveMode && (
+
+            <div className="bg-white border-t border-gray-200 shrink-0 flex flex-col z-20 w-full">
+              {/* Row 1: Selected Product Info & Basic Actions */}
+              <div className="flex flex-wrap md:flex-nowrap items-center justify-between px-3 md:px-6 py-2 gap-y-2">
+                <div
+                  onClick={(e) => handleOpenDetails(e, selectedProduct)}
+                  className="flex items-center gap-2 md:gap-3 w-full md:w-auto cursor-pointer hover:bg-gray-50 p-1.5 -ml-1.5 rounded-md transition-colors group"
                 >
-                  Reset Zoom
-                </button>
-              </div>
-            </div>
-
-            {/* Row 2: Quick Selector (mobile only) */}
-            <div className="flex md:hidden flex-col w-full border-t border-gray-100 px-3 md:px-6 py-2 bg-gray-50/50">
-              <div className="flex overflow-x-auto gap-2 pb-2 items-center [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-                <span className="text-[10px] md:text-xs font-bold text-gray-500 uppercase tracking-wider mr-1 shrink-0">Collections:</span>
-                {displayCategories.map(cat => (
-                  <button
-                    key={cat}
-                    onClick={(e) => { e.stopPropagation(); setActiveFooterCategory(cat); }}
-                    className={`shrink-0 text-[11px] md:text-xs px-3 py-1 rounded-full font-medium transition-colors cursor-pointer border ${activeFooterCategory === cat ? 'bg-[#0b5e5e] text-white border-[#0b5e5e] shadow-sm' : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-100'}`}
-                  >
-                    {cat}
-                  </button>
-                ))}
-              </div>
-              <div className="flex overflow-x-auto gap-3 py-1 items-center [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-                {mockProducts.filter(p => p.accordionCategory === activeFooterCategory).map(prod => {
-                  const isSelected = selectedProduct.id === prod.id;
-                  return (
-                    <div
-                      key={prod.id}
-                      onClick={(e) => { e.stopPropagation(); handleTileSelection(prod); }}
-                      className={`relative shrink-0 w-12 h-12 md:w-14 md:h-14 rounded-md cursor-pointer border-2 transition-all duration-200 overflow-hidden ${isSelected ? 'border-[#0b5e5e] shadow-md scale-105 z-10' : 'border-transparent hover:border-gray-300'}`}
-                      title={prod.name}
+                  <img src={selectedProduct.img} alt="Selected" className="w-8 h-8 md:w-10 md:h-10 object-cover rounded border border-gray-200" />
+                  <div className="flex flex-col mr-auto md:mr-0">
+                    <span className="font-bold text-sm md:text-base text-gray-900 leading-tight group-hover:text-[#0b5e5e] transition-colors">{selectedProduct.name}</span>
+                    <span className="text-[10px] md:text-xs text-gray-400">{selectedProduct.size}</span>
+                  </div>
+                  <div className="flex items-center gap-3 md:gap-6 text-xs md:text-sm text-gray-600 font-medium md:ml-6 md:border-l border-gray-200 pl-2 md:pl-6 h-full py-1">
+                    <button
+                      onClick={(e) => { e.stopPropagation(); handleReset(); }}
+                      disabled={!isFloorVisible}
+                      className={`flex items-center gap-1 md:gap-2 px-2 py-1.5 md:py-2 rounded-md transition-colors ${isFloorVisible
+                        ? 'hover:bg-gray-100 hover:text-gray-900 cursor-pointer text-gray-600'
+                        : 'opacity-50 cursor-not-allowed text-gray-400'
+                        }`}
                     >
-                      <img src={prod.img} alt={prod.name} className="w-full h-full object-cover" />
-                      {isSelected && (
-                        <div className="absolute inset-0 bg-[#0b5e5e]/10 flex items-center justify-center">
-                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" className="drop-shadow-md">
-                            <polyline points="20 6 9 17 4 12"></polyline>
-                          </svg>
-                        </div>
+                      <span className="hidden sm:inline">Reset</span>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="md:w-4 md:h-4"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><polyline points="3 3 3 8 8 8"></polyline></svg>
+                    </button>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); handleRotate(); }}
+                      disabled={!isFloorVisible}
+                      className={`flex items-center gap-1 md:gap-2 px-2 py-1.5 md:py-2 rounded-md transition-colors group ${isFloorVisible
+                        ? 'hover:bg-gray-100 hover:text-gray-900 cursor-pointer'
+                        : 'opacity-50 cursor-not-allowed text-gray-400'
+                        }`}
+                    >
+                      <span className="hidden sm:inline">Rotate</span>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="md:w-4 md:h-4"><path d="M21 2v6h-6"></path><path d="M3 12a9 9 0 0 1 15-6.7L21 8"></path><path d="M3 22v-6h6"></path><path d="M21 12a9 9 0 0 1-15 6.7L3 16"></path></svg>
+                      {floorRotation !== 0 && (
+                        <span className="ml-1 px-1.5 py-0.5 text-[10px] md:text-xs font-bold text-[#0b5e5e] bg-[#0b5e5e]/10 rounded-full group-hover:bg-[#0b5e5e]/20 transition-colors">
+                          {floorRotation}&deg;
+                        </span>
                       )}
-                    </div>
-                  );
-                })}
+                    </button>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-md hover:bg-gray-100 hover:text-gray-900 transition-colors cursor-default text-xs md:text-sm text-gray-600">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    <span className="hidden sm:inline">Zoom</span> {zoomScale > 1 ? `(${zoomScale.toFixed(1)}x)` : ''}
+                  </button>
+                  <button
+                    onClick={() => { setZoomScale(1); setPan({ x: 0, y: 0 }); }}
+                    disabled={zoomScale === 1}
+                    className={`text-xs md:text-sm px-3 py-1.5 rounded-md transition-colors ${zoomScale === 1
+                      ? 'text-gray-400 cursor-not-allowed opacity-50'
+                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100 cursor-pointer'
+                      }`}
+                  >
+                    Reset Zoom
+                  </button>
+                </div>
+              </div>
+
+              {/* Row 2: Quick Selector (mobile only) */}
+              <div className="flex md:hidden flex-col w-full border-t border-gray-100 px-3 md:px-6 py-2 bg-gray-50/50">
+                <div className="flex overflow-x-auto gap-2 pb-2 items-center [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                  <span className="text-[10px] md:text-xs font-bold text-gray-500 uppercase tracking-wider mr-1 shrink-0">Collections:</span>
+                  {displayCategories.map(cat => (
+                    <button
+                      key={cat}
+                      onClick={(e) => { e.stopPropagation(); setActiveFooterCategory(cat); }}
+                      className={`shrink-0 text-[11px] md:text-xs px-3 py-1 rounded-full font-medium transition-colors cursor-pointer border ${activeFooterCategory === cat ? 'bg-[#0b5e5e] text-white border-[#0b5e5e] shadow-sm' : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-100'}`}
+                    >
+                      {cat}
+                    </button>
+                  ))}
+                </div>
+                <div className="flex overflow-x-auto gap-3 py-1 items-center [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                  {mockProducts.filter(p => p.accordionCategory === activeFooterCategory).map(prod => {
+                    const isSelected = selectedProduct.id === prod.id;
+                    return (
+                      <div
+                        key={prod.id}
+                        onClick={(e) => { e.stopPropagation(); handleTileSelection(prod); }}
+                        className={`relative shrink-0 w-12 h-12 md:w-14 md:h-14 rounded-md cursor-pointer border-2 transition-all duration-200 overflow-hidden ${isSelected ? 'border-[#0b5e5e] shadow-md scale-105 z-10' : 'border-transparent hover:border-gray-300'}`}
+                        title={prod.name}
+                      >
+                        <img src={prod.img} alt={prod.name} className="w-full h-full object-cover" />
+                        {isSelected && (
+                          <div className="absolute inset-0 bg-[#0b5e5e]/10 flex items-center justify-center">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" className="drop-shadow-md">
+                              <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             </div>
-          </div>
-
+          )}
         </div>{/* ← closes the always-rendered normal view wrapper */}
 
       </div>{/* ← closes the main content area */}
