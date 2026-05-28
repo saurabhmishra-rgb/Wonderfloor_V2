@@ -266,16 +266,16 @@ function App() {
   }, [location.pathname, roomId]);
 
   // ── Auto-reload last demo room after a page refresh ───────────────────────
- useEffect(() => {
-  // Don't auto-restore if we're already loading a specific room from the URL
-  if (location.pathname.startsWith('/visualizer')) return;
+//  useEffect(() => {
+//   // Don't auto-restore if we're already loading a specific room from the URL
+//   if (location.pathname.startsWith('/visualizer')) return;
 
-  const savedRoomId = localStorage.getItem('activeDemoRoomId');
-  if (savedRoomId) {
-    const room = allDemoRooms.find(r => r.id === savedRoomId);
-    if (room) handleDemoRoomClick(room).catch(console.error);
-  }
-}, []);
+//   const savedRoomId = localStorage.getItem('activeDemoRoomId');
+//   if (savedRoomId) {
+//     const room = allDemoRooms.find(r => r.id === savedRoomId);
+//     if (room) handleDemoRoomClick(room).catch(console.error);
+//   }
+// }, []);
 
   // ── Handlers ──────────────────────────────────────────────────────────────
 
