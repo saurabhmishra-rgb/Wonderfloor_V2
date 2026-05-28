@@ -524,7 +524,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
 
   const handleTouchEnd = () => { setIsDragging(false); setInitialPinchDist(null); };
 
-  const getRotatedTileBlob = async (imageSrc, angle) => {
+const getRotatedTileBlob = async (imageSrc, angle) => {
     return new Promise((resolve, reject) => {
       const img = new Image();
       img.onload = () => {
@@ -547,121 +547,155 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
     });
   };
 
-  // ── FIX: GENERATE LOCAL 3D COMPOSITE (BYPASSES FETCH COMPLETELY) ──
-  // ── FIX: GENERATE LOCAL 3D COMPOSITE WITH SAFE GPU TIMEOUT ──
-  const generateCompositeImage = async (productImgUrl, angle = 0) => {
+  // ── FIX: HELPER FUNCTION TO PROMISIFY IMAGE LOADING ──
+  const loadCanvasImage = (src) => {
     return new Promise((resolve) => {
-      if (!activeBaseImage?.maskUrl || !visualizerInstance.current) {
-        return resolve(null);
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => resolve(img);
+      img.onerror = () => resolve(null);
+      img.src = src;
+    });
+  };
+
+  // ── FIX: GENERATE LOCAL 3D COMPOSITE SAFELY ──
+  const generateCompositeImage = async (productImgUrl, angle = 0) => {
+    if (!activeBaseImage?.maskUrl || !visualizerInstance.current) {
+      return null;
+    }
+
+    try {
+      // 1. Pre-load all required image assets FIRST so we don't wait later
+      const [bgImg, maskImg] = await Promise.all([
+        loadCanvasImage(activeBaseImage.previewUrl),
+        loadCanvasImage(activeBaseImage.maskUrl)
+      ]);
+
+      if (!bgImg || !maskImg) return null;
+
+      // 2. NOW update the ThreeJS texture and wait for it to render
+      if (visualizerInstance.current.updateTexture) {
+        await visualizerInstance.current.updateTexture(productImgUrl, angle);
       }
 
-      const tilePreloader = new Image();
-      tilePreloader.crossOrigin = 'anonymous';
+      // 3. SYNCHRONOUSLY build the composite exactly as the WebGL buffer finishes
+      const canvas = document.createElement('canvas');
+      canvas.width = bgImg.width;
+      canvas.height = bgImg.height;
+      const ctx = canvas.getContext('2d');
 
-      tilePreloader.onload = () => {
-        // 1. The image is downloaded. Tell ThreeJS to update the material.
-        if (visualizerInstance.current.updateTexture) {
-          visualizerInstance.current.updateTexture(productImgUrl, angle);
-        }
+      // Layer 1: Base Room Background
+      ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
 
-        // 2. WAIT FOR THE GPU TO RENDER THE FRAME
-        // 450ms guarantees ThreeJS has time to upload the texture and draw it.
-        setTimeout(() => {
-          try {
-            const canvas = document.createElement('canvas');
-            const bgImg = new Image();
-            bgImg.crossOrigin = 'anonymous';
+      // Layer 2: Updated ThreeJS webgl layer
+      const webglCanvas = threeContainerRef.current?.querySelector('canvas');
+      if (webglCanvas) {
+        ctx.drawImage(webglCanvas, 0, 0, canvas.width, canvas.height);
+      }
 
-            bgImg.onload = () => {
-              canvas.width = bgImg.width;
-              canvas.height = bgImg.height;
-              const ctx = canvas.getContext('2d');
+      // Layer 3: Top Mask layer
+      ctx.drawImage(maskImg, 0, 0, canvas.width, canvas.height);
 
-              // Draw Base Room Background
-              ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
+      // Return the baked image instantly
+      return canvas.toDataURL('image/jpeg', 0.92);
 
-              // Draw Updated ThreeJS webgl layer
-              const webglCanvas = threeContainerRef.current?.querySelector('canvas');
-              if (webglCanvas) {
-                ctx.drawImage(webglCanvas, 0, 0, canvas.width, canvas.height);
-              }
-
-              // Draw Top Mask layer
-              const maskImg = new Image();
-              maskImg.crossOrigin = 'anonymous';
-              maskImg.onload = () => {
-                ctx.drawImage(maskImg, 0, 0, canvas.width, canvas.height);
-                resolve(canvas.toDataURL('image/jpeg', 0.9)); // Return baked image dataURL
-              };
-              maskImg.onerror = () => resolve(null);
-              maskImg.src = activeBaseImage.maskUrl;
-            };
-            bgImg.onerror = () => resolve(null);
-            bgImg.src = activeBaseImage.previewUrl;
-          } catch (e) {
-            console.error("Canvas composite failed:", e);
-            resolve(null);
-          }
-        }, 450); // <--- THIS IS THE MAGIC NUMBER THAT FIXES THE DOUBLE CLICK
-      };
-
-      tilePreloader.onerror = () => {
-        console.error("Failed to preload tile texture asset:", productImgUrl);
-        resolve(null);
-      };
-
-      tilePreloader.src = productImgUrl;
-    });
+    } catch (e) {
+      console.error("Canvas composite failed:", e);
+      return null;
+    }
   };
 
   // Canvas-only composite that doesn't need the live ThreeJS instance
-  const generateStaticComposite = async (productImgUrl,) => {
+  const generateStaticComposite = async (productImgUrl) => {
     if (!activeBaseImage?.maskUrl) return null;
 
-    return new Promise((resolve) => {
+    try {
+      // Pre-load all assets to prevent async race conditions
+      const [bgImg, maskImg, tileImg] = await Promise.all([
+        loadCanvasImage(activeBaseImage.previewUrl),
+        loadCanvasImage(activeBaseImage.maskUrl),
+        loadCanvasImage(productImgUrl)
+      ]);
+
+      if (!bgImg || !maskImg || !tileImg) return null;
+
       const canvas = document.createElement('canvas');
-      const bgImg = new Image();
-      bgImg.crossOrigin = 'anonymous';
+      canvas.width = bgImg.width;
+      canvas.height = bgImg.height;
+      const ctx = canvas.getContext('2d');
 
-      bgImg.onload = () => {
-        canvas.width = bgImg.width;
-        canvas.height = bgImg.height;
-        const ctx = canvas.getContext('2d');
+      // Layer 1: Base Room
+      ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
 
-        // Layer 1: Draw room background
-        ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
+      // Layer 2: Floor pattern approximation
+      const pattern = ctx.createPattern(tileImg, 'repeat');
+      if (pattern) {
+        ctx.save();
+        ctx.globalAlpha = 0.85;
+        ctx.fillStyle = pattern;
+        ctx.fillRect(0, canvas.height * 0.45, canvas.width, canvas.height * 0.55);
+        ctx.restore();
+      }
 
-        // Layer 2: Draw tiled floor texture
-        const tileImg = new Image();
-        tileImg.crossOrigin = 'anonymous';
-        tileImg.onload = () => {
-          // Simple repeating tile fill as a floor approximation
-          const pattern = ctx.createPattern(tileImg, 'repeat');
-          if (pattern) {
-            ctx.save();
-            ctx.globalAlpha = 0.85;
-            ctx.fillStyle = pattern;
-            ctx.fillRect(0, canvas.height * 0.45, canvas.width, canvas.height * 0.55);
-            ctx.restore();
-          }
+      // Layer 3: Mask
+      ctx.drawImage(maskImg, 0, 0, canvas.width, canvas.height);
+      
+      return canvas.toDataURL('image/jpeg', 0.92);
 
-          // Layer 3: Draw mask on top
-          const maskImg = new Image();
-          maskImg.crossOrigin = 'anonymous';
-          maskImg.onload = () => {
-            ctx.drawImage(maskImg, 0, 0, canvas.width, canvas.height);
-            resolve(canvas.toDataURL('image/jpeg', 0.9));
-          };
-          maskImg.onerror = () => resolve(null);
-          maskImg.src = activeBaseImage.maskUrl;
-        };
-        tileImg.onerror = () => resolve(null);
-        tileImg.src = productImgUrl;
-      };
-      bgImg.onerror = () => resolve(null);
-      bgImg.src = activeBaseImage.previewUrl;
-    });
+    } catch (e) {
+      console.error("Static composite failed:", e);
+      return null;
+    }
   };
+ 
+  // // Canvas-only composite that doesn't need the live ThreeJS instance
+  // const generateStaticComposite = async (productImgUrl,) => {
+  //   if (!activeBaseImage?.maskUrl) return null;
+
+  //   return new Promise((resolve) => {
+  //     const canvas = document.createElement('canvas');
+  //     const bgImg = new Image();
+  //     bgImg.crossOrigin = 'anonymous';
+
+  //     bgImg.onload = () => {
+  //       canvas.width = bgImg.width;
+  //       canvas.height = bgImg.height;
+  //       const ctx = canvas.getContext('2d');
+
+  //       // Layer 1: Draw room background
+  //       ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
+
+  //       // Layer 2: Draw tiled floor texture
+  //       const tileImg = new Image();
+  //       tileImg.crossOrigin = 'anonymous';
+  //       tileImg.onload = () => {
+  //         // Simple repeating tile fill as a floor approximation
+  //         const pattern = ctx.createPattern(tileImg, 'repeat');
+  //         if (pattern) {
+  //           ctx.save();
+  //           ctx.globalAlpha = 0.85;
+  //           ctx.fillStyle = pattern;
+  //           ctx.fillRect(0, canvas.height * 0.45, canvas.width, canvas.height * 0.55);
+  //           ctx.restore();
+  //         }
+
+  //         // Layer 3: Draw mask on top
+  //         const maskImg = new Image();
+  //         maskImg.crossOrigin = 'anonymous';
+  //         maskImg.onload = () => {
+  //           ctx.drawImage(maskImg, 0, 0, canvas.width, canvas.height);
+  //           resolve(canvas.toDataURL('image/jpeg', 0.9));
+  //         };
+  //         maskImg.onerror = () => resolve(null);
+  //         maskImg.src = activeBaseImage.maskUrl;
+  //       };
+  //       tileImg.onerror = () => resolve(null);
+  //       tileImg.src = productImgUrl;
+  //     };
+  //     bgImg.onerror = () => resolve(null);
+  //     bgImg.src = activeBaseImage.previewUrl;
+  //   });
+  // };
   const handleEnterCompare = async () => {
     // ✅ Step 1: Capture composite WHILE visualizer is still alive
     let initialComposite = null;
