@@ -1,3 +1,4 @@
+// script.jsx
 import * as THREE from 'three';
 
 export const initVisualizer = (container) => {
@@ -6,11 +7,10 @@ export const initVisualizer = (container) => {
   try {
     const scene = new THREE.Scene();
     
-    // 1. INCREASED FAR CLIPPING PLANE TO 10000 so the back of the floor doesn't get cut off
+    // INCREASED FAR CLIPPING PLANE TO 10000 so the back of the floor doesn't get cut off
     const camera = new THREE.PerspectiveCamera(50, container.clientWidth / container.clientHeight, 0.1, 10000);
     
     // Alpha: true is crucial so the base room image shows behind the 3D floor!
-  // Alpha: true is crucial so the base room image shows behind the 3D floor!
     // preserveDrawingBuffer: true is required for html2canvas to capture the 3D layer
     const renderer = new THREE.WebGLRenderer({ 
       antialias: true, 
@@ -27,7 +27,7 @@ export const initVisualizer = (container) => {
 
     const loader = new THREE.TextureLoader();
     
-    // 2. MADE THE PLANE MASSIVE so you never see the edges
+    // MADE THE PLANE MASSIVE so you never see the edges
     const floorGeometry = new THREE.PlaneGeometry(8000, 8000);
     const floorMaterial = new THREE.MeshStandardMaterial({
       side: THREE.DoubleSide,
@@ -53,19 +53,25 @@ export const initVisualizer = (container) => {
     animate();
 
     const handleResize = () => {
-      if (!container) return;
+      if (!container || container.clientWidth === 0) return;
       camera.aspect = container.clientWidth / container.clientHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(container.clientWidth, container.clientHeight);
     };
-    window.addEventListener('resize', handleResize);
+
+    // ✅ FIX: Use ResizeObserver instead of window resize event
+    // This catches React state changes that alter the container's size
+    const resizeObserver = new ResizeObserver(() => {
+      handleResize();
+    });
+    resizeObserver.observe(container);
 
     const updateTexture = (textureUrl, angleInDegrees = 0) => {
       loader.load(textureUrl, (tex) => {
         tex.colorSpace = THREE.SRGBColorSpace;
         tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
         
-        // 3. INCREASED REPEAT to match the massive floor (Adjust these numbers if tiles look too big or small)
+        // INCREASED REPEAT to match the massive floor (Adjust these numbers if tiles look too big or small)
         tex.repeat.set(240, 240); 
         
         tex.center.set(0.5, 0.5);
@@ -78,7 +84,9 @@ export const initVisualizer = (container) => {
     return {
       cleanup: () => {
         cancelAnimationFrame(animationFrameId);
-        window.removeEventListener('resize', handleResize);
+        // ✅ FIX: Disconnect the observer to prevent memory leaks
+        resizeObserver.disconnect();
+        
         if (container && renderer.domElement && container.contains(renderer.domElement)) {
           container.removeChild(renderer.domElement);
         }
