@@ -8,7 +8,7 @@ import AttractiveLoader from './AttractiveLoader';
 import { useParams, useNavigate } from 'react-router-dom';
 
 import { NAV_CATEGORIES, ACCORDION_CATEGORIES, ALL_PRODUCTS } from '../data/productsConfig';
-import SidebarNavTabs from './SidebarNavTabs.jsx';
+import SidebarNavTabs from './SidebarNavTabs';
 
 
 
@@ -1208,43 +1208,49 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
                 <button onClick={() => setIsSidebarOpen(false)} className="md:hidden text-gray-400 hover:text-gray-800 hover:bg-gray-100 p-1.5 rounded-md transition-colors cursor-pointer">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
                 </button>
-                <div className="relative md:hidden flex items-center" ref={mobileMenuRef}>
+               <div className="relative md:hidden flex items-center" ref={mobileMenuRef}>
                   <button
                     onClick={() => setIsMenuDropdownOpen(!isMenuDropdownOpen)}
-                    className="text-gray-400 hover:text-gray-800 hover:bg-gray-100 p-1.5 rounded-md transition-colors cursor-pointer"
+                    className={`p-1.5 rounded-md transition-colors cursor-pointer ${isDarkMode ? 'text-gray-400 hover:text-white hover:bg-[#2d4059]' : 'text-gray-400 hover:text-gray-800 hover:bg-gray-100'}`}
                   >
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="1.5"></circle><circle cx="12" cy="5" r="1.5"></circle><circle cx="12" cy="19" r="1.5"></circle></svg>
                   </button>
                   {isMenuDropdownOpen && (
-                    <div className="absolute top-[45px] right-0 bg-white shadow-2xl border border-gray-200 rounded-md py-2 w-[180px] z-[100] flex flex-col">
-                      <button onClick={onOpenRecentRooms} className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gray-50 text-left transition-colors cursor-pointer w-full">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500 shrink-0">
+                    <div className={`absolute top-[45px] right-0 shadow-2xl border rounded-md py-2 w-[180px] z-[100] flex flex-col transition-colors
+                      ${isDarkMode ? 'bg-[#1e293b] border-[#334155]' : 'bg-white border-gray-200'}`}>
+                      
+                      <button onClick={onOpenRecentRooms} className={`flex items-center gap-3 px-4 py-2.5 text-sm text-left transition-colors cursor-pointer w-full
+                        ${isDarkMode ? 'text-gray-300 hover:bg-[#2d4059] hover:text-white' : 'text-gray-700 hover:bg-gray-50'}`}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={`shrink-0 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                           <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                         My History
                         {historyCount > 0 && (
-                          <span className="ml-1 bg-[#f05c3f] text-white text-[11px] font-bold rounded-full w-5 h-5 flex items-center justify-center shrink-0">
+                          <span className="ml-1 bg-[#f05c3f] text-white text-[11px] font-bold rounded-full w-5 h-5 flex items-center justify-center shrink-0 shadow-sm">
                             {historyCount > 9 ? '9+' : historyCount}
                           </span>
                         )}
                       </button>
+                      
                       <RoomUploader
                         onImageUpload={(newImageData) => {
                           setUploadedRoom(newImageData);
                           setProcessedImage(null);
                           setIsMenuDropdownOpen(false);
                         }}
-                        className="flex items-center gap-3 px-4 py-3 text-sm hover:bg-gray-50 text-left transition-colors cursor-pointer w-full"
+                        className={`flex items-center gap-3 px-4 py-2.5 text-sm text-left transition-colors cursor-pointer w-full
+                          ${isDarkMode ? 'text-gray-300 hover:bg-[#2d4059] hover:text-white' : 'text-gray-700 hover:bg-gray-50'}`}
                       >
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={isDarkMode ? 'text-gray-400' : 'text-gray-500'}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
                         Upload
                       </RoomUploader>
 
                       <button
                         onClick={() => { setIsImmersiveMode(true); setIsMenuDropdownOpen(false); setIsSidebarOpen(false); }}
-                        className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gray-50 text-left transition-colors cursor-pointer w-full"
+                        className={`flex items-center gap-3 px-4 py-2.5 text-sm text-left transition-colors cursor-pointer w-full
+                          ${isDarkMode ? 'text-gray-300 hover:bg-[#2d4059] hover:text-white' : 'text-gray-700 hover:bg-gray-50'}`}
                       >
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500 shrink-0">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={`shrink-0 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                           <path d="M2 3h20v14H2z" /><path d="M8 21h8" /><path d="M12 17v4" />
                         </svg>
                         Immersive View
@@ -1533,13 +1539,12 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
                 </div>
               </div>
 
-             <div className={`flex items-center gap-3 md:gap-5 border-l pl-3 md:pl-5 h-full shrink-0 transition-colors ${isDarkMode ? 'border-[#334155]' : 'border-gray-200'}`}>
-                {/* 🌙 DARK MODE TOGGLE — placed in the red-highlighted area */}
-               {/* 🌙 DARK MODE TOGGLE — Premium Animated Version */}
+          <div className={`flex items-center gap-1.5 md:gap-5 border-l pl-1.5 md:pl-5 h-full shrink-0 transition-colors ${isDarkMode ? 'border-[#334155]' : 'border-gray-200'}`}>
+                {/* 🌙 DARK MODE TOGGLE — Premium Animated Version */}
                 <button
                   onClick={() => setIsDarkMode(prev => !prev)}
                   title={isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-                  className={`group relative flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold tracking-wide transition-all duration-300 cursor-pointer overflow-hidden border
+                  className={`group relative flex items-center justify-center md:justify-start gap-2 w-8 h-8 md:w-auto md:h-auto md:px-4 md:py-2 rounded-full text-sm font-bold tracking-wide transition-all duration-300 cursor-pointer overflow-hidden border
                     ${isDarkMode
                       ? 'bg-[#1e293b] text-yellow-400 border-[#334155] hover:border-yellow-400/50 hover:bg-[#1a2436] shadow-[0_0_10px_rgba(250,204,21,0.05)] hover:shadow-[0_0_15px_rgba(250,204,21,0.15)]'
                       : 'bg-white text-slate-700 border-gray-200 hover:border-slate-300 hover:bg-gray-50 shadow-sm hover:shadow-md'
@@ -1557,16 +1562,18 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
                       <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
                     </svg>
                   )}
-                  <span className="hidden sm:inline relative z-10">{isDarkMode ? 'Light' : 'Dark'}</span>
+                  <span className="hidden md:inline relative z-10">{isDarkMode ? 'Light' : 'Dark'}</span>
                 </button>
                 <a href="https://www.wonderfloor.co.in/contact-us" target="_blank" rel="noopener noreferrer" title="Contact Us | Wonderfloor">
-                  <button className="bg-[#0b5e5e] text-white px-3 py-1.5 md:px-4 md:py-2 rounded-md text-xs md:text-sm font-medium hover:bg-[#084747] flex items-center gap-1.5 shadow-sm transition-colors cursor-pointer">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="hidden sm:block"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-                    Contact us
+                  <button className="group relative flex items-center justify-center gap-2 w-8 h-8 md:w-auto md:h-auto md:px-4 md:py-2 rounded-full text-sm font-bold tracking-wide transition-all duration-300 cursor-pointer overflow-hidden border border-teal-500/30 bg-gradient-to-r from-[#0b5e5e] to-teal-600 text-white hover:from-[#084747] hover:to-teal-700 shadow-md hover:shadow-lg shrink-0">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 group-hover:-translate-y-0.5 transition-transform duration-300">
+                      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline>
+                    </svg>
+                    <span className="hidden md:inline relative z-10">Contact us</span>
                   </button>
                 </a>
                 <div className="relative flex items-center h-full" ref={menuRef}>
-                  <button onClick={() => setIsMenuDropdownOpen(!isMenuDropdownOpen)} className={`flex px-2 md:px-3 py-2 rounded-md text-sm font-medium items-center gap-1 transition-colors cursor-pointer ${dm.navBtn}`}>
+                  <button onClick={() => setIsMenuDropdownOpen(!isMenuDropdownOpen)} className={`flex p-1.5 md:px-3 md:py-2 rounded-md text-sm font-medium items-center gap-1 transition-colors cursor-pointer ${dm.navBtn}`}>
                     <span className="hidden sm:inline">Menu</span>
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="1.5"></circle><circle cx="12" cy="5" r="1.5"></circle><circle cx="12" cy="19" r="1.5"></circle></svg>
                   </button>
