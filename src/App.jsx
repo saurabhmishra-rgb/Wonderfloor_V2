@@ -428,6 +428,29 @@ function App() {
       </div>
     );
   }
+   // ── ADD THIS: When visualizer is ready, render ONLY the modal ─────────
+if (isVisualizerRoute && isModalOpen && selectedRoomImage) {
+  return (
+    <>
+      <ImageHistoryDrawer
+        isOpen={isHistoryOpen}
+        history={history}
+        onSelect={handleHistorySelect}
+        onRemove={removeEntry}
+        onClear={clearHistory}
+        onClose={() => setIsHistoryOpen(false)}
+      />
+      <ARVisualizer
+        key={selectedRoomImage.previewUrl}
+        closeModal={handleCloseModal}
+        initialImage={selectedRoomImage}
+        onOpenRecentRooms={() => setIsHistoryOpen(true)}
+        historyCount={history.length}
+        onProductChange={updateEntryProduct}
+      />
+    </>
+  );
+}
 
  // ── Render ────────────────────────────────────────────────────────────────
 return (
