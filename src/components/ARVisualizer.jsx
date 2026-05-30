@@ -153,24 +153,27 @@ const CompareView = ({
 
 
 const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCount = 0, onProductChange, }) => {
+  // Browser detector: True if Safari (Mac/iOS), False if Chrome/Edge/Windows
+  const isSafari = typeof window !== 'undefined' && /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
-  // for download images
+ // for download images
   const [downloadImageUrl, setDownloadImageUrl] = useState(null);
+  const [isGeneratingDownload, setIsGeneratingDownload] = useState(false); // <-- NEW SEPARATE STATE
+  
   const handleDownloadButtonClick = async () => {
     if (isDownloadMenuOpen) { setIsDownloadMenuOpen(false); return; }
 
     // Pre-generate the 3D composite BEFORE opening the menu
-    // (Safari can't capture WebGL canvas via html-to-image)
     let imgUrl = currentSrc;
     if (activeBaseImage?.maskUrl && visualizerInstance.current) {
-      setIsProcessing(true);
+      setIsGeneratingDownload(true); // <-- CHANGED from setIsProcessing
       try {
         const composite = await generateCompositeImage(selectedProduct.img, floorRotation);
         if (composite) imgUrl = composite;
       } catch (e) {
         console.error('Composite failed for download:', e);
       } finally {
-        setIsProcessing(false);
+        setIsGeneratingDownload(false); // <-- CHANGED from setIsProcessing
       }
     }
     setDownloadImageUrl(imgUrl);
@@ -1545,16 +1548,36 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
                   )}
                 </div>
 
-                <div className="relative flex items-center h-full" ref={downloadRef}>
-                  <button onClick={handleDownloadButtonClick} className={`flex items-center gap-1.5 px-3 py-2 rounded-md transition-colors cursor-pointer ${dm.navBtn}`}>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                    <span className="hidden sm:inline">Download</span>
+               <div className="relative flex items-center h-full" ref={downloadRef}>
+                  <button 
+                    onClick={handleDownloadButtonClick} 
+                    disabled={isGeneratingDownload}
+                    className={`flex items-center gap-1.5 px-3 py-2 rounded-md transition-all h-9 text-sm font-semibold select-none
+                      ${isGeneratingDownload ? 'cursor-not-allowed opacity-70' : 'cursor-pointer'} ${dm.navBtn}`}
+                  >
+                    {isGeneratingDownload ? (
+                      <>
+                        {/* Premium micro-spinner icon */}
+                        <svg className="animate-spin h-4 w-4 text-teal-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span className="hidden sm:inline text-teal-500">Preparing...</span>
+                      </>
+                    ) : (
+                      <>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                        <span className="hidden sm:inline">Download</span>
+                      </>
+                    )}
                   </button>
                   {isDownloadMenuOpen && (
-                    <div className="absolute top-[50px] left-1/2 -translate-x-1/2 md:translate-x-0 md:left-auto md:right-0 bg-white shadow-xl border border-gray-200 rounded-md py-2 w-[240px] z-50 flex flex-col">
-                      <DownloadView
+                    <div className={`absolute top-[50px] left-1/2 -translate-x-1/2 md:translate-x-0 md:left-auto md:right-0 shadow-xl border rounded-md py-2 w-[240px] z-50 flex flex-col transition-colors
+                      ${isDarkMode ? 'bg-[#1e293b] border-[#334155]' : 'bg-white border-gray-200'}`}>
+                     <DownloadView
                         selectedProduct={selectedProduct}
                         currentSrc={downloadImageUrl || currentSrc}
+                        compositeRef={!isSafari && activeBaseImage?.maskUrl ? compositeRef : null}
                         onClose={() => setIsDownloadMenuOpen(false)}
                       />
                     </div>
