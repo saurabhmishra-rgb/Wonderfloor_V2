@@ -8,7 +8,7 @@ import AttractiveLoader from './AttractiveLoader';
 import { useParams, useNavigate } from 'react-router-dom';
 
 import { NAV_CATEGORIES, ACCORDION_CATEGORIES, ALL_PRODUCTS } from '../data/productsConfig';
-import SidebarNavTabs from './SidebarNavTabs';
+import SidebarNavTabs from './SidebarNavTabs.jsx';
 
 
 
