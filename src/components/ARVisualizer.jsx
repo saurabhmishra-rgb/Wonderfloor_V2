@@ -866,8 +866,8 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
     { id: 'colour', label: 'Colour Family', options: ['Grey', 'cherry-red', 'neo-silver', 'Beige', 'Brown', 'Black', 'White', 'Blue', 'Green', 'Lemon', 'Orange', 'Purple', 'Cherry', 'Pink'] },
     { id: 'shade', label: 'Shade', options: ['Light', 'Medium', 'Dark'] },
     { id: 'userIndustry', label: 'User Industry', options: ['Industrial Flooring', 'Office Flooring', 'Residential Flooring', 'School Flooring', 'Sports Flooring', 'Hotel/ Hospitality Flooring'] },
-    { id: 'Pattern/Layout', label: 'Pattern/ Layout', options: ['Harringbone'] },
-    { id: 'collection', label: 'Style', options: ['Wood', 'Stone', 'Cushion Vinyl'] },
+    { id: 'Pattern/Layout', label: 'Pattern/ Layout', options: ['Herringbone'] },
+    { id: 'collection', label: 'Style', options: ['Wood', 'Stone', 'Non Directional'] },
   ];
 
   const handleToggleFilter = (categoryId, option) => {
