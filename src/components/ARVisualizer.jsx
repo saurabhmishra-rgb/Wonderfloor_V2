@@ -153,6 +153,30 @@ const CompareView = ({
 
 
 const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCount = 0, onProductChange, }) => {
+
+  // for download images
+  const [downloadImageUrl, setDownloadImageUrl] = useState(null);
+  const handleDownloadButtonClick = async () => {
+    if (isDownloadMenuOpen) { setIsDownloadMenuOpen(false); return; }
+
+    // Pre-generate the 3D composite BEFORE opening the menu
+    // (Safari can't capture WebGL canvas via html-to-image)
+    let imgUrl = currentSrc;
+    if (activeBaseImage?.maskUrl && visualizerInstance.current) {
+      setIsProcessing(true);
+      try {
+        const composite = await generateCompositeImage(selectedProduct.img, floorRotation);
+        if (composite) imgUrl = composite;
+      } catch (e) {
+        console.error('Composite failed for download:', e);
+      } finally {
+        setIsProcessing(false);
+      }
+    }
+    setDownloadImageUrl(imgUrl);
+    setIsDownloadMenuOpen(true);
+  };
+
   const { productId } = useParams(); // <-- NEW CLEAN URL EXTRACTOR
   const navigate = useNavigate();
 
@@ -986,7 +1010,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
             onSelectProduct={handleTileSelection}
             onToggleFavorite={toggleFavorite}
           />
-     ) : isFilterMenuOpen ? (
+        ) : isFilterMenuOpen ? (
           <div className={`flex flex-col h-full absolute inset-0 z-40 animate-fade-in
             md:rounded-none rounded-t-3xl overflow-hidden transition-colors
             ${isDarkMode ? 'bg-[#0f1b2d]' : 'bg-white'}`}>
@@ -1037,14 +1061,14 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
                 >
                   <span className="font-semibold text-sm flex items-center gap-2">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/>
+                      <line x1="12" y1="5" x2="12" y2="19" /><polyline points="19 12 12 19 5 12" />
                     </svg>
                     Sort By
                   </span>
                   <svg
                     className={`w-4 h-4 transition-transform ${expandedFilterCategory === 'sort' ? 'rotate-180' : ''}`}
                     fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                    <polyline points="6 9 12 15 18 9"/>
+                    <polyline points="6 9 12 15 18 9" />
                   </svg>
                 </button>
 
@@ -1071,7 +1095,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
                             ? 'border-teal-400 bg-teal-400'
                             : isDarkMode ? 'border-gray-500' : 'border-gray-300'}`}>
                           {sortOrder === value && (
-                            <div className="w-1.5 h-1.5 rounded-full bg-white"/>
+                            <div className="w-1.5 h-1.5 rounded-full bg-white" />
                           )}
                         </div>
                         <input
@@ -1113,7 +1137,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
                       <svg
                         className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
                         fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                        <polyline points="6 9 12 15 18 9"/>
+                        <polyline points="6 9 12 15 18 9" />
                       </svg>
                     </button>
 
@@ -1137,7 +1161,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
                                   : isDarkMode ? 'border-gray-500' : 'border-gray-300'}`}>
                                 {isChecked && (
                                   <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3">
-                                    <polyline points="20 6 9 17 4 12"/>
+                                    <polyline points="20 6 9 17 4 12" />
                                   </svg>
                                 )}
                               </div>
@@ -1208,7 +1232,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
                 <button onClick={() => setIsSidebarOpen(false)} className="md:hidden text-gray-400 hover:text-gray-800 hover:bg-gray-100 p-1.5 rounded-md transition-colors cursor-pointer">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
                 </button>
-               <div className="relative md:hidden flex items-center" ref={mobileMenuRef}>
+                <div className="relative md:hidden flex items-center" ref={mobileMenuRef}>
                   <button
                     onClick={() => setIsMenuDropdownOpen(!isMenuDropdownOpen)}
                     className={`p-1.5 rounded-md transition-colors cursor-pointer ${isDarkMode ? 'text-gray-400 hover:text-white hover:bg-[#2d4059]' : 'text-gray-400 hover:text-gray-800 hover:bg-gray-100'}`}
@@ -1218,7 +1242,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
                   {isMenuDropdownOpen && (
                     <div className={`absolute top-[45px] right-0 shadow-2xl border rounded-md py-2 w-[180px] z-[100] flex flex-col transition-colors
                       ${isDarkMode ? 'bg-[#1e293b] border-[#334155]' : 'bg-white border-gray-200'}`}>
-                      
+
                       <button onClick={onOpenRecentRooms} className={`flex items-center gap-3 px-4 py-2.5 text-sm text-left transition-colors cursor-pointer w-full
                         ${isDarkMode ? 'text-gray-300 hover:bg-[#2d4059] hover:text-white' : 'text-gray-700 hover:bg-gray-50'}`}>
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={`shrink-0 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
@@ -1231,7 +1255,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
                           </span>
                         )}
                       </button>
-                      
+
                       <RoomUploader
                         onImageUpload={(newImageData) => {
                           setUploadedRoom(newImageData);
@@ -1262,17 +1286,17 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
             </div>
 
             <div className="px-4 md:px-5 pb-3">
-     <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2">
                 <button
                   onClick={() => setIsSearchOpen(!isSearchOpen)}
                   className={`w-10 h-10 border rounded-lg flex items-center justify-center transition-all cursor-pointer shrink-0 shadow-sm
-                    ${isDarkMode 
-                      ? 'bg-[#1e293b] border-[#334155] text-gray-300 hover:text-white hover:border-teal-500 hover:bg-[#1a2d47]' 
+                    ${isDarkMode
+                      ? 'bg-[#1e293b] border-[#334155] text-gray-300 hover:text-white hover:border-teal-500 hover:bg-[#1a2d47]'
                       : 'bg-white border-gray-200 text-gray-600 hover:text-[#0b5e5e] hover:border-[#0b5e5e] hover:bg-gray-50'}`}
                 >
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                 </button>
-                
+
                 <button
                   onClick={() => setIsFilterMenuOpen(true)}
                   className={`flex-1 h-10 border rounded-lg flex items-center justify-center gap-2 transition-all text-sm font-semibold cursor-pointer relative shadow-sm
@@ -1522,7 +1546,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
                 </div>
 
                 <div className="relative flex items-center h-full" ref={downloadRef}>
-                  <button onClick={() => setIsDownloadMenuOpen(!isDownloadMenuOpen)} className={`flex items-center gap-1.5 px-3 py-2 rounded-md transition-colors cursor-pointer ${dm.navBtn}`}>
+                  <button onClick={handleDownloadButtonClick} className={`flex items-center gap-1.5 px-3 py-2 rounded-md transition-colors cursor-pointer ${dm.navBtn}`}>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
                     <span className="hidden sm:inline">Download</span>
                   </button>
@@ -1530,8 +1554,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
                     <div className="absolute top-[50px] left-1/2 -translate-x-1/2 md:translate-x-0 md:left-auto md:right-0 bg-white shadow-xl border border-gray-200 rounded-md py-2 w-[240px] z-50 flex flex-col">
                       <DownloadView
                         selectedProduct={selectedProduct}
-                        currentSrc={currentSrc}
-                        compositeRef={activeBaseImage?.maskUrl ? compositeRef : null}
+                        currentSrc={downloadImageUrl || currentSrc}
                         onClose={() => setIsDownloadMenuOpen(false)}
                       />
                     </div>
@@ -1539,7 +1562,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
                 </div>
               </div>
 
-          <div className={`flex items-center gap-1.5 md:gap-5 border-l pl-1.5 md:pl-5 h-full shrink-0 transition-colors ${isDarkMode ? 'border-[#334155]' : 'border-gray-200'}`}>
+              <div className={`flex items-center gap-1.5 md:gap-5 border-l pl-1.5 md:pl-5 h-full shrink-0 transition-colors ${isDarkMode ? 'border-[#334155]' : 'border-gray-200'}`}>
                 {/* 🌙 DARK MODE TOGGLE — Premium Animated Version */}
                 <button
                   onClick={() => setIsDarkMode(prev => !prev)}
@@ -1552,7 +1575,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
                 >
                   {/* Subtle hover glow effect */}
                   {isDarkMode && <div className="absolute inset-0 bg-yellow-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />}
-                  
+
                   {isDarkMode ? (
                     <svg className="w-4 h-4 animate-[spin_8s_linear_infinite]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                       <circle cx="12" cy="12" r="5" /><line x1="12" y1="1" x2="12" y2="3" /><line x1="12" y1="21" x2="12" y2="23" /><line x1="4.22" y1="4.22" x2="5.64" y2="5.64" /><line x1="18.36" y1="18.36" x2="19.78" y2="19.78" /><line x1="1" y1="12" x2="3" y2="12" /><line x1="21" y1="12" x2="23" y2="12" /><line x1="4.22" y1="19.78" x2="5.64" y2="18.36" /><line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
@@ -1580,7 +1603,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
                   {isMenuDropdownOpen && (
                     <div className={`absolute top-[50px] right-0 shadow-xl border rounded-md py-2 w-[180px] z-50 flex flex-col transition-colors
                       ${isDarkMode ? 'bg-[#1e293b] border-[#334155]' : 'bg-white border-gray-200'}`}>
-                      
+
                       <button onClick={onOpenRecentRooms} className={`flex items-center gap-3 px-4 py-2.5 text-sm text-left transition-colors cursor-pointer w-full
                         ${isDarkMode ? 'text-gray-300 hover:bg-[#2d4059] hover:text-white' : 'text-gray-700 hover:bg-gray-50'}`}>
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={`shrink-0 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
@@ -1593,7 +1616,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
                           </span>
                         )}
                       </button>
-                      
+
                       <RoomUploader
                         onImageUpload={(newImageData) => {
                           setUploadedRoom(newImageData);
@@ -1776,18 +1799,17 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                     <span className="hidden sm:inline">Zoom</span> {zoomScale > 1 ? `(${zoomScale.toFixed(1)}x)` : ''}
                   </button>
-                <button
+                  <button
                     onClick={() => { setZoomScale(1); setPan({ x: 0, y: 0 }); }}
                     disabled={zoomScale === 1}
-                    className={`text-xs md:text-sm px-4 py-2 rounded-lg font-medium transition-all shadow-sm ${
-                      zoomScale === 1
-                        ? isDarkMode 
-                            ? 'bg-[#1e293b]/50 text-gray-500 border border-[#334155]/50 cursor-not-allowed' 
-                            : 'bg-gray-50 text-gray-400 border border-gray-200 cursor-not-allowed'
+                    className={`text-xs md:text-sm px-4 py-2 rounded-lg font-medium transition-all shadow-sm ${zoomScale === 1
+                        ? isDarkMode
+                          ? 'bg-[#1e293b]/50 text-gray-500 border border-[#334155]/50 cursor-not-allowed'
+                          : 'bg-gray-50 text-gray-400 border border-gray-200 cursor-not-allowed'
                         : isDarkMode
-                            ? 'bg-[#1e293b] text-teal-400 border border-teal-500/30 hover:bg-[#1a2d47] hover:border-teal-500 cursor-pointer'
-                            : 'bg-white text-[#0b5e5e] border border-[#0b5e5e]/30 hover:bg-gray-50 hover:border-[#0b5e5e] cursor-pointer'
-                    }`}
+                          ? 'bg-[#1e293b] text-teal-400 border border-teal-500/30 hover:bg-[#1a2d47] hover:border-teal-500 cursor-pointer'
+                          : 'bg-white text-[#0b5e5e] border border-[#0b5e5e]/30 hover:bg-gray-50 hover:border-[#0b5e5e] cursor-pointer'
+                      }`}
                   >
                     Reset Zoom
                   </button>
