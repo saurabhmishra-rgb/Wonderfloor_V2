@@ -6,62 +6,11 @@ import DownloadView from './DownloadView';
 import { initVisualizer } from './script.jsx';
 import AttractiveLoader from './AttractiveLoader';
 import { useParams, useNavigate } from 'react-router-dom';
-// 1. IMPORT YOUR LOCAL ASSETS HERE
-import floorActon from '../assets/image1.jpeg';
-import floorHolmes from '../assets/image2.jpeg';
-import floorCedar from '../assets/image3.jpeg';
-import floorCalla from '../assets/image4.jpeg';
-import floorTansy from '../assets/image5.jpeg';
-import floorPoppy from '../assets/image6.jpeg';
-import floorPoppy1 from '../assets/image7.jpeg';
-import floorPoppy2 from '../assets/image8.jpeg';
-import floorPoppy3 from '../assets/image9.jpeg';
-import floorPoppy4 from '../assets/image10.jpeg';
-import floorPoppy5 from '../assets/image11.jpeg';
-import floorpoppy6 from '../assets/image3.1.jpeg';
-//Krayons
-import Krayons1 from '../assets/krayon-fluorescent.jpg';
-import Krayons2 from '../assets/krayons-frosty-n-beige.jpg';
-import Krayons4 from '../assets/krayons-frosty-n-grey.jpg';
-import Krayons5 from '../assets/krayons-frosty-n-orange.jpg';
-import Krayons6 from '../assets/krayons-frosty-n-red.jpg';
-import Krayons7 from '../assets/krayons-frosty-n-yellow.jpg';
-import Krayons8 from '../assets/krayons-frosty-n-sea-blue.jpg';
-import Krayons9 from '../assets/krayons-frosty-n-blue.jpg';
-import Krayons10 from '../assets/krayons-pastel-blue.jpg';
-import Krayons11 from '../assets/krayons-pastel-green.png';
-import Krayons12 from '../assets/krayons-pastel-lemon.jpg';
-import Krayons13 from '../assets/krayons-frosty-n-orange.jpg';
-import Krayons14 from '../assets/krayons-pastel-purple.jpg';
-import Krayons15 from '../assets/krayons-pastel-cherry.jpg';
-import Krayons16 from '../assets/krayons-pastel-pink.jpg';
 
-//Bravo Tiles
-import Bravo1 from '../assets/braavo-ace-091-cherry-red.jpg';
-import Bravo2 from '../assets/braavo-ace-092-blue.jpg';
-import Bravo3 from '../assets/braavo-ace-093-orange.jpg';
-import Bravo4 from '../assets/braavo-ace-094-green.jpg';
-import Bravo5 from '../assets/braavo-ace-095-neo-silver.jpg';
-import Bravo6 from '../assets/braavo-ace-096-yellow.jpg';
-import Bravo7 from '../assets/braavo-ace-097-iron-grey.jpg';
+import { NAV_CATEGORIES, ACCORDION_CATEGORIES, ALL_PRODUCTS } from '../data/productsConfig';
+import SidebarNavTabs from './SidebarNavTabs';
 
-import Bravo8 from '../assets/braavo-ar-051.jpg';
-import Bravo9 from '../assets/braavo-ar-053.jpg';
-import Bravo10 from '../assets/braavo-ar-054.jpg';
-import Bravo11 from '../assets/braavo-ar-055.jpg';
-import Bravo12 from '../assets/braavo-ar-056.jpg';
-import Bravo13 from '../assets/braavo-ar-057.jpg';
 
-import Bravo14 from '../assets/braavo-elite-blue--082.jpg';
-import Bravo15 from '../assets/braavo-elite-elite-red-081.jpg';
-import Bravo16 from '../assets/braavo-elite-gray--087.jpg';
-import Bravo17 from '../assets/braavo-elite-orange-083.jpg';
-
-import Bravo18 from '../assets/braavo-lite-lite-bood-085a.jpg';
-import Bravo19 from '../assets/braavo-lite-lite-green-084.jpg';
-import Bravo20 from '../assets/braavo-lite-lite-wood--086.jpg';
-
-import Bravo21 from '../assets/braavo-spt-082-meadows-green.jpg';
 
 const BACKEND_URL = 'http://127.0.0.1:8000';
 // const BACKEND_URL = 'https://wonderfloor-backend-1.onrender.com';
@@ -201,94 +150,42 @@ const CompareView = ({
 };
 
 
-// ── MAIN AR VISUALIZER COMPONENT ──
-const mockProducts = [
-  //Bravo Tiles
 
-  { id: 28, name: 'Ace-091-cherry-red', size: '2mtr x 15mtr (Roll)', img: Bravo1, colour: 'cherry-red', shade: 'Dark', category: 'Braavo', userIndustry: ['Sports Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Braavo', sku: 'WF/BR/0001', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=BRAAVO', description: "Wonderfloor Braavo premium sports flooring combines heavy-duty durability with cushioned comfort, making workouts safer, smoother, and more comfortable for gyms, courts, and fitness spaces.\n\nDesigned with resilient wear layers, glass fibre reinforcement, and easy-maintenance PUR coating, Braavo offers excellent shock absorption, acoustic performance, and long-lasting stability for sports, wellness, schools, auditoriums, and libraries." },
-  { id: 29, name: 'Ace-092-blue', size: '2mtr x 15mtr (Roll)', img: Bravo2, colour: 'blue', shade: 'Dark', category: 'Braavo', userIndustry: ['Sports Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Braavo', sku: 'WF/BR/0002', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=BRAAVO', description: "Wonderfloor Braavo premium sports flooring combines heavy-duty durability with cushioned comfort, making workouts safer, smoother, and more comfortable for gyms, courts, and fitness spaces.\n\nDesigned with resilient wear layers, glass fibre reinforcement, and easy-maintenance PUR coating, Braavo offers excellent shock absorption, acoustic performance, and long-lasting stability for sports, wellness, schools, auditoriums, and libraries." },
-  { id: 30, name: 'Ace-093-orange', size: '2mtr x 15mtr (Roll)', img: Bravo3, colour: 'orange', shade: 'Dark', category: 'Braavo', userIndustry: ['Sports Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Braavo', sku: 'WF/BR/0003', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=BRAAVO', description: "Wonderfloor Braavo premium sports flooring combines heavy-duty durability with cushioned comfort, making workouts safer, smoother, and more comfortable for gyms, courts, and fitness spaces.\n\nDesigned with resilient wear layers, glass fibre reinforcement, and easy-maintenance PUR coating, Braavo offers excellent shock absorption, acoustic performance, and long-lasting stability for sports, wellness, schools, auditoriums, and libraries." },
-  { id: 31, name: 'Ace-094-green', size: '2mtr x 15mtr (Roll)', img: Bravo4, colour: 'green', shade: 'Dark', category: 'Braavo', userIndustry: ['Sports Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Braavo', sku: 'WF/BR/0004', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=BRAAVO', description: "Wonderfloor Braavo premium sports flooring combines heavy-duty durability with cushioned comfort, making workouts safer, smoother, and more comfortable for gyms, courts, and fitness spaces.\n\nDesigned with resilient wear layers, glass fibre reinforcement, and easy-maintenance PUR coating, Braavo offers excellent shock absorption, acoustic performance, and long-lasting stability for sports, wellness, schools, auditoriums, and libraries." },
-  { id: 32, name: 'Light-grey', size: '2mtr x 15mtr (Roll)', img: Bravo5, colour: 'neo-silver', shade: 'Dark', category: 'Braavo', userIndustry: ['Sports Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Braavo', sku: 'WF/BR/0005', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=BRAAVO', description: "Wonderfloor Braavo premium sports flooring combines heavy-duty durability with cushioned comfort, making workouts safer, smoother, and more comfortable for gyms, courts, and fitness spaces.\n\nDesigned with resilient wear layers, glass fibre reinforcement, and easy-maintenance PUR coating, Braavo offers excellent shock absorption, acoustic performance, and long-lasting stability for sports, wellness, schools, auditoriums, and libraries." },
-  { id: 33, name: 'Ace-096-yellow', size: '2mtr x 15mtr (Roll)', img: Bravo6, colour: 'yellow', shade: 'Dark', category: 'Braavo', userIndustry: ['Sports Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Braavo', sku: 'WF/BR/0006', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=BRAAVO', description: "Wonderfloor Braavo premium sports flooring combines heavy-duty durability with cushioned comfort, making workouts safer, smoother, and more comfortable for gyms, courts, and fitness spaces.\n\nDesigned with resilient wear layers, glass fibre reinforcement, and easy-maintenance PUR coating, Braavo offers excellent shock absorption, acoustic performance, and long-lasting stability for sports, wellness, schools, auditoriums, and libraries." },
-  { id: 34, name: 'Ace-097-iron-grey', size: '2mtr x 15mtr (Roll)', img: Bravo7, colour: 'grey', shade: 'Dark', category: 'Braavo', userIndustry: ['Sports Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Braavo', sku: 'WF/BR/0007', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=BRAAVO', description: "Wonderfloor Braavo premium sports flooring combines heavy-duty durability with cushioned comfort, making workouts safer, smoother, and more comfortable for gyms, courts, and fitness spaces.\n\nDesigned with resilient wear layers, glass fibre reinforcement, and easy-maintenance PUR coating, Braavo offers excellent shock absorption, acoustic performance, and long-lasting stability for sports, wellness, schools, auditoriums, and libraries." },
-  { id: 35, name: 'Ar-051', size: '2mtr x 15mtr (Roll)', img: Bravo8, colour: 'orange', shade: 'Dark', category: 'Braavo', userIndustry: ['Sports Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Braavo', sku: 'WF/BR/0008', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=BRAAVO', description: "Wonderfloor Braavo premium sports flooring combines heavy-duty durability with cushioned comfort, making workouts safer, smoother, and more comfortable for gyms, courts, and fitness spaces.\n\nDesigned with resilient wear layers, glass fibre reinforcement, and easy-maintenance PUR coating, Braavo offers excellent shock absorption, acoustic performance, and long-lasting stability for sports, wellness, schools, auditoriums, and libraries." },
-  { id: 36, name: 'Ar-053', size: '2mtr x 15mtr (Roll)', img: Bravo9, colour: 'orange', shade: 'Dark', category: 'Braavo', userIndustry: ['Sports Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Braavo', sku: 'WF/BR/0009', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=BRAAVO', description: "Wonderfloor Braavo premium sports flooring combines heavy-duty durability with cushioned comfort, making workouts safer, smoother, and more comfortable for gyms, courts, and fitness spaces.\n\nDesigned with resilient wear layers, glass fibre reinforcement, and easy-maintenance PUR coating, Braavo offers excellent shock absorption, acoustic performance, and long-lasting stability for sports, wellness, schools, auditoriums, and libraries." },
-  { id: 37, name: 'Ar-054', size: '2mtr x 15mtr (Roll)', img: Bravo10, colour: 'orange', shade: 'Dark', category: 'Braavo', userIndustry: ['Sports Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Braavo', sku: 'WF/BR/0010', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=BRAAVO', description: "Wonderfloor Braavo premium sports flooring combines heavy-duty durability with cushioned comfort, making workouts safer, smoother, and more comfortable for gyms, courts, and fitness spaces.\n\nDesigned with resilient wear layers, glass fibre reinforcement, and easy-maintenance PUR coating, Braavo offers excellent shock absorption, acoustic performance, and long-lasting stability for sports, wellness, schools, auditoriums, and libraries." },
-  { id: 38, name: 'Ar-055', size: '2mtr x 15mtr (Roll)', img: Bravo11, colour: 'grey', shade: 'Dark', category: 'Braavo', userIndustry: ['Sports Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Braavo', sku: 'WF/BR/0011', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=BRAAVO', description: "Wonderfloor Braavo premium sports flooring combines heavy-duty durability with cushioned comfort, making workouts safer, smoother, and more comfortable for gyms, courts, and fitness spaces.\n\nDesigned with resilient wear layers, glass fibre reinforcement, and easy-maintenance PUR coating, Braavo offers excellent shock absorption, acoustic performance, and long-lasting stability for sports, wellness, schools, auditoriums, and libraries." },
-  { id: 39, name: 'Ar-056', size: '2mtr x 15mtr (Roll)', img: Bravo12, colour: 'orange', shade: 'Dark', category: 'Braavo', userIndustry: ['Sports Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Braavo', sku: 'WF/BR/0012', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=BRAAVO', description: "Wonderfloor Braavo premium sports flooring combines heavy-duty durability with cushioned comfort, making workouts safer, smoother, and more comfortable for gyms, courts, and fitness spaces.\n\nDesigned with resilient wear layers, glass fibre reinforcement, and easy-maintenance PUR coating, Braavo offers excellent shock absorption, acoustic performance, and long-lasting stability for sports, wellness, schools, auditoriums, and libraries." },
-  { id: 40, name: 'Ar-057', size: '2mtr x 15mtr (Roll)', img: Bravo13, colour: 'yellow', shade: 'Dark', category: 'Braavo', userIndustry: ['Sports Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Braavo', sku: 'WF/BR/0013', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=BRAAVO', description: "Wonderfloor Braavo premium sports flooring combines heavy-duty durability with cushioned comfort, making workouts safer, smoother, and more comfortable for gyms, courts, and fitness spaces.\n\nDesigned with resilient wear layers, glass fibre reinforcement, and easy-maintenance PUR coating, Braavo offers excellent shock absorption, acoustic performance, and long-lasting stability for sports, wellness, schools, auditoriums, and libraries." },
-  { id: 41, name: 'Elite-blue-082', size: '2mtr x 15mtr (Roll)', img: Bravo14, colour: 'blue', shade: 'Dark', category: 'Braavo', userIndustry: ['Sports Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Braavo', sku: 'WF/BR/0014', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=BRAAVO', description: "Wonderfloor Braavo premium sports flooring combines heavy-duty durability with cushioned comfort, making workouts safer, smoother, and more comfortable for gyms, courts, and fitness spaces.\n\nDesigned with resilient wear layers, glass fibre reinforcement, and easy-maintenance PUR coating, Braavo offers excellent shock absorption, acoustic performance, and long-lasting stability for sports, wellness, schools, auditoriums, and libraries." },
-  { id: 42, name: 'Elite-red-081', size: '2mtr x 15mtr (Roll)', img: Bravo15, colour: 'red', shade: 'Dark', category: 'Braavo', userIndustry: ['Sports Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Braavo', sku: 'WF/BR/0015', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=BRAAVO', description: "Wonderfloor Braavo premium sports flooring combines heavy-duty durability with cushioned comfort, making workouts safer, smoother, and more comfortable for gyms, courts, and fitness spaces.\n\nDesigned with resilient wear layers, glass fibre reinforcement, and easy-maintenance PUR coating, Braavo offers excellent shock absorption, acoustic performance, and long-lasting stability for sports, wellness, schools, auditoriums, and libraries." },
-  { id: 43, name: 'Elite-grey-087', size: '2mtr x 15mtr (Roll)', img: Bravo16, colour: 'grey', shade: 'Dark', category: 'Braavo', userIndustry: ['Sports Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Braavo', sku: 'WF/BR/0016', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=BRAAVO', description: "Wonderfloor Braavo premium sports flooring combines heavy-duty durability with cushioned comfort, making workouts safer, smoother, and more comfortable for gyms, courts, and fitness spaces.\n\nDesigned with resilient wear layers, glass fibre reinforcement, and easy-maintenance PUR coating, Braavo offers excellent shock absorption, acoustic performance, and long-lasting stability for sports, wellness, schools, auditoriums, and libraries." },
-  { id: 44, name: 'Elite-orange-083', size: '2mtr x 15mtr (Roll)', img: Bravo17, colour: 'orange', shade: 'Dark', category: 'Braavo', userIndustry: ['Sports Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Braavo', sku: 'WF/BR/0017', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=BRAAVO', description: "Wonderfloor Braavo premium sports flooring combines heavy-duty durability with cushioned comfort, making workouts safer, smoother, and more comfortable for gyms, courts, and fitness spaces.\n\nDesigned with resilient wear layers, glass fibre reinforcement, and easy-maintenance PUR coating, Braavo offers excellent shock absorption, acoustic performance, and long-lasting stability for sports, wellness, schools, auditoriums, and libraries." },
-  { id: 45, name: 'Elite-Wood-085A', size: '2mtr x 15mtr (Roll)', img: Bravo18, colour: 'yellow', shade: 'Dark', category: 'Braavo', userIndustry: ['Sports Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Braavo', sku: 'WF/BR/0018', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=BRAAVO', description: "Wonderfloor Braavo premium sports flooring combines heavy-duty durability with cushioned comfort, making workouts safer, smoother, and more comfortable for gyms, courts, and fitness spaces.\n\nDesigned with resilient wear layers, glass fibre reinforcement, and easy-maintenance PUR coating, Braavo offers excellent shock absorption, acoustic performance, and long-lasting stability for sports, wellness, schools, auditoriums, and libraries." },
-  { id: 46, name: 'Elite-green-084', size: '2mtr x 15mtr (Roll)', img: Bravo19, colour: 'green', shade: 'Dark', category: 'Braavo', userIndustry: ['Sports Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Braavo', sku: 'WF/BR/0019', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=BRAAVO', description: "Wonderfloor Braavo premium sports flooring combines heavy-duty durability with cushioned comfort, making workouts safer, smoother, and more comfortable for gyms, courts, and fitness spaces.\n\nDesigned with resilient wear layers, glass fibre reinforcement, and easy-maintenance PUR coating, Braavo offers excellent shock absorption, acoustic performance, and long-lasting stability for sports, wellness, schools, auditoriums, and libraries." },
-  { id: 47, name: 'Elite-wood-086', size: '2mtr x 15mtr (Roll)', img: Bravo20, colour: 'brown', shade: 'Dark', category: 'Braavo', userIndustry: ['Sports Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Braavo', sku: 'WF/BR/0020', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=BRAAVO', description: "Wonderfloor Braavo premium sports flooring combines heavy-duty durability with cushioned comfort, making workouts safer, smoother, and more comfortable for gyms, courts, and fitness spaces.\n\nDesigned with resilient wear layers, glass fibre reinforcement, and easy-maintenance PUR coating, Braavo offers excellent shock absorption, acoustic performance, and long-lasting stability for sports, wellness, schools, auditoriums, and libraries." },
-  { id: 48, name: 'Spt-082-meadows-green', size: '2mtr x 15mtr (Roll)', img: Bravo21, colour: 'green', shade: 'Dark', category: 'Braavo', userIndustry: ['Sports Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Braavo', sku: 'WF/BR/0021', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=BRAAVO', description: "Wonderfloor Braavo premium sports flooring combines heavy-duty durability with cushioned comfort, making workouts safer, smoother, and more comfortable for gyms, courts, and fitness spaces.\n\nDesigned with resilient wear layers, glass fibre reinforcement, and easy-maintenance PUR coating, Braavo offers excellent shock absorption, acoustic performance, and long-lasting stability for sports, wellness, schools, auditoriums, and libraries." },
-
-  //krayons
-  { id: 13, name: 'Pastel Green', size: '2mtr x 20mtr (Roll)', img: Krayons1, colour: 'Green', shade: 'Dark', category: 'Krayons', userIndustry: ['School Flooring, Office Flooring', 'Hotel/ Hospitality Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Krayons', sku: 'WF/KR/0001', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons', description: "Wonderfloor Krayons cushion vinyl flooring brings vibrant colours and creative design flexibility to interiors with easy mix-and-match patterns, durable dimensional stability, and a maintenance-free PUR-coated surface.\n\nIdeal for schools, play areas, homes, offices, and hospitality spaces, Krayons adds a cheerful and lively atmosphere while offering long-lasting performance." },
-  { id: 14, name: 'Frosty N Beige', size: '2mtr x 20mtr (Roll)', img: Krayons2, colour: 'Beige', shade: 'Dark', category: 'Krayons', userIndustry: ['School Flooring Office Flooring', 'Hotel/ Hospitality Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Krayons', sku: 'WF/KR/0002', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons', description: "Wonderfloor Krayons cushion vinyl flooring brings vibrant colours and creative design flexibility to interiors with easy mix-and-match patterns, durable dimensional stability, and a maintenance-free PUR-coated surface.\n\nIdeal for schools, play areas, homes, offices, and hospitality spaces, Krayons adds a cheerful and lively atmosphere while offering long-lasting performance." },
-  { id: 15, name: 'Frosty N Grey', size: '2mtr x 20mtr (Roll)', img: Krayons4, colour: 'Blue', shade: 'Dark', category: 'Krayons', userIndustry: ['School Flooring', 'Office Flooring', 'Hotel/ Hospitality Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Krayons', sku: 'WF/KR/0003', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons', description: "Wonderfloor Krayons cushion vinyl flooring brings vibrant colours and creative design flexibility to interiors with easy mix-and-match patterns, durable dimensional stability, and a maintenance-free PUR-coated surface.\n\nIdeal for schools, play areas, homes, offices, and hospitality spaces, Krayons adds a cheerful and lively atmosphere while offering long-lasting performance." },
-  { id: 16, name: 'Frosty N Orange', size: '2mtr x 20mtr (Roll)', img: Krayons5, colour: 'Grey', shade: 'Dark', category: 'Krayons', userIndustry: ['School Flooring', 'Office Flooring', 'Hotel/ Hospitality Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Krayons', sku: 'WF/KR/0004', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons', description: "Wonderfloor Krayons cushion vinyl flooring brings vibrant colours and creative design flexibility to interiors with easy mix-and-match patterns, durable dimensional stability, and a maintenance-free PUR-coated surface.\n\nIdeal for schools, play areas, homes, offices, and hospitality spaces, Krayons adds a cheerful and lively atmosphere while offering long-lasting performance." },
-  { id: 17, name: 'Frosty N Red', size: '2mtr x 20mtr (Roll)', img: Krayons6, colour: 'Orange', shade: 'Dark', category: 'Krayons', userIndustry: ['School Flooring', 'Office Flooring', 'Hotel/ Hospitality Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Krayons', sku: 'WF/KR/0005', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons', description: "Wonderfloor Krayons cushion vinyl flooring brings vibrant colours and creative design flexibility to interiors with easy mix-and-match patterns, durable dimensional stability, and a maintenance-free PUR-coated surface.\n\nIdeal for schools, play areas, homes, offices, and hospitality spaces, Krayons adds a cheerful and lively atmosphere while offering long-lasting performance." },
-  { id: 18, name: 'Frosty N Yellow', size: '2mtr x 20mtr (Roll)', img: Krayons7, colour: 'Red', shade: 'Dark', category: 'Krayons', userIndustry: ['School Flooring', 'Office Flooring', 'Hotel/ Hospitality Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Krayons', sku: 'WF/KR/0006', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons', description: "Wonderfloor Krayons cushion vinyl flooring brings vibrant colours and creative design flexibility to interiors with easy mix-and-match patterns, durable dimensional stability, and a maintenance-free PUR-coated surface.\n\nIdeal for schools, play areas, homes, offices, and hospitality spaces, Krayons adds a cheerful and lively atmosphere while offering long-lasting performance." },
-  { id: 19, name: 'Frosty N Sea Blue', size: '2mtr x 20mtr (Roll)', img: Krayons8, colour: 'Yellow', shade: 'Dark', category: 'Krayons', userIndustry: ['School Flooring', 'Office Flooring', 'Hotel/ Hospitality Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Krayons', sku: 'WF/KR/0007', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons', description: "Wonderfloor Krayons cushion vinyl flooring brings vibrant colours and creative design flexibility to interiors with easy mix-and-match patterns, durable dimensional stability, and a maintenance-free PUR-coated surface.\n\nIdeal for schools, play areas, homes, offices, and hospitality spaces, Krayons adds a cheerful and lively atmosphere while offering long-lasting performance." },
-  { id: 20, name: 'Frosty N Blue', size: '2mtr x 20mtr (Roll)', img: Krayons9, colour: 'Blue', shade: 'Dark', category: 'Krayons', userIndustry: ['School Flooring', 'Office Flooring', 'Hotel/ Hospitality Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Krayons', sku: 'WFKRr/0008', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons', description: "Wonderfloor Krayons cushion vinyl flooring brings vibrant colours and creative design flexibility to interiors with easy mix-and-match patterns, durable dimensional stability, and a maintenance-free PUR-coated surface.\n\nIdeal for schools, play areas, homes, offices, and hospitality spaces, Krayons adds a cheerful and lively atmosphere while offering long-lasting performance." },
-  { id: 21, name: 'Pastel Blue', size: '2mtr x 20mtr (Roll)', img: Krayons10, colour: 'Blue', shade: 'Dark', category: 'Krayons', userIndustry: ['School Flooring', 'Office Flooring', 'Hotel/ Hospitality Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Krayons', sku: 'WF/KR/0009', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons', description: "Wonderfloor Krayons cushion vinyl flooring brings vibrant colours and creative design flexibility to interiors with easy mix-and-match patterns, durable dimensional stability, and a maintenance-free PUR-coated surface.\n\nIdeal for schools, play areas, homes, offices, and hospitality spaces, Krayons adds a cheerful and lively atmosphere while offering long-lasting performance." },
-  { id: 22, name: 'Fluoresent', size: '2mtr x 20mtr (Roll)', img: Krayons11, colour: 'Green', shade: 'Dark', category: 'Krayons', userIndustry: ['School Flooring', 'Office Flooring', 'Hotel/ Hospitality Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Krayons', sku: 'WF/KR/00010', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons', description: "Wonderfloor Krayons cushion vinyl flooring brings vibrant colours and creative design flexibility to interiors with easy mix-and-match patterns, durable dimensional stability, and a maintenance-free PUR-coated surface.\n\nIdeal for schools, play areas, homes, offices, and hospitality spaces, Krayons adds a cheerful and lively atmosphere while offering long-lasting performance." },
-  { id: 23, name: 'Pastel Lemon', size: '2mtr x 20mtr (Roll)', img: Krayons12, colour: 'Lemon', shade: 'Dark', category: 'Krayons', userIndustry: ['School Flooring', 'Office Flooring', 'Hotel/ Hospitality Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Krayons', sku: 'WF/KR/00011', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons', description: "Wonderfloor Krayons cushion vinyl flooring brings vibrant colours and creative design flexibility to interiors with easy mix-and-match patterns, durable dimensional stability, and a maintenance-free PUR-coated surface.\n\nIdeal for schools, play areas, homes, offices, and hospitality spaces, Krayons adds a cheerful and lively atmosphere while offering long-lasting performance." },
-  { id: 24, name: 'Pastel Orange', size: '2mtr x 20mtr (Roll)', img: Krayons13, colour: 'Orange', shade: 'Dark', category: 'Krayons', userIndustry: ['School Flooring', 'Office Flooring', 'Hotel/ Hospitality Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Krayons', sku: 'WF/KR/00012', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons', description: "Wonderfloor Krayons cushion vinyl flooring brings vibrant colours and creative design flexibility to interiors with easy mix-and-match patterns, durable dimensional stability, and a maintenance-free PUR-coated surface.\n\nIdeal for schools, play areas, homes, offices, and hospitality spaces, Krayons adds a cheerful and lively atmosphere while offering long-lasting performance." },
-  { id: 25, name: 'Pastel Purple', size: '2mtr x 20mtr (Roll)', img: Krayons14, colour: 'Purple', shade: 'Dark', category: 'Krayons', userIndustry: ['School Flooring', 'Office Flooring', 'Hotel/ Hospitality Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Krayons', sku: 'WF/KR/00013', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons', description: "Wonderfloor Krayons cushion vinyl flooring brings vibrant colours and creative design flexibility to interiors with easy mix-and-match patterns, durable dimensional stability, and a maintenance-free PUR-coated surface.\n\nIdeal for schools, play areas, homes, offices, and hospitality spaces, Krayons adds a cheerful and lively atmosphere while offering long-lasting performance." },
-  { id: 26, name: 'Pastel Cherry', size: '2mtr x 20mtr (Roll)', img: Krayons15, colour: 'Cherry', shade: 'Dark', category: 'Krayons', userIndustry: ['School Flooring', 'Office Flooring', 'Hotel/ Hospitality Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Krayons', sku: 'WF/KR/00014', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons', description: "Wonderfloor Krayons cushion vinyl flooring brings vibrant colours and creative design flexibility to interiors with easy mix-and-match patterns, durable dimensional stability, and a maintenance-free PUR-coated surface.\n\nIdeal for schools, play areas, homes, offices, and hospitality spaces, Krayons adds a cheerful and lively atmosphere while offering long-lasting performance." },
-  { id: 27, name: 'Pastel Pink', size: '2mtr x 20mtr (Roll)', img: Krayons16, colour: 'Pink', shade: 'Dark', category: 'Krayons', userIndustry: ['School Flooring', 'Office Flooring'], collection: 'Cushion Vinyl', accordionCategory: 'Krayons', sku: 'WF/kr/0015', url: 'https://www.wonderfloor.co.in/vinyl_flooring?product=Krayons' },
-  { id: 1, name: 'GDP-550406', size: '30cm x 30cm', img: floorActon, colour: 'Grey', shade: 'Dark', category: 'Tiles', userIndustry: ['Industrial Flooring'], collection: 'GDP', accordionCategory: 'Durofloor', sku: 'WF000051' },
-  { id: 2, name: 'GDP-551004', size: '30cm x 30cm', img: floorHolmes, colour: 'Beige', shade: 'Light', category: 'Planks', userIndustry: ['Office Flooring', 'Residential Flooring'], collection: 'Classic', accordionCategory: 'Durofloor', sku: 'WF000052' },
-  { id: 3, name: 'GDP-551007', size: '30cm x 30cm', img: floorCedar, colour: 'Brown', shade: 'Medium', category: 'Tiles', userIndustry: ['Industrial Flooring'], collection: 'GDP', accordionCategory: 'Siggma', sku: 'WF000053' },
-  { id: 4, name: 'GDP-552107', size: '30cm x 30cm', img: floorCalla, colour: 'Grey', shade: 'Light', category: 'Carpet', userIndustry: ['Office Flooring'], collection: 'Premium', accordionCategory: 'Siggma', sku: 'WF000054' },
-  { id: 5, name: 'GDP-553107', size: '30cm x 30cm', img: floorpoppy6, colour: 'Grey', shade: 'Light', category: 'Carpet', userIndustry: ['Office Flooring'], collection: 'Premium', accordionCategory: 'Siggma', sku: 'WF000055' },
-  { id: 6, name: 'GDP-552112', size: '30cm x 30cm', img: floorTansy, colour: 'Black', shade: 'Dark', category: 'Planks', userIndustry: ['Residential Flooring'], collection: 'Classic', accordionCategory: 'Orbit', sku: 'WF000056' },
-  { id: 7, name: 'GDP-554306', size: '30cm x 30cm', img: floorPoppy, colour: 'White', shade: 'Light', category: 'Tiles', userIndustry: ['Residential Flooring'], collection: 'GDP', accordionCategory: 'Orbit', sku: 'WF000057' },
-  { id: 8, name: 'GDP-555902', size: '30cm x 30cm', img: floorPoppy1, colour: 'Grey', shade: 'Medium', category: 'Carpet', userIndustry: ['Industrial Flooring'], collection: 'Premium', accordionCategory: 'Stoneland Monza', sku: 'WF000058' },
-  { id: 9, name: 'GDP-557304', size: '30cm x 30cm', img: floorPoppy2, colour: 'Beige', shade: 'Medium', category: 'Tiles', userIndustry: ['Office Flooring'], collection: 'Classic', accordionCategory: 'Stoneland Monza', sku: 'WF000059' },
-  { id: 10, name: 'GDP-557703', size: '30cm x 30cm', img: floorPoppy3, colour: 'Brown', shade: 'Dark', category: 'Planks', userIndustry: ['Residential Flooring'], collection: 'Premium', accordionCategory: 'Meteor', sku: 'WF000060' },
-  { id: 11, name: 'GDP-559204', size: '30cm x 30cm', img: floorPoppy4, colour: 'Black', shade: 'Dark', category: 'Carpet', userIndustry: ['Sports Flooring'], collection: 'GDP', accordionCategory: 'Meteor', sku: 'WF000061' },
-  { id: 12, name: 'GDP-559404', size: '30cm x 30cm', img: floorPoppy5, colour: 'White', shade: 'Light', category: 'Tiles', userIndustry: ['Residential Flooring'], collection: 'Classic', accordionCategory: 'Aventus', sku: 'WF000062' },
-];
 
 const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCount = 0, onProductChange, }) => {
   const { productId } = useParams(); // <-- NEW CLEAN URL EXTRACTOR
   const navigate = useNavigate();
 
-  const productCategories = ['Braavo', 'Krayons', 'Durofloor', 'Siggma', 'Orbit', 'Stoneland Monza', 'Meteor', 'Aventus'];
   const [initialPinchDist, setInitialPinchDist] = useState(null);
   const [uploadedRoom, setUploadedRoom] = useState(null);
+
+  const [activeNavCategory, setActiveNavCategory] = useState('flooring-products');
+  const productCategories = ACCORDION_CATEGORIES[activeNavCategory] ?? [];
 
   // 2. READ URL DIRECTLY INTO INITIAL STATE
   const [selectedProduct, setSelectedProduct] = useState(() => {
     // Priority 1: Explicitly clicked History Item (fixes the wrong tile bug)
     if (initialImage?.historyEntryId && initialImage?.lastProduct) {
-      const match = mockProducts.find(p => p.id === initialImage.lastProduct.id);
+      const match = ALL_PRODUCTS.find(p => p.id === initialImage.lastProduct.id);
       if (match) return match;
     }
 
     // Priority 2: URL param (highest priority for newly shared links)
     if (productId) {
-      const decodedSku = decodeURIComponent(productId); // Fixes encoded slashes
-      const matchedProduct = mockProducts.find(p => p.sku === decodedSku);
+      const decodedSku = decodeURIComponent(productId);
+      const matchedProduct = ALL_PRODUCTS.find(p => p.sku === decodedSku);
       if (matchedProduct) return matchedProduct;
     }
 
     // Priority 3: General last used tile saved in history
     if (initialImage?.lastProduct) {
-      const match = mockProducts.find(p => p.id === initialImage.lastProduct.id);
+      const match = ALL_PRODUCTS.find(p => p.id === initialImage.lastProduct.id);
       if (match) return match;
     }
 
     // Priority 4: Fallback to LocalStorage, then Default
     const savedProduct = localStorage.getItem('savedSelectedProduct');
-    return savedProduct ? JSON.parse(savedProduct) : mockProducts[0];
+    return savedProduct ? JSON.parse(savedProduct) : ALL_PRODUCTS[0];
   });
   // ── NEW: 1. Track absolute latest product to prevent 3D loading glitches ──
   const latestProductRef = useRef(selectedProduct);
@@ -316,7 +213,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
   // ── UPDATE: Force update when History is clicked & sync React Router ──
   useEffect(() => {
     if (initialImage?.historyEntryId && initialImage?.lastProduct) {
-      const historyProduct = mockProducts.find(p => p.id === initialImage.lastProduct.id);
+      const historyProduct = ALL_PRODUCTS.find(p => p.id === initialImage.lastProduct.id);
 
       // If the history tile is different from what is currently on screen
       if (historyProduct && historyProduct.id !== selectedProduct?.id) {
@@ -365,7 +262,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
   // Sidebar states
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [expandedProductCategory, setExpandedProductCategory] = useState(selectedProduct.accordionCategory);
-  const [activeFooterCategory, setActiveFooterCategory] = useState(mockProducts[0].accordionCategory);
+  const [activeFooterCategory, setActiveFooterCategory] = useState(ALL_PRODUCTS[0].accordionCategory);
 
   // Modal States
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
@@ -387,7 +284,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
   // FullScreen Mode
 
   const [isImmersiveMode, setIsImmersiveMode] = useState(false);
-
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
 
   const shareRef = useRef(null);
@@ -475,7 +372,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
       if (threeContainerRef.current) {
         const instance = initVisualizer(threeContainerRef.current);
         if (instance) {
-          visualizerInstance.current = instance; // ✅ ADD THIS LINE
+          visualizerInstance.current = instance;
           if (latestProductRef.current && instance.updateTexture) {
             instance.updateTexture(latestProductRef.current.img, floorRotation);
           }
@@ -524,7 +421,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
 
   const handleTouchEnd = () => { setIsDragging(false); setInitialPinchDist(null); };
 
-const getRotatedTileBlob = async (imageSrc, angle) => {
+  const getRotatedTileBlob = async (imageSrc, angle) => {
     return new Promise((resolve, reject) => {
       const img = new Image();
       img.onload = () => {
@@ -639,7 +536,7 @@ const getRotatedTileBlob = async (imageSrc, angle) => {
 
       // Layer 3: Mask
       ctx.drawImage(maskImg, 0, 0, canvas.width, canvas.height);
-      
+
       return canvas.toDataURL('image/jpeg', 0.92);
 
     } catch (e) {
@@ -647,7 +544,7 @@ const getRotatedTileBlob = async (imageSrc, angle) => {
       return null;
     }
   };
- 
+
   // // Canvas-only composite that doesn't need the live ThreeJS instance
   // const generateStaticComposite = async (productImgUrl,) => {
   //   if (!activeBaseImage?.maskUrl) return null;
@@ -983,7 +880,13 @@ const getRotatedTileBlob = async (imageSrc, angle) => {
 
   const clearFilters = () => setActiveFilters({});
   // Filter Logic
-  const filteredProducts = mockProducts.filter(prod => {
+  const navProducts = ALL_PRODUCTS.filter(p => p.navCategory === activeNavCategory);
+  console.log('activeNavCategory:', activeNavCategory);
+  console.log('navProducts count:', navProducts.length);
+  console.log('ALL_PRODUCTS count:', ALL_PRODUCTS.length);
+
+  // ── FILTER LOGIC: APPLIES GLOBALLY ACROSS ALL PRODUCTS ──
+  const filteredProducts = ALL_PRODUCTS.filter(prod => {
     const searchLower = searchQuery.trim().toLowerCase();
     const matchesSearch = searchLower === '' ||
       prod.name.toLowerCase().includes(searchLower) ||
@@ -992,22 +895,24 @@ const getRotatedTileBlob = async (imageSrc, angle) => {
       (prod.category && prod.category.toLowerCase().includes(searchLower)) ||
       (prod.colour && prod.colour.toLowerCase().includes(searchLower));
 
-    // FILTERING LOGIC TO SUPPORT REAL ARRAYS
     const matchesFilters = Object.entries(activeFilters).every(([key, selectedValues]) => {
       if (selectedValues.length === 0) return true;
       if (!prod[key]) return false;
 
-      // Check if the product data property is an Array (like our new userIndustry format)
+      // Support for real arrays (e.g. userIndustry)
       if (Array.isArray(prod[key])) {
         return selectedValues.some(val => prod[key].includes(val));
       }
 
-      // Normal string check fallback (for colour, shade, etc.)
+      // String check fallback
       return selectedValues.includes(prod[key]);
     });
 
     return matchesSearch && matchesFilters;
   });
+
+  // Isolate filtered results matching the current tab category
+  const currentTabFilteredProducts = filteredProducts.filter(p => p.navCategory === activeNavCategory);
 
   const displayCategories = [...productCategories].sort((a, b) => {
     if (sortOrder === 'Cat-A-Z') return a.localeCompare(b);
@@ -1016,9 +921,47 @@ const getRotatedTileBlob = async (imageSrc, angle) => {
   });
 
   const totalActiveFiltersCount = Object.values(activeFilters).reduce((acc, curr) => acc + curr.length, 0);
+  const dm = {
+    root: isDarkMode ? 'bg-[#0f172a] text-gray-100' : 'bg-[#f9fafb] text-gray-800',
+    navbar: isDarkMode ? 'bg-[#1e293b] border-[#334155]' : 'bg-white border-gray-200',
+    sidebar: isDarkMode ? 'bg-[#1e293b] border-[#334155]' : 'bg-white border-gray-200',
+    card: isDarkMode ? 'bg-[#243447] border-[#3d5068]' : 'bg-white border-gray-200',
+    cardSelected: isDarkMode ? 'border-teal-400 bg-teal-900/40 shadow-[0_0_12px_rgba(45,212,191,0.25)]' : 'border-[#0b5e5e] bg-[#0b5e5e]/5',
+    input: isDarkMode ? 'bg-[#1a2740] border-[#3d5068] text-white placeholder-gray-400' : 'bg-white border-gray-300 text-gray-800',
+    footer: isDarkMode ? 'bg-[#1e293b] border-[#334155]' : 'bg-white border-gray-200',
 
+    // ── VIBRANT TEXT COLORS ──
+    text: isDarkMode ? 'text-white' : 'text-gray-900',           // primary — full white
+    subtext: isDarkMode ? 'text-gray-300' : 'text-gray-500',        // secondary — lighter gray
+    brandLabel: isDarkMode ? 'text-teal-400' : 'text-gray-500',        // "WONDERFLOOR" label
+    sizeText: isDarkMode ? 'text-gray-300' : 'text-gray-500',        // size info
+    moreDetails: isDarkMode ? 'text-teal-400 hover:text-teal-300' : 'text-[#0b5e5e] hover:underline', // link
+    accent: isDarkMode ? 'text-teal-400' : 'text-[#0b5e5e]',       // general accent
+
+    hover: isDarkMode ? 'hover:bg-[#2d4059]' : 'hover:bg-gray-100',
+    divider: isDarkMode ? 'border-[#334155]' : 'border-gray-200',
+    accordion: isDarkMode ? 'bg-[#243447] border-[#3d5068] text-white' : 'bg-white border-gray-200 text-gray-800',
+
+    // ── FILTER SIDEBAR SPECIFIC ──
+    filterBg: isDarkMode ? 'bg-[#1e293b]' : 'bg-white',
+    filterHeader: isDarkMode ? 'border-[#334155]' : 'border-gray-100',
+    filterBtn: isDarkMode ? 'bg-[#243447] hover:bg-[#2d4059] text-gray-100' : 'hover:bg-gray-50 text-gray-800',
+    filterActive: isDarkMode ? 'bg-[#2d4059] text-white' : 'bg-gray-100 text-gray-800',
+    filterOption: isDarkMode ? 'text-gray-200' : 'text-gray-700',
+    filterFooter: isDarkMode ? 'bg-[#1a2535] border-[#334155]' : 'bg-gray-50 border-gray-200',
+    filterClear: isDarkMode ? 'border-[#3d5068] text-gray-200 hover:bg-[#2d4059]' : 'border-gray-300 text-gray-700 hover:bg-gray-50',
+    navBtn: isDarkMode ? 'text-gray-200 hover:text-white hover:bg-[#2d4059]' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100',
+    navBtnActive: isDarkMode ? 'text-white' : 'text-gray-900',
+    footerText: isDarkMode ? 'text-white' : 'text-gray-900',
+    footerSub: isDarkMode ? 'text-gray-300' : 'text-gray-400',
+    actionBtn: isDarkMode ? 'text-gray-200 hover:text-white hover:bg-[#2d4059]' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100',
+    actionDis: isDarkMode ? 'text-gray-600 cursor-not-allowed opacity-40' : 'text-gray-400 cursor-not-allowed opacity-50',
+    zoomText: isDarkMode ? 'text-gray-300 hover:text-white' : 'text-gray-600 hover:text-gray-900',
+    tabActive: isDarkMode ? 'text-teal-400 border-teal-400' : 'text-[#0b5e5e] border-[#0b5e5e]',
+    tabInactive: isDarkMode ? 'text-gray-400 hover:text-gray-200' : 'text-gray-500 hover:text-gray-700',
+  };
   return (
-    <div className="fixed inset-0 bg-[#f9fafb] flex z-50 overflow-hidden font-sans text-gray-800">
+    <div className={`fixed inset-0 flex z-50 overflow-hidden font-sans transition-colors duration-300 ${dm.root}`}>
 
       {isSidebarOpen && (
         <div
@@ -1028,125 +971,211 @@ const getRotatedTileBlob = async (imageSrc, angle) => {
       )}
 
       {/* Sidebar */}
-      <div className={`fixed md:relative bg-white md:border-r border-gray-200 flex flex-col z-50 md:z-30 shrink-0 transition-transform duration-300 ease-in-out
-        bottom-0 left-0 w-full h-[85vh] rounded-t-3xl shadow-[0_-10px_40px_rgba(0,0,0,0.15)]
-        ${isSidebarOpen ? 'translate-y-0' : 'translate-y-full'} 
-        md:w-[320px] md:h-full md:rounded-none md:shadow-sm md:translate-y-0
-         ${isImmersiveMode ? 'md:hidden' : ''}
-      `}>
+      <div className={`fixed md:relative md:border-r flex flex-col z-50 md:z-30 shrink-0 transition-all duration-300
+  bottom-0 left-0 w-full h-[85vh] rounded-t-3xl shadow-[0_-10px_40px_rgba(0,0,0,0.15)]
+  ${isSidebarOpen ? 'translate-y-0' : 'translate-y-full'} 
+  md:w-[320px] md:h-full md:rounded-none md:shadow-sm md:translate-y-0
+  ${isImmersiveMode ? 'md:hidden' : ''}
+  ${dm.sidebar}`}>
 
         {isFavoritesViewOpen ? (
           <FavoritesView
             favoriteIds={favoriteProducts}
-            allProducts={mockProducts}
+            allProducts={ALL_PRODUCTS}
             onBack={() => setIsFavoritesViewOpen(false)}
             onSelectProduct={handleTileSelection}
             onToggleFavorite={toggleFavorite}
           />
-        ) : isFilterMenuOpen ? (
-          <div className="flex flex-col h-full bg-white absolute inset-0 z-40 animate-fade-in md:rounded-none rounded-t-3xl overflow-hidden">
-            <div className="p-4 md:p-5 flex items-center gap-3 border-b border-gray-100">
-              <button onClick={() => setIsFilterMenuOpen(false)} className="text-gray-500 hover:text-black hover:bg-gray-100 p-1.5 rounded-md cursor-pointer transition-colors">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+     ) : isFilterMenuOpen ? (
+          <div className={`flex flex-col h-full absolute inset-0 z-40 animate-fade-in
+            md:rounded-none rounded-t-3xl overflow-hidden transition-colors
+            ${isDarkMode ? 'bg-[#0f1b2d]' : 'bg-white'}`}>
+
+            {/* ── HEADER ── */}
+            <div className={`p-4 md:p-5 flex items-center gap-3 border-b shrink-0
+              ${isDarkMode ? 'border-[#1e3a5f] bg-[#0f1b2d]' : 'border-gray-100 bg-white'}`}>
+              <button
+                onClick={() => setIsFilterMenuOpen(false)}
+                className={`p-2 rounded-lg cursor-pointer transition-all
+                  ${isDarkMode
+                    ? 'text-gray-300 hover:text-white hover:bg-[#1e3a5f]'
+                    : 'text-gray-500 hover:text-black hover:bg-gray-100'}`}
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
               </button>
-              <h2 className="text-xl font-bold text-gray-900">Filters</h2>
+              <div>
+                <h2 className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                  Filters
+                </h2>
+                <p className={`text-xs mt-0.5 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                  {totalActiveFiltersCount === 0
+                    ? 'No active filters'
+                    : `${totalActiveFiltersCount} filter${totalActiveFiltersCount > 1 ? 's' : ''} applied`}
+                </p>
+              </div>
+              {totalActiveFiltersCount > 0 && (
+                <span className="ml-auto flex items-center justify-center w-6 h-6 rounded-full bg-teal-500 text-white text-[11px] font-bold shadow-md shadow-teal-500/30">
+                  {totalActiveFiltersCount}
+                </span>
+              )}
             </div>
 
-            <div className="flex-1 overflow-y-auto px-4 md:px-5 py-4">
-              <p className="text-sm font-medium text-gray-800 mb-4">
-                {totalActiveFiltersCount === 0 ? "No active filters" : `${totalActiveFiltersCount} active filter${totalActiveFiltersCount > 1 ? 's' : ''}`}
-              </p>
+            {/* ── SCROLLABLE BODY ── */}
+            <div className="flex-1 overflow-y-auto px-3 md:px-4 py-3 flex flex-col gap-1.5">
 
-              <div className="flex flex-col">
+              {/* Sort By Accordion */}
+              <div className={`rounded-xl overflow-hidden border transition-colors
+                ${isDarkMode ? 'border-[#1e3a5f]' : 'border-gray-200'}`}>
                 <button
                   onClick={() => setExpandedFilterCategory(expandedFilterCategory === 'sort' ? null : 'sort')}
-                  className={`flex justify-between items-center py-3 px-2 rounded-md transition-colors cursor-pointer ${expandedFilterCategory === 'sort' ? 'bg-gray-100' : 'hover:bg-gray-50'}`}
+                  className={`w-full flex justify-between items-center px-4 py-3.5 cursor-pointer transition-all
+                    ${expandedFilterCategory === 'sort'
+                      ? isDarkMode ? 'bg-[#1e3a5f] text-white' : 'bg-[#0b5e5e]/5 text-[#0b5e5e]'
+                      : isDarkMode ? 'bg-[#152235] text-gray-200 hover:bg-[#1a2d47]' : 'bg-white text-gray-800 hover:bg-gray-50'}`}
                 >
-                  <span className="font-medium text-[15px] text-gray-800 flex items-center gap-2">Sort By</span>
-                  <svg className={`w-5 h-5 text-gray-500 transition-transform ${expandedFilterCategory === 'sort' ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                    <polyline points="6 9 12 15 18 9"></polyline>
+                  <span className="font-semibold text-sm flex items-center gap-2">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/>
+                    </svg>
+                    Sort By
+                  </span>
+                  <svg
+                    className={`w-4 h-4 transition-transform ${expandedFilterCategory === 'sort' ? 'rotate-180' : ''}`}
+                    fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <polyline points="6 9 12 15 18 9"/>
                   </svg>
                 </button>
 
                 {expandedFilterCategory === 'sort' && (
-                  <div className="flex flex-col gap-3 py-3 px-2 pl-4">
-                    <label className="flex justify-between items-center cursor-pointer group">
-                      <span className="text-sm text-gray-700 flex items-center gap-2">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-400"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
-                        Default
-                      </span>
-                      <input type="radio" name="sort" value="" checked={sortOrder === ''} onChange={(e) => setSortOrder(e.target.value)} className="w-4 h-4 text-[#0b5e5e] focus:ring-[#0b5e5e] cursor-pointer accent-[#0b5e5e]" />
-                    </label>
-                    <label className="flex justify-between items-center cursor-pointer group">
-                      <span className="text-sm text-gray-700 flex items-center gap-2">Product Name (A-Z)</span>
-                      <input type="radio" name="sort" value="Prod-A-Z" checked={sortOrder === 'Prod-A-Z'} onChange={(e) => setSortOrder(e.target.value)} className="w-4 h-4 text-[#0b5e5e] focus:ring-[#0b5e5e] cursor-pointer accent-[#0b5e5e]" />
-                    </label>
-                    <label className="flex justify-between items-center cursor-pointer group">
-                      <span className="text-sm text-gray-700 flex items-center gap-2">Product Name (Z-A)</span>
-                      <input type="radio" name="sort" value="Prod-Z-A" checked={sortOrder === 'Prod-Z-A'} onChange={(e) => setSortOrder(e.target.value)} className="w-4 h-4 text-[#0b5e5e] focus:ring-[#0b5e5e] cursor-pointer accent-[#0b5e5e]" />
-                    </label>
-                    <label className="flex justify-between items-center cursor-pointer group">
-                      <span className="text-sm text-gray-700 flex items-center gap-2">Category Name (A-Z)</span>
-                      <input type="radio" name="sort" value="Cat-A-Z" checked={sortOrder === 'Cat-A-Z'} onChange={(e) => setSortOrder(e.target.value)} className="w-4 h-4 text-[#0b5e5e] focus:ring-[#0b5e5e] cursor-pointer accent-[#0b5e5e]" />
-                    </label>
-                    <label className="flex justify-between items-center cursor-pointer group">
-                      <span className="text-sm text-gray-700 flex items-center gap-2">Category Name (Z-A)</span>
-                      <input type="radio" name="sort" value="Cat-Z-A" checked={sortOrder === 'Cat-Z-A'} onChange={(e) => setSortOrder(e.target.value)} className="w-4 h-4 text-[#0b5e5e] focus:ring-[#0b5e5e] cursor-pointer accent-[#0b5e5e]" />
-                    </label>
+                  <div className={`flex flex-col gap-1 p-3 border-t
+                    ${isDarkMode ? 'bg-[#0d1825] border-[#1e3a5f]' : 'bg-gray-50 border-gray-100'}`}>
+                    {[
+                      { label: 'Default', value: '' },
+                      { label: 'Product Name (A–Z)', value: 'Prod-A-Z' },
+                      { label: 'Product Name (Z–A)', value: 'Prod-Z-A' },
+                      { label: 'Category Name (A–Z)', value: 'Cat-A-Z' },
+                      { label: 'Category Name (Z–A)', value: 'Cat-Z-A' },
+                    ].map(({ label, value }) => (
+                      <label
+                        key={value}
+                        className={`flex justify-between items-center px-3 py-2.5 rounded-lg cursor-pointer transition-all
+                          ${sortOrder === value
+                            ? isDarkMode ? 'bg-teal-500/20 text-teal-300' : 'bg-[#0b5e5e]/10 text-[#0b5e5e]'
+                            : isDarkMode ? 'text-gray-300 hover:bg-[#1a2d47] hover:text-white' : 'text-gray-700 hover:bg-gray-100'}`}
+                      >
+                        <span className="text-sm font-medium">{label}</span>
+                        <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all
+                          ${sortOrder === value
+                            ? 'border-teal-400 bg-teal-400'
+                            : isDarkMode ? 'border-gray-500' : 'border-gray-300'}`}>
+                          {sortOrder === value && (
+                            <div className="w-1.5 h-1.5 rounded-full bg-white"/>
+                          )}
+                        </div>
+                        <input
+                          type="radio" name="sort" value={value}
+                          checked={sortOrder === value}
+                          onChange={(e) => setSortOrder(e.target.value)}
+                          className="sr-only"
+                        />
+                      </label>
+                    ))}
                   </div>
                 )}
               </div>
 
-              <div className="flex flex-col gap-1">
-                {filterCategories.map((category) => {
-                  const isExpanded = expandedFilterCategory === category.id;
-                  const selectedCount = activeFilters[category.id]?.length || 0;
-                  return (
-                    <div key={category.id} className="flex flex-col">
-                      <button
-                        onClick={() => setExpandedFilterCategory(isExpanded ? null : category.id)}
-                        className={`flex justify-between items-center py-3 px-2 rounded-md transition-colors cursor-pointer ${isExpanded ? 'bg-gray-100' : 'hover:bg-gray-50'}`}
-                      >
-                        <span className="font-medium text-[15px] text-gray-800 flex items-center gap-2">
-                          {category.label}
-                          {selectedCount > 0 && (
-                            <span className="bg-[#0b5e5e] text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold">{selectedCount}</span>
-                          )}
-                        </span>
-                        <svg className={`w-5 h-5 text-gray-500 transition-transform ${isExpanded ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                          <polyline points="6 9 12 15 18 9"></polyline>
-                        </svg>
-                      </button>
-                      {isExpanded && (
-                        <div className="flex flex-col gap-3 py-3 px-2 pl-4">
-                          {category.options.map(option => {
-                            const isChecked = activeFilters[category.id]?.includes(option) || false;
-                            return (
-                              <label key={option} className="flex justify-between items-center cursor-pointer group">
-                                <span className="text-sm text-gray-700">{option}</span>
-                                <input
-                                  type="checkbox"
-                                  checked={isChecked}
-                                  onChange={() => handleToggleFilter(category.id, option)}
-                                  className="w-4 h-4 rounded border-gray-300 text-[#0b5e5e] focus:ring-[#0b5e5e] cursor-pointer accent-[#0b5e5e]"
-                                />
-                              </label>
-                            );
-                          })}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
+              {/* Filter Category Accordions */}
+              {filterCategories.map((category) => {
+                const isExpanded = expandedFilterCategory === category.id;
+                const selectedCount = activeFilters[category.id]?.length || 0;
+
+                return (
+                  <div key={category.id} className={`rounded-xl overflow-hidden border transition-colors
+                    ${isDarkMode ? 'border-[#1e3a5f]' : 'border-gray-200'}`}>
+
+                    <button
+                      onClick={() => setExpandedFilterCategory(isExpanded ? null : category.id)}
+                      className={`w-full flex justify-between items-center px-4 py-3.5 cursor-pointer transition-all
+                        ${isExpanded
+                          ? isDarkMode ? 'bg-[#1e3a5f] text-white' : 'bg-[#0b5e5e]/5 text-[#0b5e5e]'
+                          : isDarkMode ? 'bg-[#152235] text-gray-200 hover:bg-[#1a2d47]' : 'bg-white text-gray-800 hover:bg-gray-50'}`}
+                    >
+                      <span className="font-semibold text-sm flex items-center gap-2">
+                        {category.label}
+                        {selectedCount > 0 && (
+                          <span className="bg-teal-500 text-white text-[10px] px-2 py-0.5 rounded-full font-bold shadow-sm shadow-teal-500/30">
+                            {selectedCount}
+                          </span>
+                        )}
+                      </span>
+                      <svg
+                        className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+                        fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                        <polyline points="6 9 12 15 18 9"/>
+                      </svg>
+                    </button>
+
+                    {isExpanded && (
+                      <div className={`p-3 border-t flex flex-col gap-1
+                        ${isDarkMode ? 'bg-[#0d1825] border-[#1e3a5f]' : 'bg-gray-50 border-gray-100'}`}>
+                        {category.options.map(option => {
+                          const isChecked = activeFilters[category.id]?.includes(option) || false;
+                          return (
+                            <label
+                              key={option}
+                              className={`flex justify-between items-center px-3 py-2.5 rounded-lg cursor-pointer transition-all
+                                ${isChecked
+                                  ? isDarkMode ? 'bg-teal-500/20 text-teal-300' : 'bg-[#0b5e5e]/10 text-[#0b5e5e]'
+                                  : isDarkMode ? 'text-gray-300 hover:bg-[#1a2d47] hover:text-white' : 'text-gray-700 hover:bg-gray-100'}`}
+                            >
+                              <span className="text-sm font-medium">{option}</span>
+                              <div className={`w-4 h-4 rounded flex items-center justify-center border-2 transition-all
+                                ${isChecked
+                                  ? 'bg-teal-500 border-teal-500'
+                                  : isDarkMode ? 'border-gray-500' : 'border-gray-300'}`}>
+                                {isChecked && (
+                                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                  </svg>
+                                )}
+                              </div>
+                              <input
+                                type="checkbox"
+                                checked={isChecked}
+                                onChange={() => handleToggleFilter(category.id, option)}
+                                className="sr-only"
+                              />
+                            </label>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
 
-            <div className="p-4 border-t border-gray-200 bg-white flex justify-between gap-3 shrink-0">
-              <button onClick={clearFilters} className="flex-1 py-2.5 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer">
-                Clear filters
+            {/* ── FOOTER BUTTONS ── */}
+            <div className={`p-4 border-t flex gap-3 shrink-0
+              ${isDarkMode ? 'bg-[#0f1b2d] border-[#1e3a5f]' : 'bg-white border-gray-200'}`}>
+              <button
+                onClick={clearFilters}
+                className={`flex-1 py-3 rounded-xl text-sm font-semibold border-2 transition-all cursor-pointer
+                  ${isDarkMode
+                    ? 'border-[#1e3a5f] text-gray-300 hover:border-teal-500/50 hover:text-white hover:bg-[#1e3a5f]'
+                    : 'border-gray-300 text-gray-700 hover:bg-gray-50'}`}
+              >
+                Clear all
               </button>
-              <button onClick={() => setIsFilterMenuOpen(false)} className="flex-1 py-2.5 bg-[#202938] rounded-md text-sm font-medium text-white hover:bg-black transition-colors cursor-pointer">
-                Done
+              <button
+                onClick={() => setIsFilterMenuOpen(false)}
+                className="flex-1 py-3 rounded-xl text-sm font-semibold text-white cursor-pointer transition-all
+                  bg-gradient-to-r from-[#0b5e5e] to-teal-500 hover:from-[#084747] hover:to-teal-600
+                  shadow-lg shadow-teal-900/40"
+              >
+                Apply
               </button>
             </div>
           </div>
@@ -1210,7 +1239,7 @@ const getRotatedTileBlob = async (imageSrc, angle) => {
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
                         Upload
                       </RoomUploader>
-                    
+
                       <button
                         onClick={() => { setIsImmersiveMode(true); setIsMenuDropdownOpen(false); setIsSidebarOpen(false); }}
                         className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gray-50 text-left transition-colors cursor-pointer w-full"
@@ -1227,16 +1256,23 @@ const getRotatedTileBlob = async (imageSrc, angle) => {
             </div>
 
             <div className="px-4 md:px-5 pb-3">
-              <div className="flex items-center gap-2">
+     <div className="flex items-center gap-2">
                 <button
                   onClick={() => setIsSearchOpen(!isSearchOpen)}
-                  className="w-10 h-10 border border-gray-300 rounded flex items-center justify-center hover:bg-gray-100 transition-colors text-gray-600 shrink-0 cursor-pointer"
+                  className={`w-10 h-10 border rounded-lg flex items-center justify-center transition-all cursor-pointer shrink-0 shadow-sm
+                    ${isDarkMode 
+                      ? 'bg-[#1e293b] border-[#334155] text-gray-300 hover:text-white hover:border-teal-500 hover:bg-[#1a2d47]' 
+                      : 'bg-white border-gray-200 text-gray-600 hover:text-[#0b5e5e] hover:border-[#0b5e5e] hover:bg-gray-50'}`}
                 >
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                 </button>
+                
                 <button
                   onClick={() => setIsFilterMenuOpen(true)}
-                  className="flex-1 h-10 border border-gray-300 rounded flex items-center justify-center gap-2 hover:bg-gray-100 transition-colors text-sm font-medium text-gray-700 cursor-pointer relative"
+                  className={`flex-1 h-10 border rounded-lg flex items-center justify-center gap-2 transition-all text-sm font-semibold cursor-pointer relative shadow-sm
+                    ${isDarkMode
+                      ? 'bg-[#1e293b] border-[#334155] text-gray-300 hover:text-white hover:border-teal-500 hover:bg-[#1a2d47]'
+                      : 'bg-white border-gray-200 text-gray-700 hover:text-[#0b5e5e] hover:border-[#0b5e5e] hover:bg-gray-50'}`}
                 >
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
                   Filters
@@ -1247,12 +1283,13 @@ const getRotatedTileBlob = async (imageSrc, angle) => {
                     </span>
                   )}
                 </button>
-                <div className="flex border border-gray-300 rounded overflow-hidden h-10 shrink-0">
-                  <button onClick={() => setViewMode('list')} className={`w-10 flex justify-center items-center transition-colors cursor-pointer ${viewMode === 'list' ? 'bg-gray-800 text-white' : 'bg-white text-gray-600 hover:bg-gray-100'}`}>
+
+                <div className={`flex border rounded-lg overflow-hidden h-10 shrink-0 shadow-sm transition-colors ${isDarkMode ? 'border-[#334155]' : 'border-gray-200'}`}>
+                  <button onClick={() => setViewMode('list')} className={`w-10 flex justify-center items-center transition-all cursor-pointer ${viewMode === 'list' ? (isDarkMode ? 'bg-teal-500 text-white' : 'bg-[#0b5e5e] text-white') : (isDarkMode ? 'bg-[#1e293b] text-gray-400 hover:bg-[#2d4059] hover:text-white' : 'bg-white text-gray-500 hover:bg-gray-100')}`}>
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
                   </button>
-                  <div className="w-px bg-gray-300"></div>
-                  <button onClick={() => setViewMode('grid')} className={`w-10 flex justify-center items-center transition-colors cursor-pointer ${viewMode === 'grid' ? 'bg-gray-800 text-white' : 'bg-white text-gray-600 hover:bg-gray-100'}`}>
+                  <div className={`w-px ${isDarkMode ? 'bg-[#334155]' : 'bg-gray-200'}`}></div>
+                  <button onClick={() => setViewMode('grid')} className={`w-10 flex justify-center items-center transition-all cursor-pointer ${viewMode === 'grid' ? (isDarkMode ? 'bg-teal-500 text-white' : 'bg-[#0b5e5e] text-white') : (isDarkMode ? 'bg-[#1e293b] text-gray-400 hover:bg-[#2d4059] hover:text-white' : 'bg-white text-gray-500 hover:bg-gray-100')}`}>
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
                   </button>
                 </div>
@@ -1264,13 +1301,25 @@ const getRotatedTileBlob = async (imageSrc, angle) => {
                     placeholder="Search products, collections, colors..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full h-10 border border-gray-300 rounded px-3 text-[16px] md:text-sm focus:outline-none focus:border-[#0b5e5e] focus:ring-1 focus:ring-[#0b5e5e]"
+                    className={`w-full h-10 border rounded px-3 text-[16px] md:text-sm focus:outline-none focus:border-[#0b5e5e] focus:ring-1 focus:ring-[#0b5e5e] transition-colors ${dm.input}`}
                     autoFocus
                   />
                 </div>
               )}
             </div>
             <div className="border-b border-gray-100"></div>
+
+            <SidebarNavTabs
+              categories={NAV_CATEGORIES}
+              activeId={activeNavCategory}
+              isDarkMode={isDarkMode}
+              onChange={(id) => {
+                setActiveNavCategory(id);
+                setExpandedProductCategory(null);
+                // setSearchQuery('');
+                // setActiveFilters({});
+              }}
+            />
 
             {errorMsg && (
               <div className="mx-4 md:mx-5 mt-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm break-words font-medium">
@@ -1281,7 +1330,8 @@ const getRotatedTileBlob = async (imageSrc, angle) => {
             <div className="flex-1 overflow-y-auto px-4 md:px-5 pb-5 pt-4 flex flex-col relative">
               <div className="flex-1">
                 {displayCategories.map(categoryName => {
-                  let categoryProducts = filteredProducts.filter(
+                  // Change filteredProducts to currentTabFilteredProducts
+                  let categoryProducts = currentTabFilteredProducts.filter(
                     p => p.accordionCategory === categoryName
                   );
 
@@ -1295,12 +1345,19 @@ const getRotatedTileBlob = async (imageSrc, angle) => {
                     );
                   }
                   if (categoryProducts.length === 0) return null;
+                  {/* Change filteredProducts.length to currentTabFilteredProducts.length */ }
+                  {
+                    currentTabFilteredProducts.length === 0 && (
+                      <div className="text-center text-gray-500 py-8 text-sm">No products match your search or filters.</div>
+                    )
+                  }
                   const isExpanded = (expandedProductCategory === categoryName) || (searchQuery.trim().length > 0);
                   return (
                     <div key={categoryName} className="mb-3">
                       <button
                         onClick={() => setExpandedProductCategory(isExpanded && searchQuery.length === 0 ? null : categoryName)}
-                        className={`w-full flex justify-between items-center py-3 px-4 border rounded-lg transition-all duration-300 cursor-pointer ${isExpanded ? 'bg-[#0b5e5e] border-[#0b5e5e] text-white shadow-md' : 'bg-white border-gray-200 hover:bg-gray-50 hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)]'}`}
+                        className={`w-full flex justify-between items-center py-3 px-4 border rounded-lg transition-all duration-300 cursor-pointer
+  ${isExpanded ? 'bg-[#0b5e5e] border-[#0b5e5e] text-white shadow-md' : `${dm.accordion} ${dm.hover}`}`}
                       >
                         <span className="font-bold text-sm tracking-wide">{categoryName}</span>
                         <svg className={`w-5 h-5 transition-transform ${isExpanded ? 'rotate-180 text-white' : 'text-gray-500'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -1320,7 +1377,8 @@ const getRotatedTileBlob = async (imageSrc, angle) => {
                                   <div
                                     key={prod.id}
                                     onClick={() => handleTileSelection(prod)}
-                                    className={`relative flex gap-3 md:gap-4 p-2 md:p-3 border rounded-lg cursor-pointer transition-all duration-300 bg-white ${isSelected ? 'border-[#0b5e5e] shadow-md bg-[#0b5e5e]/5 transform scale-[1.02]' : 'border-gray-200 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:-translate-y-1'}`}
+                                    className={`relative flex gap-3 md:gap-4 p-2 md:p-3 border rounded-lg cursor-pointer transition-all duration-300
+  ${isSelected ? dm.cardSelected : `${dm.card} hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:-translate-y-1`}`}
                                   >
                                     <button onClick={(e) => toggleFavorite(e, prod.id)} className="absolute top-2 right-2 p-1 z-10 cursor-pointer">
                                       <svg width="20" height="20" viewBox="0 0 24 24" fill={isFavorite ? "#ef4444" : "none"} stroke={isFavorite ? "#ef4444" : "#9ca3af"} strokeWidth="2" className="transition-colors hover:scale-110">
@@ -1329,10 +1387,13 @@ const getRotatedTileBlob = async (imageSrc, angle) => {
                                     </button>
                                     <img src={prod.img} alt={prod.name} className="w-16 h-16 md:w-20 md:h-20 object-cover rounded shadow-sm bg-gray-100 shrink-0 border border-gray-200" />
                                     <div className="flex flex-col justify-center min-w-0 flex-1">
-                                      <span className="text-[10px] md:text-[11px] text-gray-500 uppercase tracking-wide">Wonderfloor</span>
-                                      <span className="font-bold text-sm text-gray-900 truncate mt-0.5 pr-6">{prod.name}</span>
-                                      <span className="text-xs text-gray-500 mt-1">Size: {prod.size}</span>
-                                      <button onClick={(e) => handleOpenDetails(e, prod)} className="text-xs text-[#0b5e5e] mt-1 hover:underline text-left cursor-pointer z-10 block w-max">
+                                      <span className={`text-[10px] md:text-[11px] uppercase tracking-wide font-semibold ${dm.brandLabel}`}>Wonderfloor</span>
+                                      <span className={`font-bold text-sm truncate mt-0.5 pr-6 ${dm.text}`}>{prod.name}</span>
+                                      <span className={`text-xs mt-1 ${dm.sizeText}`}>Size: {prod.size}</span>
+                                      <button
+                                        onClick={(e) => handleOpenDetails(e, prod)}
+                                        className={`text-xs mt-1 text-left cursor-pointer z-10 block w-max font-medium transition-colors ${dm.moreDetails}`}
+                                      >
                                         More details →
                                       </button>
                                     </div>
@@ -1378,8 +1439,10 @@ const getRotatedTileBlob = async (imageSrc, angle) => {
                 <div className="mt-auto border-t border-gray-200 p-3 shrink-0 bg-white sticky bottom-0 z-20 shadow-[0_-4px_10px_rgba(0,0,0,0.03)]">
                   <div className="flex items-center justify-between">
                     <div className="flex flex-col min-w-0 pr-2">
-                      <span className="font-bold text-sm text-gray-900 truncate">{selectedProduct.name}</span>
-                      <span className="text-xs text-gray-500 truncate">Size: {selectedProduct.size}</span>
+                      <span className={`font-bold text-sm md:text-base leading-tight transition-colors group-hover:text-teal-400 ${dm.footerText}`}>
+                        {selectedProduct.name}
+                      </span>
+                      <span className={`text-[10px] md:text-xs ${dm.footerSub}`}>{selectedProduct.size}</span>
                     </div>
                     <button onClick={(e) => handleOpenDetails(e, selectedProduct)} className="text-xs font-medium text-[#0b5e5e] flex items-center hover:bg-[#0b5e5e]/5 px-3 py-2 rounded-md transition-colors cursor-pointer shrink-0">
                       Details <svg className="ml-1" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
@@ -1419,25 +1482,25 @@ const getRotatedTileBlob = async (imageSrc, angle) => {
 
           {/* Top Nav Bar */}
           {!isImmersiveMode && (
-            <div className="h-[60px] bg-white border-b border-gray-200 flex justify-between items-center px-2 md:px-4 shadow-sm z-30 shrink-0 w-full relative">
+            <div className={`h-[60px] border-b flex justify-between items-center px-2 md:px-4 shadow-sm z-30 shrink-0 w-full relative transition-colors ${dm.navbar}`}>
               <div className="flex items-center gap-1 md:gap-2 text-gray-600 hover:text-black text-sm font-medium px-2 border-r border-gray-200 pr-3 md:pr-6 h-full transition-colors">
                 <button onClick={() => setIsSidebarOpen(true)} className="md:hidden p-1.5 rounded-md hover:bg-gray-100 cursor-pointer">
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
                 </button>
-                <button onClick={closeModal} className="flex items-center gap-1 md:gap-2 px-3 py-2 rounded-md hover:bg-gray-100 hover:text-gray-900 transition-colors cursor-pointer">
+                <button onClick={closeModal} className={`flex items-center gap-1 md:gap-2 px-3 py-2 rounded-md transition-colors cursor-pointer ${dm.navBtn}`}>
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                   <span className="hidden sm:inline">Exit</span>
                 </button>
               </div>
 
               <div className="flex-1 flex items-center justify-center gap-1 md:gap-2 text-sm text-gray-600 font-medium px-3 whitespace-nowrap h-full">
-                <button onClick={handleEnterCompare} className="flex items-center gap-1.5 px-3 py-2 rounded-md hover:bg-gray-100 hover:text-gray-900 transition-colors cursor-pointer">
+                <button onClick={handleEnterCompare} className={`flex items-center gap-1.5 px-3 py-2 rounded-md transition-colors cursor-pointer ${dm.navBtn}`}>
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M16 3h5v5M4 20L20 4M21 16v5h-5M15 15l6 6M4 4l5 5"></path></svg>
                   <span className="hidden lg:inline">Compare</span>
                 </button>
 
                 <div className="relative flex items-center h-full" ref={shareRef}>
-                  <button onClick={() => setIsShareMenuOpen(!isShareMenuOpen)} className="flex items-center gap-1.5 px-3 py-2 rounded-md hover:bg-gray-100 hover:text-gray-900 transition-colors cursor-pointer">
+                  <button onClick={() => setIsShareMenuOpen(!isShareMenuOpen)} className={`flex items-center gap-1.5 px-3 py-2 rounded-md transition-colors cursor-pointer ${dm.navBtn}`}>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
                     <span className="hidden sm:inline">Share</span>
                   </button>
@@ -1453,7 +1516,7 @@ const getRotatedTileBlob = async (imageSrc, angle) => {
                 </div>
 
                 <div className="relative flex items-center h-full" ref={downloadRef}>
-                  <button onClick={() => setIsDownloadMenuOpen(!isDownloadMenuOpen)} className="flex items-center gap-1.5 px-3 py-2 rounded-md hover:bg-gray-100 hover:text-gray-900 transition-colors cursor-pointer">
+                  <button onClick={() => setIsDownloadMenuOpen(!isDownloadMenuOpen)} className={`flex items-center gap-1.5 px-3 py-2 rounded-md transition-colors cursor-pointer ${dm.navBtn}`}>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
                     <span className="hidden sm:inline">Download</span>
                   </button>
@@ -1470,7 +1533,32 @@ const getRotatedTileBlob = async (imageSrc, angle) => {
                 </div>
               </div>
 
-              <div className="flex items-center gap-1 md:gap-2 border-l border-gray-200 pl-2 md:pl-4 h-full shrink-0">
+             <div className={`flex items-center gap-3 md:gap-5 border-l pl-3 md:pl-5 h-full shrink-0 transition-colors ${isDarkMode ? 'border-[#334155]' : 'border-gray-200'}`}>
+                {/* 🌙 DARK MODE TOGGLE — placed in the red-highlighted area */}
+               {/* 🌙 DARK MODE TOGGLE — Premium Animated Version */}
+                <button
+                  onClick={() => setIsDarkMode(prev => !prev)}
+                  title={isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+                  className={`group relative flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold tracking-wide transition-all duration-300 cursor-pointer overflow-hidden border
+                    ${isDarkMode
+                      ? 'bg-[#1e293b] text-yellow-400 border-[#334155] hover:border-yellow-400/50 hover:bg-[#1a2436] shadow-[0_0_10px_rgba(250,204,21,0.05)] hover:shadow-[0_0_15px_rgba(250,204,21,0.15)]'
+                      : 'bg-white text-slate-700 border-gray-200 hover:border-slate-300 hover:bg-gray-50 shadow-sm hover:shadow-md'
+                    }`}
+                >
+                  {/* Subtle hover glow effect */}
+                  {isDarkMode && <div className="absolute inset-0 bg-yellow-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />}
+                  
+                  {isDarkMode ? (
+                    <svg className="w-4 h-4 animate-[spin_8s_linear_infinite]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="12" cy="12" r="5" /><line x1="12" y1="1" x2="12" y2="3" /><line x1="12" y1="21" x2="12" y2="23" /><line x1="4.22" y1="4.22" x2="5.64" y2="5.64" /><line x1="18.36" y1="18.36" x2="19.78" y2="19.78" /><line x1="1" y1="12" x2="3" y2="12" /><line x1="21" y1="12" x2="23" y2="12" /><line x1="4.22" y1="19.78" x2="5.64" y2="18.36" /><line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+                    </svg>
+                  ) : (
+                    <svg className="w-4 h-4 group-hover:-rotate-12 transition-transform duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                    </svg>
+                  )}
+                  <span className="hidden sm:inline relative z-10">{isDarkMode ? 'Light' : 'Dark'}</span>
+                </button>
                 <a href="https://www.wonderfloor.co.in/contact-us" target="_blank" rel="noopener noreferrer" title="Contact Us | Wonderfloor">
                   <button className="bg-[#0b5e5e] text-white px-3 py-1.5 md:px-4 md:py-2 rounded-md text-xs md:text-sm font-medium hover:bg-[#084747] flex items-center gap-1.5 shadow-sm transition-colors cursor-pointer">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="hidden sm:block"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
@@ -1478,41 +1566,46 @@ const getRotatedTileBlob = async (imageSrc, angle) => {
                   </button>
                 </a>
                 <div className="relative flex items-center h-full" ref={menuRef}>
-                  <button onClick={() => setIsMenuDropdownOpen(!isMenuDropdownOpen)} className="flex text-gray-600 hover:text-gray-900 hover:bg-gray-100 px-2 md:px-3 py-2 rounded-md text-sm font-medium items-center gap-1 transition-colors cursor-pointer">
+                  <button onClick={() => setIsMenuDropdownOpen(!isMenuDropdownOpen)} className={`flex px-2 md:px-3 py-2 rounded-md text-sm font-medium items-center gap-1 transition-colors cursor-pointer ${dm.navBtn}`}>
                     <span className="hidden sm:inline">Menu</span>
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="1.5"></circle><circle cx="12" cy="5" r="1.5"></circle><circle cx="12" cy="19" r="1.5"></circle></svg>
                   </button>
                   {isMenuDropdownOpen && (
-                    <div className="absolute top-[50px] right-0 bg-white shadow-xl border border-gray-200 rounded-md py-2 w-[180px] z-50 flex flex-col">
-                      <button onClick={onOpenRecentRooms} className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gray-50 text-left transition-colors cursor-pointer w-full">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500 shrink-0">
+                    <div className={`absolute top-[50px] right-0 shadow-xl border rounded-md py-2 w-[180px] z-50 flex flex-col transition-colors
+                      ${isDarkMode ? 'bg-[#1e293b] border-[#334155]' : 'bg-white border-gray-200'}`}>
+                      
+                      <button onClick={onOpenRecentRooms} className={`flex items-center gap-3 px-4 py-2.5 text-sm text-left transition-colors cursor-pointer w-full
+                        ${isDarkMode ? 'text-gray-300 hover:bg-[#2d4059] hover:text-white' : 'text-gray-700 hover:bg-gray-50'}`}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={`shrink-0 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                           <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                         My History
                         {historyCount > 0 && (
-                          <span className="ml-1 bg-[#f05c3f] text-white text-[11px] font-bold rounded-full w-5 h-5 flex items-center justify-center shrink-0">
+                          <span className="ml-1 bg-[#f05c3f] text-white text-[11px] font-bold rounded-full w-5 h-5 flex items-center justify-center shrink-0 shadow-sm">
                             {historyCount > 9 ? '9+' : historyCount}
                           </span>
                         )}
                       </button>
+                      
                       <RoomUploader
                         onImageUpload={(newImageData) => {
                           setUploadedRoom(newImageData);
                           setProcessedImage(null);
                           setIsMenuDropdownOpen(false);
                         }}
-                        className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gray-50 text-left transition-colors cursor-pointer w-full"
+                        className={`flex items-center gap-3 px-4 py-2.5 text-sm text-left transition-colors cursor-pointer w-full
+                          ${isDarkMode ? 'text-gray-300 hover:bg-[#2d4059] hover:text-white' : 'text-gray-700 hover:bg-gray-50'}`}
                       >
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={isDarkMode ? 'text-gray-400' : 'text-gray-500'}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
                         Upload
                       </RoomUploader>
 
-                     
                       <button
                         onClick={() => { setIsImmersiveMode(true); setIsMenuDropdownOpen(false); setIsSidebarOpen(false); }}
-                        className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gray-50 text-left transition-colors cursor-pointer w-full"
+                        className={`flex items-center gap-3 px-4 py-2.5 text-sm text-left transition-colors cursor-pointer w-full
+                          ${isDarkMode ? 'text-gray-300 hover:bg-[#2d4059] hover:text-white' : 'text-gray-700 hover:bg-gray-50'}`}
                       >
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500 shrink-0">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={`shrink-0 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                           <path d="M2 3h20v14H2z" /><path d="M8 21h8" /><path d="M12 17v4" />
                         </svg>
                         Immersive View
@@ -1623,26 +1716,33 @@ const getRotatedTileBlob = async (imageSrc, angle) => {
           {/* ── FOOTER BAR ── */}
           {!isImmersiveMode && (
 
-            <div className="bg-white border-t border-gray-200 shrink-0 flex flex-col z-20 w-full">
+            <div className={`border-t shrink-0 flex flex-col z-20 w-full transition-colors ${dm.footer}`}>
               {/* Row 1: Selected Product Info & Basic Actions */}
               <div className="flex flex-wrap md:flex-nowrap items-center justify-between px-3 md:px-6 py-2 gap-y-2">
                 <div
                   onClick={(e) => handleOpenDetails(e, selectedProduct)}
-                  className="flex items-center gap-2 md:gap-3 w-full md:w-auto cursor-pointer hover:bg-gray-50 p-1.5 -ml-1.5 rounded-md transition-colors group"
+                  className={`flex items-center gap-2 md:gap-3 w-full md:w-auto cursor-pointer p-1.5 -ml-1.5 rounded-md transition-colors group
+    ${isDarkMode ? 'hover:bg-[#2d4059]' : 'hover:bg-gray-50'}`}
                 >
-                  <img src={selectedProduct.img} alt="Selected" className="w-8 h-8 md:w-10 md:h-10 object-cover rounded border border-gray-200" />
+                  <img src={selectedProduct.img} alt="Selected"
+                    className={`w-8 h-8 md:w-10 md:h-10 object-cover rounded border ${isDarkMode ? 'border-[#3d5068]' : 'border-gray-200'}`}
+                  />
                   <div className="flex flex-col mr-auto md:mr-0">
-                    <span className="font-bold text-sm md:text-base text-gray-900 leading-tight group-hover:text-[#0b5e5e] transition-colors">{selectedProduct.name}</span>
-                    <span className="text-[10px] md:text-xs text-gray-400">{selectedProduct.size}</span>
+                    <span className={`font-bold text-sm md:text-base leading-tight transition-colors
+      ${isDarkMode ? 'text-white group-hover:text-teal-400' : 'text-gray-900 group-hover:text-[#0b5e5e]'}`}>
+                      {selectedProduct.name}
+                    </span>
+                    <span className={`text-[10px] md:text-xs ${isDarkMode ? 'text-gray-300' : 'text-gray-400'}`}>
+                      {selectedProduct.size}
+                    </span>
                   </div>
                   <div className="flex items-center gap-3 md:gap-6 text-xs md:text-sm text-gray-600 font-medium md:ml-6 md:border-l border-gray-200 pl-2 md:pl-6 h-full py-1">
                     <button
                       onClick={(e) => { e.stopPropagation(); handleReset(); }}
                       disabled={!isFloorVisible}
                       className={`flex items-center gap-1 md:gap-2 px-2 py-1.5 md:py-2 rounded-md transition-colors ${isFloorVisible
-                        ? 'hover:bg-gray-100 hover:text-gray-900 cursor-pointer text-gray-600'
-                        : 'opacity-50 cursor-not-allowed text-gray-400'
-                        }`}
+                        ? dm.actionBtn
+                        : dm.actionDis}`}
                     >
                       <span className="hidden sm:inline">Reset</span>
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="md:w-4 md:h-4"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><polyline points="3 3 3 8 8 8"></polyline></svg>
@@ -1651,9 +1751,8 @@ const getRotatedTileBlob = async (imageSrc, angle) => {
                       onClick={(e) => { e.stopPropagation(); handleRotate(); }}
                       disabled={!isFloorVisible}
                       className={`flex items-center gap-1 md:gap-2 px-2 py-1.5 md:py-2 rounded-md transition-colors group ${isFloorVisible
-                        ? 'hover:bg-gray-100 hover:text-gray-900 cursor-pointer'
-                        : 'opacity-50 cursor-not-allowed text-gray-400'
-                        }`}
+                        ? dm.actionBtn
+                        : dm.actionDis}`}
                     >
                       <span className="hidden sm:inline">Rotate</span>
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="md:w-4 md:h-4"><path d="M21 2v6h-6"></path><path d="M3 12a9 9 0 0 1 15-6.7L21 8"></path><path d="M3 22v-6h6"></path><path d="M21 12a9 9 0 0 1-15 6.7L3 16"></path></svg>
@@ -1666,17 +1765,22 @@ const getRotatedTileBlob = async (imageSrc, angle) => {
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-md hover:bg-gray-100 hover:text-gray-900 transition-colors cursor-default text-xs md:text-sm text-gray-600">
+                  <button className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md transition-colors cursor-default text-xs md:text-sm ${dm.zoomText}`}>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                     <span className="hidden sm:inline">Zoom</span> {zoomScale > 1 ? `(${zoomScale.toFixed(1)}x)` : ''}
                   </button>
-                  <button
+                <button
                     onClick={() => { setZoomScale(1); setPan({ x: 0, y: 0 }); }}
                     disabled={zoomScale === 1}
-                    className={`text-xs md:text-sm px-3 py-1.5 rounded-md transition-colors ${zoomScale === 1
-                      ? 'text-gray-400 cursor-not-allowed opacity-50'
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100 cursor-pointer'
-                      }`}
+                    className={`text-xs md:text-sm px-4 py-2 rounded-lg font-medium transition-all shadow-sm ${
+                      zoomScale === 1
+                        ? isDarkMode 
+                            ? 'bg-[#1e293b]/50 text-gray-500 border border-[#334155]/50 cursor-not-allowed' 
+                            : 'bg-gray-50 text-gray-400 border border-gray-200 cursor-not-allowed'
+                        : isDarkMode
+                            ? 'bg-[#1e293b] text-teal-400 border border-teal-500/30 hover:bg-[#1a2d47] hover:border-teal-500 cursor-pointer'
+                            : 'bg-white text-[#0b5e5e] border border-[#0b5e5e]/30 hover:bg-gray-50 hover:border-[#0b5e5e] cursor-pointer'
+                    }`}
                   >
                     Reset Zoom
                   </button>
@@ -1698,7 +1802,7 @@ const getRotatedTileBlob = async (imageSrc, angle) => {
                   ))}
                 </div>
                 <div className="flex overflow-x-auto gap-3 py-1 items-center [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-                  {mockProducts.filter(p => p.accordionCategory === activeFooterCategory).map(prod => {
+                  {ALL_PRODUCTS.filter(p => p.navCategory === activeNavCategory && p.accordionCategory === activeFooterCategory).map(prod => {
                     const isSelected = selectedProduct.id === prod.id;
                     return (
                       <div
