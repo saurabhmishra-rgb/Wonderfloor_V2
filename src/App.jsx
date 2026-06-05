@@ -151,6 +151,9 @@ function App() {
   const [showQR, setShowQR] = useState(false);
   const [sessionId, setSessionId] = useState('');
   const [isProductDropdownOpen, setIsProductDropdownOpen] = useState(false);
+  
+  // ── NEW: Database Fetched Rooms State ─────────────────────────────────────
+  const [dbRooms, setDbRooms] = useState([]);
 
   // ── History state ─────────────────────────────────────────────────────────
   const { history, addToHistory, removeEntry, clearHistory, updateEntryProduct } = useImageHistory();
@@ -168,25 +171,54 @@ function App() {
   const [isDarkMode, setIsDarkMode] = useState(() => 
     localStorage.getItem('theme') === 'dark'
   );
- const [isThemeExpanded, setIsThemeExpanded] = useState(true);
+  const [isThemeExpanded, setIsThemeExpanded] = useState(true);
+  
   useEffect(() => {
     localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
   }, [isDarkMode]);
 
+  // ── NEW: Fetch Rooms from MongoDB/Cloudinary Backend ─────────────────────
+  useEffect(() => {
+    async function fetchDatabaseRooms() {
+      try {
+        const response = await fetch('https://wonderfloor-dashboard.vercel.app/rooms');
+        if (response.ok) {
+          const data = await response.json();
+          // Transform the DB structure to match our frontend UI structure
+          const formattedDbRooms = data.map(room => ({
+            id: room._id,
+            name: room.name,
+            img: room.previewUrl,
+            mask: room.maskUrl || null,
+            category: room.category,
+            product: room.supportedCollections || [],
+          }));
+          setDbRooms(formattedDbRooms);
+        }
+      } catch (error) {
+        console.error("Failed to fetch rooms from database:", error);
+      }
+    }
+    fetchDatabaseRooms();
+  }, []);
+
+  // ── COMBINE STATIC AND DATABASE ROOMS ────────────────────────────────────
+  const activeRooms = useMemo(() => {
+    return [...allDemoRooms, ...dbRooms];
+  }, [dbRooms]);
+
   // ── AUTO-HIDE THEME SWITCH AFTER 3 SECONDS ON CHANGE ──
   useEffect(() => {
-    // Start a 3-second countdown to automatically hide the capsule
     const timer = setTimeout(() => {
       setIsThemeExpanded(false);
-    }, 3000); // 3000ms = 3 seconds
-
-    // Clean up the timer if the user clicks again before 3 seconds pass
+    }, 3000);
     return () => clearTimeout(timer);
   }, [isDarkMode]);
+
   // ── Refs ───────────────────────────────────────────────────────────────────
   const fileInputRef = useRef(null);
   const productDropdownRef = useRef(null);
-  const industryScrollRef = useRef(null); // <-- NEW Ref for Scroll Container
+  const industryScrollRef = useRef(null);
 
   // ── Router ─────────────────────────────────────────────────────────────────
   const location = useLocation();
@@ -267,14 +299,15 @@ function App() {
     if (location.pathname.startsWith('/visualizer')) {
       const pathRoomId = roomId || location.pathname.split('/').pop();
       if (pathRoomId && pathRoomId !== 'default' && pathRoomId !== 'visualizer') {
-        const matchedRoom = allDemoRooms.find(r => r.id === pathRoomId);
+        const matchedRoom = activeRooms.find(r => r.id === pathRoomId);
         if (matchedRoom) handleDemoRoomClick(matchedRoom, false);
         else navigate('/');
       } else {
-        handleDemoRoomClick(allDemoRooms[0]);
+        if(activeRooms.length > 0) handleDemoRoomClick(activeRooms[0]);
       }
     }
-  }, [location.pathname, roomId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.pathname, roomId, activeRooms.length]);
 
   // ── Handlers ──────────────────────────────────────────────────────────────
   const handleUploadClick = () => fileInputRef.current.click();
@@ -327,7 +360,7 @@ function App() {
 
   const handleHistorySelect = (entry) => {
     if (entry.type === 'demo' && entry.roomId) {
-      const room = allDemoRooms.find(r => r.id === entry.roomId);
+      const room = activeRooms.find(r => r.id === entry.roomId);
       if (room) {
         handleDemoRoomClick({
           ...room,
@@ -371,7 +404,6 @@ function App() {
     }
   };
 
-  // Function to handle scroll actions cleanly
   const scrollIndustries = (direction) => {
     if (industryScrollRef.current) {
       const offset = direction === 'left' ? -240 : 240;
@@ -379,23 +411,23 @@ function App() {
     }
   };
 
-  // ── NEW: Calculate matching industries dynamically ─────────────────────────
+  // ── Calculate matching industries dynamically ─────────────────────────
   const matchingIndustries = useMemo(() => {
     if (selectedProduct === 'Product Collections') return new Set();
     const matches = new Set();
-    allDemoRooms.forEach(room => {
+    activeRooms.forEach(room => {
       const products = Array.isArray(room.product) ? room.product : [room.product];
       if (products.includes(selectedProduct)) {
         matches.add(room.category);
       }
     });
     return matches;
-  }, [selectedProduct]);
+  }, [selectedProduct, activeRooms]);
 
   // ── Derived values ────────────────────────────────────────────────────────
   const isDefaultView = selectedIndustry === 'ALL INDUSTRY' && selectedProduct === 'Product Collections';
 
-  const displayedRooms = allDemoRooms.filter(room => {
+  const displayedRooms = activeRooms.filter(room => {
     if (selectedProduct !== 'Product Collections') {
       return Array.isArray(room.product)
         ? room.product.includes(selectedProduct)
@@ -406,7 +438,7 @@ function App() {
 
   const uniqueCategories = [];
   const categoryNames = new Set();
-  for (const room of allDemoRooms) {
+  for (const room of activeRooms) {
     if (!categoryNames.has(room.category)) {
       categoryNames.add(room.category);
       uniqueCategories.push(room);
@@ -428,40 +460,37 @@ function App() {
       </div>
     );
   }
-   // ── ADD THIS: When visualizer is ready, render ONLY the modal ─────────
-if (isVisualizerRoute && isModalOpen && selectedRoomImage) {
-  return (
-    <>
-      <ImageHistoryDrawer
-        isOpen={isHistoryOpen}
-        history={history}
-        onSelect={handleHistorySelect}
-        onRemove={removeEntry}
-        onClear={clearHistory}
-        onClose={() => setIsHistoryOpen(false)}
-      />
-      <ARVisualizer
-        key={selectedRoomImage.previewUrl}
-        closeModal={handleCloseModal}
-        initialImage={selectedRoomImage}
-        onOpenRecentRooms={() => setIsHistoryOpen(true)}
-        historyCount={history.length}
-        onProductChange={updateEntryProduct}
-      />
-    </>
-  );
-}
 
- // ── Render ────────────────────────────────────────────────────────────────
-return (
+  if (isVisualizerRoute && isModalOpen && selectedRoomImage) {
+    return (
+      <>
+        <ImageHistoryDrawer
+          isOpen={isHistoryOpen}
+          history={history}
+          onSelect={handleHistorySelect}
+          onRemove={removeEntry}
+          onClear={clearHistory}
+          onClose={() => setIsHistoryOpen(false)}
+        />
+        <ARVisualizer
+          key={selectedRoomImage.previewUrl}
+          closeModal={handleCloseModal}
+          initialImage={selectedRoomImage}
+          onOpenRecentRooms={() => setIsHistoryOpen(true)}
+          historyCount={history.length}
+          onProductChange={updateEntryProduct}
+        />
+      </>
+    );
+  }
+
+  // ── Render ────────────────────────────────────────────────────────────────
+  return (
     <div className={`w-full min-h-screen transition-colors duration-300 overflow-x-hidden ${isDarkMode ? 'bg-slate-900' : 'bg-white'}`}>
-      {/* Reduced padding-top to pt-6 matches the clean alignment in image_e670f4.png */}
       <div className="relative w-full max-w-[1300px] mx-auto px-4 sm:px-6 pt-6 pb-15 font-sans flex flex-col">
         
-        {/* ── COLLAPSIBLE CONTROL LAYER (FIXES GAPS) ── */}
+        {/* ── COLLAPSIBLE CONTROL LAYER ── */}
         <div className="absolute top-4 left-4 sm:left-6 z-50 flex items-center gap-1.5 transition-all duration-300">
-          
-          {/* Main Toggle Capsule Container */}
           <div className={`flex items-center gap-2 overflow-hidden transition-all duration-300 ${
             isThemeExpanded ? 'max-w-xs opacity-100 scale-100' : 'max-w-0 opacity-0 scale-95 pointer-events-none'
           }`}>
@@ -491,7 +520,6 @@ return (
             </button>
           </div>
 
-          {/* Small Arrow Trigger to Collapse/Expand Theme Controls */}
           <button
             onClick={() => setIsThemeExpanded(!isThemeExpanded)}
             className={`flex items-center justify-center w-8 h-8 rounded-full border shadow-sm transition-all duration-300 transform hover:scale-105 active:scale-95 cursor-pointer ${
@@ -508,19 +536,16 @@ return (
               strokeWidth="2.5" 
               viewBox="0 0 24 24"
             >
-              {/* Pointing arrow indicator layouts */}
               <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
             </svg>
           </button>
-
         </div>
 
         {/* ── Hero section ── */}
         <div className="flex flex-col lg:flex-row items-center lg:items-start justify-between gap-8 lg:gap-16 mt-16 sm:mt-20 md:mt-24 mb-16 sm:mb-24 w-full">
-   
           <div className="w-full lg:w-[480px] flex flex-col gap-4 shrink-0 mt-8 lg:mt-0 lg:-mt-2">
             <img src={Logo} alt="Wonderfloor Logo" className="w-[200px] h-auto mb-1 mx-auto lg:mx-0" />
-           <h1 className={`text-[32px] sm:text-[36px] lg:text-[42px] font-bold mb-1 tracking-tight text-center lg:text-left leading-[1.15] break-words transition-colors duration-200 ${
+            <h1 className={`text-[32px] sm:text-[36px] lg:text-[42px] font-bold mb-1 tracking-tight text-center lg:text-left leading-[1.15] break-words transition-colors duration-200 ${
               isDarkMode ? 'text-white' : 'text-[#202938]'
             }`}>
               See live floor transformation in your room
@@ -649,12 +674,9 @@ return (
             </div>
           </div>
 
-          {/* ── Industry filter pills container with Left & Right scroll buttons ── */}
-       
-          {/* ── PREMIUM REDESIGNED INDUSTRY FILTER PILLS WITH ADAPTIVE GRADIENTS ── */}
+          {/* ── Filter Pills ── */}
           <div className="relative w-full flex items-center mb-8 group">
             
-            {/* LEFT SCROLL CONTROLLER WITH ADAPTIVE GRADIENT */}
             <div className={`absolute left-0 top-0 bottom-0 w-20 z-40 flex items-center pointer-events-none bg-gradient-to-r ${
               isDarkMode ? 'from-slate-900 via-slate-900/80' : 'from-white via-white/80'
             } to-transparent`}>
@@ -671,7 +693,6 @@ return (
               </button>
             </div>
 
-            {/* SCROLL CONTAINER */}
             <div
               ref={industryScrollRef}
               className="flex overflow-x-auto gap-3 pb-3 pt-1 w-full scroll-smooth snap-x scrollbar-none"
@@ -712,7 +733,6 @@ return (
               <div className="w-6 shrink-0" />
             </div>
 
-            {/* RIGHT SCROLL CONTROLLER WITH ADAPTIVE GRADIENT */}
             <div className={`absolute right-0 top-0 bottom-0 w-20 z-40 flex items-center justify-end pointer-events-none bg-gradient-to-l ${
               isDarkMode ? 'from-slate-900 via-slate-900/80' : 'from-white via-white/80'
             } to-transparent`}>
@@ -744,10 +764,10 @@ return (
                     <img src={cat.img} alt={cat.category} className="w-full h-[200px] object-cover hover:opacity-90 transition-opacity duration-200" />
                   </div>
                   <p className={`text-[12px] font-bold uppercase tracking-wider px-1 group-hover:text-[#f05c3f] transition-colors ${
-      isDarkMode ? 'text-white' : 'text-[#0b5c58]'
-    }`}>
-      {cat.category}
-    </p>
+                    isDarkMode ? 'text-white' : 'text-[#0b5c58]'
+                  }`}>
+                    {cat.category}
+                  </p>
                 </div>
               ))}
             </div>
@@ -774,14 +794,20 @@ return (
                       className="cursor-pointer group flex flex-col gap-3"
                       onClick={() => navigate(`/visualizer/${room.id}`)}
                     >
-                      <div className="overflow-hidden rounded-none bg-gray-100">
+                      <div className="overflow-hidden rounded-none bg-gray-100 relative">
                         <img src={room.img} alt={room.name} className="w-full h-[200px] object-cover hover:opacity-90 transition-opacity duration-200" />
+                        {/* Show "New" tag if it's a database room (Cloudinary URL) */}
+                        {room.img.includes('cloudinary') && (
+                          <div className="absolute top-2 right-2 bg-[#f05c3f] text-white text-[10px] font-bold px-2 py-1 rounded shadow-md uppercase">
+                            New
+                          </div>
+                        )}
                       </div>
                       <p className={`text-[12px] font-bold uppercase tracking-wider px-1 group-hover:text-[#f05c3f] transition-colors ${
-      isDarkMode ? 'text-white' : 'text-[#0b5c58]'
-    }`}>
-      {room.name}
-    </p>
+                        isDarkMode ? 'text-white' : 'text-[#0b5c58]'
+                      }`}>
+                        {room.name}
+                      </p>
                     </div>
                   ))}
                 </div>
