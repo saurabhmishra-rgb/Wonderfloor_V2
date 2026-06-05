@@ -12,8 +12,10 @@ import SidebarNavTabs from './SidebarNavTabs';
 
 
 
-const BACKEND_URL = 'http://127.0.0.1:8000';
+// const PYTHON_BACKEND_URL = 'http://127.0.0.1:8000';
+   const NODE_BACKEND_URL = 'https://wonderfloor-dashboard.vercel.app'
 // const BACKEND_URL = 'https://wonderfloor-backend-1.onrender.com';
+const PYTHON_BACKEND_URL = 'https://python-floor-backend.onrender.com';
 
 // ── COMPARE VIEW COMPONENT ──
 const CompareView = ({
@@ -156,10 +158,10 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
   // Browser detector: True if Safari (Mac/iOS), False if Chrome/Edge/Windows
   const isSafari = typeof window !== 'undefined' && /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
- // for download images
+  // for download images
   const [downloadImageUrl, setDownloadImageUrl] = useState(null);
   const [isGeneratingDownload, setIsGeneratingDownload] = useState(false); // <-- NEW SEPARATE STATE
-  
+
   const handleDownloadButtonClick = async () => {
     if (isDownloadMenuOpen) { setIsDownloadMenuOpen(false); return; }
 
@@ -183,37 +185,106 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
   const { productId } = useParams(); // <-- NEW CLEAN URL EXTRACTOR
   const navigate = useNavigate();
 
+const [combinedProducts, setCombinedProducts] = useState([...ALL_PRODUCTS]);
+
+
+// ── 2. NEW: FETCH PRODUCTS FROM MONGODB ──
+useEffect(() => {
+  async function fetchDatabaseProducts() {
+    try {
+      const response = await fetch(`${NODE_BACKEND_URL}/products`);
+      if (response.ok) {
+        const data = await response.json();
+        
+        // ─── UPDATE THIS MAP LOOP BELOW ───
+        const formattedProducts = data.map(prod => {
+          
+          // 1. ADD THE HELPER CODE HERE (Right at the start of the loop)
+          let translatedNav = prod.navCategory || '';
+          if (translatedNav === 'Flooring Products') {
+            translatedNav = 'flooring-products';
+          } else if (translatedNav === 'Luxury Vinyl Tile') {
+            translatedNav = 'luxury-vinyl-tile';
+          }
+
+          // 2. NOW RETURN THE CONVERTED OBJECT
+          return {
+            id: prod._id,
+            navCategory: translatedNav, // <-- Use the converted variable here!
+            accordionCategory: (prod.accordionCategory || '').trim(),
+            name: prod.name,
+            sku: (prod.sku || '').trim(),
+            size: prod.size,
+            img: prod.img, 
+            colour: prod.colour,
+            shade: prod.shade,
+            collection: prod.collection || '',
+            category: prod.accordionCategory, 
+            description: prod.description || '',
+            userIndustry: prod.userIndustry || [],
+          };
+        });
+        
+        // Merge and update the bucket!
+        setCombinedProducts([...ALL_PRODUCTS, ...formattedProducts]);
+      }
+    } catch (error) {
+      console.error("Failed to fetch dynamic products:", error);
+    }
+  }
+  fetchDatabaseProducts();
+}, []);
+
+
   const [initialPinchDist, setInitialPinchDist] = useState(null);
   const [uploadedRoom, setUploadedRoom] = useState(null);
 
   const [activeNavCategory, setActiveNavCategory] = useState('flooring-products');
-  const productCategories = ACCORDION_CATEGORIES[activeNavCategory] ?? [];
+ // Dynamically extracts unique categories so newly created admin collections appear automatically!
+  const productCategories = Array.from(new Set(
+    combinedProducts
+      .filter(p => p.navCategory === activeNavCategory)
+      .map(p => p.accordionCategory)
+  ));
 
   // 2. READ URL DIRECTLY INTO INITIAL STATE
-  const [selectedProduct, setSelectedProduct] = useState(() => {
-    // Priority 1: Explicitly clicked History Item (fixes the wrong tile bug)
-    if (initialImage?.historyEntryId && initialImage?.lastProduct) {
-      const match = ALL_PRODUCTS.find(p => p.id === initialImage.lastProduct.id);
-      if (match) return match;
-    }
+const [selectedProduct, setSelectedProduct] = useState(() => {
+  // Priority 1: Explicitly clicked History Item
+  if (initialImage?.historyEntryId && initialImage?.lastProduct) {
+    const match = combinedProducts.find(p => p.id === initialImage.lastProduct.id);
+    if (match) return match;
+  }
 
-    // Priority 2: URL param (highest priority for newly shared links)
-    if (productId) {
+  // Priority 2: URL param 
+  if (productId) {
+    const decodedSku = decodeURIComponent(productId);
+    const matchedProduct = combinedProducts.find(p => p.sku === decodedSku);
+    if (matchedProduct) return matchedProduct;
+  }
+
+  // Priority 3: General last used tile
+  if (initialImage?.lastProduct) {
+    const match = combinedProducts.find(p => p.id === initialImage.lastProduct.id);
+    if (match) return match;
+  }
+
+  // Priority 4: Fallback
+  const savedProduct = localStorage.getItem('savedSelectedProduct');
+  return savedProduct ? JSON.parse(savedProduct) : combinedProducts[0];
+});
+
+
+  // ── NEW: WATCH FOR DB PRODUCTS ON INITIAL LOAD FROM URL ──
+  useEffect(() => {
+    if (productId && combinedProducts.length > ALL_PRODUCTS.length) {
       const decodedSku = decodeURIComponent(productId);
-      const matchedProduct = ALL_PRODUCTS.find(p => p.sku === decodedSku);
-      if (matchedProduct) return matchedProduct;
+      const matchedProduct = combinedProducts.find(p => p.sku === decodedSku);
+      if (matchedProduct && matchedProduct.id !== selectedProduct?.id) {
+        setSelectedProduct(matchedProduct);
+      }
     }
+  }, [combinedProducts, productId, selectedProduct]);
 
-    // Priority 3: General last used tile saved in history
-    if (initialImage?.lastProduct) {
-      const match = ALL_PRODUCTS.find(p => p.id === initialImage.lastProduct.id);
-      if (match) return match;
-    }
-
-    // Priority 4: Fallback to LocalStorage, then Default
-    const savedProduct = localStorage.getItem('savedSelectedProduct');
-    return savedProduct ? JSON.parse(savedProduct) : ALL_PRODUCTS[0];
-  });
   // ── NEW: 1. Track absolute latest product to prevent 3D loading glitches ──
   const latestProductRef = useRef(selectedProduct);
   useEffect(() => {
@@ -240,7 +311,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
   // ── UPDATE: Force update when History is clicked & sync React Router ──
   useEffect(() => {
     if (initialImage?.historyEntryId && initialImage?.lastProduct) {
-      const historyProduct = ALL_PRODUCTS.find(p => p.id === initialImage.lastProduct.id);
+      const historyProduct = combinedProducts.find(p => p.id === initialImage.lastProduct.id);
 
       // If the history tile is different from what is currently on screen
       if (historyProduct && historyProduct.id !== selectedProduct?.id) {
@@ -652,7 +723,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
         formData.append('roomImage', activeBaseImage.rawFile);
         formData.append('floorImage', tileBlob, `${selectedProduct.name}_rotated.jpg`);
         formData.append('instructions', `The flooring tiles have physical dimensions of ${selectedProduct.size}.`);
-        const response = await fetch(`${BACKEND_URL}/api/replace-floor`, { method: 'POST', body: formData });
+        const response = await fetch(`${PYTHON_BACKEND_URL}/api/replace-floor`, { method: 'POST', body: formData });
         const data = await response.json();
         if (response.ok && data.success) {
           setCompareLeftImage(data.imageDataUrl);
@@ -695,7 +766,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
       formData.append('instructions', dimensionInstruction);
 
       const [response] = await Promise.all([
-        fetch(`${BACKEND_URL}/api/replace-floor`, { method: 'POST', body: formData }),
+        fetch(`${PYTHON_BACKEND_URL}/api/replace-floor`, { method: 'POST', body: formData }),
         new Promise(resolve => setTimeout(resolve, 4500))
       ]);
 
@@ -762,7 +833,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
           formData.append('floorImage', tileBlob, `${product.name}_rotated.jpg`);
           formData.append('instructions', `The flooring tiles have physical dimensions of ${product.size}. Please scale realistically.`);
 
-          const response = await fetch(`${BACKEND_URL}/api/replace-floor`, { method: 'POST', body: formData });
+          const response = await fetch(`${PYTHON_BACKEND_URL}/api/replace-floor`, { method: 'POST', body: formData });
           const data = await response.json();
           if (response.ok && data.success) {
             if (activeCompareSide === 'left') setCompareLeftImage(data.imageDataUrl);
@@ -907,13 +978,13 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
 
   const clearFilters = () => setActiveFilters({});
   // Filter Logic
-  const navProducts = ALL_PRODUCTS.filter(p => p.navCategory === activeNavCategory);
+ const navProducts = combinedProducts.filter(p => p.navCategory === activeNavCategory);
   console.log('activeNavCategory:', activeNavCategory);
   console.log('navProducts count:', navProducts.length);
   console.log('ALL_PRODUCTS count:', ALL_PRODUCTS.length);
 
   // ── FILTER LOGIC: APPLIES GLOBALLY ACROSS ALL PRODUCTS ──
-  const filteredProducts = ALL_PRODUCTS.filter(prod => {
+const filteredProducts = combinedProducts.filter(prod => {
     const searchLower = searchQuery.trim().toLowerCase();
     const matchesSearch = searchLower === '' ||
       prod.name.toLowerCase().includes(searchLower) ||
@@ -1005,10 +1076,10 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
   ${isImmersiveMode ? 'md:hidden' : ''}
   ${dm.sidebar}`}>
 
-        {isFavoritesViewOpen ? (
+      {isFavoritesViewOpen ? (
           <FavoritesView
             favoriteIds={favoriteProducts}
-            allProducts={ALL_PRODUCTS}
+            allProducts={combinedProducts}  // <--- Updated to the Single Source of Truth
             onBack={() => setIsFavoritesViewOpen(false)}
             onSelectProduct={handleTileSelection}
             onToggleFavorite={toggleFavorite}
@@ -1548,9 +1619,9 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
                   )}
                 </div>
 
-               <div className="relative flex items-center h-full" ref={downloadRef}>
-                  <button 
-                    onClick={handleDownloadButtonClick} 
+                <div className="relative flex items-center h-full" ref={downloadRef}>
+                  <button
+                    onClick={handleDownloadButtonClick}
                     disabled={isGeneratingDownload}
                     className={`flex items-center gap-1.5 px-3 py-2 rounded-md transition-all h-9 text-sm font-semibold select-none
                       ${isGeneratingDownload ? 'cursor-not-allowed opacity-70' : 'cursor-pointer'} ${dm.navBtn}`}
@@ -1574,11 +1645,12 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
                   {isDownloadMenuOpen && (
                     <div className={`absolute top-[50px] left-1/2 -translate-x-1/2 md:translate-x-0 md:left-auto md:right-0 shadow-xl border rounded-md py-2 w-[240px] z-50 flex flex-col transition-colors
                       ${isDarkMode ? 'bg-[#1e293b] border-[#334155]' : 'bg-white border-gray-200'}`}>
-                     <DownloadView
+                      <DownloadView
                         selectedProduct={selectedProduct}
                         currentSrc={downloadImageUrl || currentSrc}
                         compositeRef={!isSafari && activeBaseImage?.maskUrl ? compositeRef : null}
                         onClose={() => setIsDownloadMenuOpen(false)}
+                        
                       />
                     </div>
                   )}
@@ -1826,12 +1898,12 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
                     onClick={() => { setZoomScale(1); setPan({ x: 0, y: 0 }); }}
                     disabled={zoomScale === 1}
                     className={`text-xs md:text-sm px-4 py-2 rounded-lg font-medium transition-all shadow-sm ${zoomScale === 1
-                        ? isDarkMode
-                          ? 'bg-[#1e293b]/50 text-gray-500 border border-[#334155]/50 cursor-not-allowed'
-                          : 'bg-gray-50 text-gray-400 border border-gray-200 cursor-not-allowed'
-                        : isDarkMode
-                          ? 'bg-[#1e293b] text-teal-400 border border-teal-500/30 hover:bg-[#1a2d47] hover:border-teal-500 cursor-pointer'
-                          : 'bg-white text-[#0b5e5e] border border-[#0b5e5e]/30 hover:bg-gray-50 hover:border-[#0b5e5e] cursor-pointer'
+                      ? isDarkMode
+                        ? 'bg-[#1e293b]/50 text-gray-500 border border-[#334155]/50 cursor-not-allowed'
+                        : 'bg-gray-50 text-gray-400 border border-gray-200 cursor-not-allowed'
+                      : isDarkMode
+                        ? 'bg-[#1e293b] text-teal-400 border border-teal-500/30 hover:bg-[#1a2d47] hover:border-teal-500 cursor-pointer'
+                        : 'bg-white text-[#0b5e5e] border border-[#0b5e5e]/30 hover:bg-gray-50 hover:border-[#0b5e5e] cursor-pointer'
                       }`}
                   >
                     Reset Zoom
@@ -1854,7 +1926,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
                   ))}
                 </div>
                 <div className="flex overflow-x-auto gap-3 py-1 items-center [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-                  {ALL_PRODUCTS.filter(p => p.navCategory === activeNavCategory && p.accordionCategory === activeFooterCategory).map(prod => {
+                 {combinedProducts.filter(p => p.navCategory === activeNavCategory && p.accordionCategory === activeFooterCategory).map(prod => {
                     const isSelected = selectedProduct.id === prod.id;
                     return (
                       <div
