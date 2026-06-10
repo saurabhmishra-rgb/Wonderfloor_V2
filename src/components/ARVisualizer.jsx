@@ -196,35 +196,34 @@ useEffect(() => {
       if (response.ok) {
         const data = await response.json();
         
-        // ─── UPDATE THIS MAP LOOP BELOW ───
-        const formattedProducts = data.map(prod => {
-          
-          // 1. ADD THE HELPER CODE HERE (Right at the start of the loop)
-          let translatedNav = prod.navCategory || '';
-          if (translatedNav === 'Flooring Products') {
-            translatedNav = 'flooring-products';
-          } else if (translatedNav === 'Luxury Vinyl Tile') {
-            translatedNav = 'luxury-vinyl-tile';
-          }
+        // ✅ CORRECT CODE — single declaration
+const formattedProducts = data
+  .filter(prod => prod.isVisible !== false)
+  .map(prod => {
 
-          // 2. NOW RETURN THE CONVERTED OBJECT
-          return {
-            id: prod._id,
-            navCategory: translatedNav, // <-- Use the converted variable here!
-            accordionCategory: (prod.accordionCategory || '').trim(),
-            name: prod.name,
-            sku: (prod.sku || '').trim(),
-            size: prod.size,
-            img: prod.img, 
-            colour: prod.colour,
-            shade: prod.shade,
-            collection: prod.collection || '',
-            category: prod.accordionCategory, 
-            description: prod.description || '',
-            userIndustry: prod.userIndustry || [],
-          };
-        });
-        
+    let translatedNav = prod.navCategory || '';
+    if (translatedNav === 'Flooring Products') {
+      translatedNav = 'flooring-products';
+    } else if (translatedNav === 'Luxury Vinyl Tile') {
+      translatedNav = 'luxury-vinyl-tile';
+    }
+
+    return {
+      id: prod._id,
+      navCategory: translatedNav,
+      accordionCategory: (prod.accordionCategory || '').trim(),
+      name: prod.name,
+      sku: (prod.sku || '').trim(),
+      size: prod.size,
+      img: prod.img,
+      colour: prod.colour,
+      shade: prod.shade,
+      collection: prod.collection || '',
+      category: prod.accordionCategory,
+      description: prod.description || '',
+      userIndustry: prod.userIndustry || [],
+    };
+  });
         // Merge and update the bucket!
         setCombinedProducts([...ALL_PRODUCTS, ...formattedProducts]);
       }
