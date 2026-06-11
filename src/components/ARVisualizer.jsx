@@ -208,7 +208,7 @@ const formattedProducts = data
       translatedNav = 'luxury-vinyl-tile';
     }
 
-    return {
+   return {
       id: prod._id,
       navCategory: translatedNav,
       accordionCategory: (prod.accordionCategory || '').trim(),
@@ -222,6 +222,10 @@ const formattedProducts = data
       category: prod.accordionCategory,
       description: prod.description || '',
       userIndustry: prod.userIndustry || [],
+      // NEW: Safely parse tags into an array
+      tags: Array.isArray(prod.tags) 
+              ? prod.tags 
+              : (typeof prod.tags === 'string' ? prod.tags.split(',').map(t => t.trim()) : []),
     };
   });
         // Merge and update the bucket!
@@ -393,7 +397,12 @@ const [selectedProduct, setSelectedProduct] = useState(() => {
   const [viewMode, setViewMode] = useState('list');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-
+// NEW: Track accordions manually closed during a search
+  const [collapsedDuringSearch, setCollapsedDuringSearch] = useState([]);
+  useEffect(() => {
+    // Reset the collapsed list when typing a new search so all results auto-expand again
+    setCollapsedDuringSearch([]);
+  }, [searchQuery]);
   // Filter Sidebar States
   const [isFilterMenuOpen, setIsFilterMenuOpen] = useState(false);
   const [expandedFilterCategory, setExpandedFilterCategory] = useState(null);
@@ -962,7 +971,7 @@ const [selectedProduct, setSelectedProduct] = useState(() => {
     { id: 'accordionCategory', label: 'Product Collections', options: ['Braavo', 'Krayons', 'Durofloor', 'Siggma', 'Orbit', 'Stoneland Monza', 'Meteor', 'Aventus'] },
     { id: 'colour', label: 'Colour Family', options: ['Grey', 'cherry-red', 'neo-silver', 'Beige', 'Brown', 'Black', 'White', 'Blue', 'Green', 'Lemon', 'Orange', 'Purple', 'Cherry', 'Pink'] },
     { id: 'shade', label: 'Shade', options: ['Light', 'Medium', 'Dark'] },
-    { id: 'userIndustry', label: 'User Industry', options: ['Industrial Flooring', 'Office Flooring', 'Residential Flooring', 'School Flooring', 'Sports Flooring', 'Hotel/ Hospitality Flooring'] },
+    { id: 'userIndustry', label: 'Application Area', options: ['Industrial Flooring', 'Office Flooring', 'Residential Flooring', 'School Flooring', 'Sports Flooring', 'Hotel/ Hospitality Flooring'] },
     { id: 'Pattern/Layout', label: 'Pattern/ Layout', options: ['Herringbone'] },
     { id: 'collection', label: 'Style', options: ['Wood', 'Stone', 'Non Directional'] },
   ];
@@ -993,7 +1002,9 @@ const filteredProducts = combinedProducts.filter(prod => {
       (prod.accordionCategory && prod.accordionCategory.toLowerCase().includes(searchLower)) ||
       (prod.collection && prod.collection.toLowerCase().includes(searchLower)) ||
       (prod.category && prod.category.toLowerCase().includes(searchLower)) ||
-      (prod.colour && prod.colour.toLowerCase().includes(searchLower));
+      (prod.colour && prod.colour.toLowerCase().includes(searchLower)) ||
+      // NEW: Check if the search query matches any of our custom tags
+      (prod.tags && prod.tags.some(tag => tag.toLowerCase().includes(searchLower)));
 
     const matchesFilters = Object.entries(activeFilters).every(([key, selectedValues]) => {
       if (selectedValues.length === 0) return true;
@@ -1449,17 +1460,33 @@ const filteredProducts = combinedProducts.filter(prod => {
                     );
                   }
                   if (categoryProducts.length === 0) return null;
-                  {/* Change filteredProducts.length to currentTabFilteredProducts.length */ }
+                {/* Change filteredProducts.length to currentTabFilteredProducts.length */ }
                   {
                     currentTabFilteredProducts.length === 0 && (
                       <div className="text-center text-gray-500 py-8 text-sm">No products match your search or filters.</div>
                     )
                   }
-                  const isExpanded = (expandedProductCategory === categoryName) || (searchQuery.trim().length > 0);
+                  
+                  // NEW ACCORDION LOGIC
+                  const isSearching = searchQuery.trim().length > 0;
+                  const isExpanded = isSearching 
+                    ? !collapsedDuringSearch.includes(categoryName) // Auto-open on search, unless explicitly closed
+                    : expandedProductCategory === categoryName;     // Normal accordion behavior
+
+                  const handleAccordionToggle = () => {
+                    if (isSearching) {
+                      setCollapsedDuringSearch(prev => 
+                        isExpanded ? [...prev, categoryName] : prev.filter(c => c !== categoryName)
+                      );
+                    } else {
+                      setExpandedProductCategory(isExpanded ? null : categoryName);
+                    }
+                  };
+
                   return (
                     <div key={categoryName} className="mb-3">
                       <button
-                        onClick={() => setExpandedProductCategory(isExpanded && searchQuery.length === 0 ? null : categoryName)}
+                        onClick={handleAccordionToggle}
                         className={`w-full flex justify-between items-center py-3 px-4 border rounded-lg transition-all duration-300 cursor-pointer
   ${isExpanded ? 'bg-[#0b5e5e] border-[#0b5e5e] text-white shadow-md' : `${dm.accordion} ${dm.hover}`}`}
                       >
@@ -1999,7 +2026,7 @@ const filteredProducts = combinedProducts.filter(prod => {
                     { label: 'Colour', value: detailsProduct.colour },
                     { label: 'Shade', value: detailsProduct.shade },
                     {
-                      label: 'User Industry',
+                      label: 'Application Area',
                       // If it's an array, join values visually with a comma, else fallback to direct display
                       value: Array.isArray(detailsProduct.userIndustry)
                         ? detailsProduct.userIndustry.join(', ')
