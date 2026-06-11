@@ -44,23 +44,9 @@ const socket = io('https://python-floor-backend.onrender.com', {
 });
 
 // ── Static data ──────────────────────────────────────────────────────────────
-const industries = [
-  'ALL INDUSTRY',
-  'Industrial Flooring',
-  'Office Flooring',
-  'Residential Flooring',
-  'School Flooring',
-  'Sports Flooring',
-  'Supermarket Flooring',
-  'Transport Flooring',
-  'Hospital Flooring',
-  'Auditorium Flooring',
-  'Hotel/ Hospitality Flooring',
-  'Luxury Vinyl Tile',
-];
 
-const flooringProducts = [
-  'Product Collections',
+// ── Static fallback data (outside App) ──────────────────────────────────────
+const flooringProducts_static = [
   'Antique',
   'Adventus',
   'Braavo',
@@ -87,6 +73,8 @@ const flooringProducts = [
   'Trendo Chips',
   'Uttsav',
 ];
+
+
 
 const allDemoRooms = [
   { id: 'ind-1', name: 'Industrial Flooring Option 1', img: Industrial, category: 'Industrial Flooring', product: ['Durofloor', 'Antique'] },
@@ -154,10 +142,30 @@ function App() {
   
   // ── NEW: Database Fetched Rooms State ─────────────────────────────────────
   const [dbRooms, setDbRooms] = useState([]);
-
+const [dbProducts, setDbProducts] = useState([]);
   // ── History state ─────────────────────────────────────────────────────────
   const { history, addToHistory, removeEntry, clearHistory, updateEntryProduct } = useImageHistory();
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+
+    const industries = useMemo(() => {
+    const staticCategories = allDemoRooms.map(r => r.category);
+    const dbCategories = dbRooms.map(r => r.category);
+    const unique = [
+      'ALL INDUSTRY',
+      ...Array.from(new Set([...staticCategories, ...dbCategories]))
+        .filter(Boolean)
+        .sort(),
+    ];
+    return unique;
+  }, [dbRooms]);
+
+  const flooringProducts = useMemo(() => {
+    const dbCollections = dbProducts.map(p => p.accordionCategory).filter(Boolean);
+    const unique = Array.from(
+      new Set([...flooringProducts_static, ...dbCollections])
+    ).sort();
+    return ['Product Collections', ...unique];
+  }, [dbProducts]);
 
   // ── Saved filter preferences ───────────────────────────────────────────────
   const [selectedIndustry, setSelectedIndustry] = useState(
@@ -177,15 +185,33 @@ function App() {
     localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
   }, [isDarkMode]);
 
+
+useEffect(() => {
+  async function fetchDatabaseProducts() {
+    try {
+      const response = await fetch('https://wonderfloor-dashboard.vercel.app/products');
+      if (response.ok) {
+        const data = await response.json();
+        setDbProducts(data.filter(p => p.isVisible !== false)); // only visible products
+      }
+    } catch (error) {
+      console.error("Failed to fetch products:", error);
+    }
+  }
+  fetchDatabaseProducts();
+}, []);
+
+  
   // ── NEW: Fetch Rooms from MongoDB/Cloudinary Backend ─────────────────────
-  useEffect(() => {
-    async function fetchDatabaseRooms() {
-      try {
-        const response = await fetch('https://wonderfloor-dashboard.vercel.app/rooms');
-        if (response.ok) {
-          const data = await response.json();
-          // Transform the DB structure to match our frontend UI structure
-          const formattedDbRooms = data.map(room => ({
+useEffect(() => {
+  async function fetchDatabaseRooms() {
+    try {
+      const response = await fetch('https://wonderfloor-dashboard.vercel.app/rooms');
+      if (response.ok) {
+        const data = await response.json();
+        const formattedDbRooms = data
+          .filter(room => room.isLive)   // ← ONLY show live rooms
+          .map(room => ({
             id: room._id,
             name: room.name,
             img: room.previewUrl,
@@ -193,14 +219,14 @@ function App() {
             category: room.category,
             product: room.supportedCollections || [],
           }));
-          setDbRooms(formattedDbRooms);
-        }
-      } catch (error) {
-        console.error("Failed to fetch rooms from database:", error);
+        setDbRooms(formattedDbRooms);
       }
+    } catch (error) {
+      console.error("Failed to fetch rooms from database:", error);
     }
-    fetchDatabaseRooms();
-  }, []);
+  }
+  fetchDatabaseRooms();
+}, []);
 
   // ── COMBINE STATIC AND DATABASE ROOMS ────────────────────────────────────
   const activeRooms = useMemo(() => {
