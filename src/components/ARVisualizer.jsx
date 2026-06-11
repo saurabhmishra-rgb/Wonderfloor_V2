@@ -983,10 +983,13 @@ const [selectedProduct, setSelectedProduct] = useState(() => {
   console.log('ALL_PRODUCTS count:', ALL_PRODUCTS.length);
 
   // ── FILTER LOGIC: APPLIES GLOBALLY ACROSS ALL PRODUCTS ──
+// ── FILTER LOGIC ──
 const filteredProducts = combinedProducts.filter(prod => {
     const searchLower = searchQuery.trim().toLowerCase();
+    
+    // ✅ Safe navigation using optional chaining (?.) prevents crashes on undefined fields
     const matchesSearch = searchLower === '' ||
-      prod.name.toLowerCase().includes(searchLower) ||
+      (prod.name && prod.name.toLowerCase().includes(searchLower)) ||
       (prod.accordionCategory && prod.accordionCategory.toLowerCase().includes(searchLower)) ||
       (prod.collection && prod.collection.toLowerCase().includes(searchLower)) ||
       (prod.category && prod.category.toLowerCase().includes(searchLower)) ||
@@ -996,17 +999,15 @@ const filteredProducts = combinedProducts.filter(prod => {
       if (selectedValues.length === 0) return true;
       if (!prod[key]) return false;
 
-      // Support for real arrays (e.g. userIndustry)
       if (Array.isArray(prod[key])) {
         return selectedValues.some(val => prod[key].includes(val));
       }
 
-      // String check fallback
       return selectedValues.includes(prod[key]);
     });
 
     return matchesSearch && matchesFilters;
-  });
+});
 
   // Isolate filtered results matching the current tab category
   const currentTabFilteredProducts = filteredProducts.filter(p => p.navCategory === activeNavCategory);
