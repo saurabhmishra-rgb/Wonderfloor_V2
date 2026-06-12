@@ -972,47 +972,47 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
     setIsShareMenuOpen(false);
   };
 
- const filterCategories = [
-  {
-    id: 'accordionCategory',
-    label: 'Product Collections',
-    options: ['Braavo', 'Krayons', 'Durofloor', 'Siggma', 'Orbit',
-              'Stoneland Monza', 'Meteor', 'Aventus'],
-  },
-  {
-    id: 'colour',
-    label: 'Colour Family',
-    options: ['Grey', 'Beige', 'Brown', 'Black', 'White',
-              'Blue', 'Green', 'Orange', 'Purple', 'Pink'],
-  },
-  {
-    id: 'shade',
-    label: 'Shade',
-    options: ['Light', 'Medium', 'Dark'],
-  },
-  {
-    id: 'thickness',
-    label: 'Thickness',
-    options: ['1.0mm', '1.5mm', '2.0mm', '2.5mm', '3.0mm', '3.5mm', '4.0mm', '5.0mm'],
-  },
-  {
-    id: 'style',
-    label: 'Style',
-    options: ['Homogeneous Flooring', 'Cushion Vinyl', 'Heterogeneous Flooring',
-              'SPC Flooring', 'WPC Flooring', 'Printed Vinyl'],
-  },
-  {
-    id: 'pattern',
-    label: 'Pattern / Layout',
-    options: ['Non-Directional', 'Directional', 'Herringbone', 'Random', 'Linear'],
-  },
-  {
-    id: 'userIndustry',
-    label: 'Application Area',
-    options: ['Industrial Flooring', 'Office Flooring', 'Residential Flooring',
-              'School Flooring', 'Sports Flooring', 'Hotel/ Hospitality Flooring'],
-  },
-];
+  const filterCategories = [
+    {
+      id: 'accordionCategory',
+      label: 'Product Collections',
+      options: ['Braavo', 'Krayons', 'Durofloor', 'Siggma', 'Orbit',
+        'Stoneland Monza', 'Meteor', 'Aventus'],
+    },
+    {
+      id: 'colour',
+      label: 'Colour Family',
+      options: ['Grey', 'Beige', 'Brown', 'Black', 'White',
+        'Blue', 'Green', 'Orange', 'Purple', 'Pink'],
+    },
+    {
+      id: 'shade',
+      label: 'Shade',
+      options: ['Light', 'Medium', 'Dark'],
+    },
+    {
+      id: 'thickness',
+      label: 'Thickness',
+      options: ['1.0mm', '1.5mm', '2.0mm', '2.5mm', '3.0mm', '3.5mm', '4.0mm', '5.0mm'],
+    },
+    {
+      id: 'style',
+      label: 'Style',
+      options: ['Homogeneous Flooring', 'Cushion Vinyl', 'Heterogeneous Flooring',
+        'SPC Flooring', 'WPC Flooring', 'Printed Vinyl'],
+    },
+    {
+      id: 'pattern',
+      label: 'Pattern / Layout',
+      options: ['Non-Directional', 'Directional', 'Herringbone', 'Random', 'Linear'],
+    },
+    {
+      id: 'userIndustry',
+      label: 'Application Area',
+      options: ['Industrial Flooring', 'Office Flooring', 'Residential Flooring',
+        'School Flooring', 'Sports Flooring', 'Hotel/ Hospitality Flooring'],
+    },
+  ];
 
   const handleToggleFilter = (categoryId, option) => {
     setActiveFilters(prev => {
@@ -1173,8 +1173,9 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
             <div className="flex-1 overflow-y-auto px-3 md:px-4 py-3 flex flex-col gap-1.5">
 
               {/* Sort By Accordion */}
-              <div className={`rounded-xl overflow-hidden border transition-colors
-                ${isDarkMode ? 'border-[#1e3a5f]' : 'border-gray-200'}`}>
+              {/* Sort By Accordion */}
+              <div className={`shrink-0 rounded-xl overflow-hidden border transition-colors
+  ${isDarkMode ? 'border-[#1e3a5f]' : 'border-gray-200'}`}>
                 <button
                   onClick={() => setExpandedFilterCategory(expandedFilterCategory === 'sort' ? null : 'sort')}
                   className={`w-full flex justify-between items-center px-4 py-3.5 cursor-pointer transition-all
@@ -1195,52 +1196,56 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
                   </svg>
                 </button>
 
-                {expandedFilterCategory === 'sort' && (
-                  <div className={`flex flex-col gap-1 p-3 border-t
-                    ${isDarkMode ? 'bg-[#0d1825] border-[#1e3a5f]' : 'bg-gray-50 border-gray-100'}`}>
-                    {[
-                      { label: 'Default', value: '' },
-                      { label: 'Product Name (A–Z)', value: 'Prod-A-Z' },
-                      { label: 'Product Name (Z–A)', value: 'Prod-Z-A' },
-                      { label: 'Category Name (A–Z)', value: 'Cat-A-Z' },
-                      { label: 'Category Name (Z–A)', value: 'Cat-Z-A' },
-                    ].map(({ label, value }) => (
-                      <label
-                        key={value}
-                        className={`flex justify-between items-center px-3 py-2.5 rounded-lg cursor-pointer transition-all
-                          ${sortOrder === value
-                            ? isDarkMode ? 'bg-teal-500/20 text-teal-300' : 'bg-[#0b5e5e]/10 text-[#0b5e5e]'
-                            : isDarkMode ? 'text-gray-300 hover:bg-[#1a2d47] hover:text-white' : 'text-gray-700 hover:bg-gray-100'}`}
-                      >
-                        <span className="text-sm font-medium">{label}</span>
-                        <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all
-                          ${sortOrder === value
-                            ? 'border-teal-400 bg-teal-400'
-                            : isDarkMode ? 'border-gray-500' : 'border-gray-300'}`}>
-                          {sortOrder === value && (
-                            <div className="w-1.5 h-1.5 rounded-full bg-white" />
-                          )}
-                        </div>
-                        <input
-                          type="radio" name="sort" value={value}
-                          checked={sortOrder === value}
-                          onChange={(e) => setSortOrder(e.target.value)}
-                          className="sr-only"
-                        />
-                      </label>
-                    ))}
+                <div
+                  className={`grid transition-[grid-template-rows] duration-300 ease-in-out ${expandedFilterCategory === 'sort' ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
+                    }`}
+                >
+                  <div className="overflow-hidden">
+                    <div className={`flex flex-col gap-1 p-3 border-t
+                      ${isDarkMode ? 'bg-[#0d1825] border-[#1e3a5f]' : 'bg-gray-50 border-gray-100'}`}>
+                      {[
+                        { label: 'Default', value: '' },
+                        { label: 'Product Name (A–Z)', value: 'Prod-A-Z' },
+                        { label: 'Product Name (Z–A)', value: 'Prod-Z-A' },
+                        { label: 'Category Name (A–Z)', value: 'Cat-A-Z' },
+                        { label: 'Category Name (Z–A)', value: 'Cat-Z-A' },
+                      ].map(({ label, value }) => (
+                        <label
+                          key={value}
+                          className={`flex justify-between items-center px-3 py-2.5 rounded-lg cursor-pointer transition-all
+                            ${sortOrder === value
+                              ? isDarkMode ? 'bg-teal-500/20 text-teal-300' : 'bg-[#0b5e5e]/10 text-[#0b5e5e]'
+                              : isDarkMode ? 'text-gray-300 hover:bg-[#1a2d47] hover:text-white' : 'text-gray-700 hover:bg-gray-100'}`}
+                        >
+                          <span className="text-sm font-medium">{label}</span>
+                          <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all
+                            ${sortOrder === value
+                              ? 'border-teal-400 bg-teal-400'
+                              : isDarkMode ? 'border-gray-500' : 'border-gray-300'}`}>
+                            {sortOrder === value && (
+                              <div className="w-1.5 h-1.5 rounded-full bg-white" />
+                            )}
+                          </div>
+                          <input
+                            type="radio" name="sort" value={value}
+                            checked={sortOrder === value}
+                            onChange={(e) => setSortOrder(e.target.value)}
+                            className="sr-only"
+                          />
+                        </label>
+                      ))}
+                    </div>
                   </div>
-                )}
+                </div>
               </div>
-
               {/* Filter Category Accordions */}
               {filterCategories.map((category) => {
                 const isExpanded = expandedFilterCategory === category.id;
                 const selectedCount = activeFilters[category.id]?.length || 0;
 
                 return (
-                  <div key={category.id} className={`rounded-xl overflow-hidden border transition-colors
-                    ${isDarkMode ? 'border-[#1e3a5f]' : 'border-gray-200'}`}>
+                  <div key={category.id} className={`shrink-0 rounded-xl overflow-hidden border transition-colors
+      ${isDarkMode ? 'border-[#1e3a5f]' : 'border-gray-200'}`}>
 
                     <button
                       onClick={() => setExpandedFilterCategory(isExpanded ? null : category.id)}
@@ -1264,41 +1269,46 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
                       </svg>
                     </button>
 
-                    {isExpanded && (
-                      <div className={`p-3 border-t flex flex-col gap-1
-                        ${isDarkMode ? 'bg-[#0d1825] border-[#1e3a5f]' : 'bg-gray-50 border-gray-100'}`}>
-                        {category.options.map(option => {
-                          const isChecked = activeFilters[category.id]?.includes(option) || false;
-                          return (
-                            <label
-                              key={option}
-                              className={`flex justify-between items-center px-3 py-2.5 rounded-lg cursor-pointer transition-all
-                                ${isChecked
-                                  ? isDarkMode ? 'bg-teal-500/20 text-teal-300' : 'bg-[#0b5e5e]/10 text-[#0b5e5e]'
-                                  : isDarkMode ? 'text-gray-300 hover:bg-[#1a2d47] hover:text-white' : 'text-gray-700 hover:bg-gray-100'}`}
-                            >
-                              <span className="text-sm font-medium">{option}</span>
-                              <div className={`w-4 h-4 rounded flex items-center justify-center border-2 transition-all
-                                ${isChecked
-                                  ? 'bg-teal-500 border-teal-500'
-                                  : isDarkMode ? 'border-gray-500' : 'border-gray-300'}`}>
-                                {isChecked && (
-                                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3">
-                                    <polyline points="20 6 9 17 4 12" />
-                                  </svg>
-                                )}
-                              </div>
-                              <input
-                                type="checkbox"
-                                checked={isChecked}
-                                onChange={() => handleToggleFilter(category.id, option)}
-                                className="sr-only"
-                              />
-                            </label>
-                          );
-                        })}
+                    <div
+                      className={`grid transition-[grid-template-rows] duration-300 ease-in-out ${isExpanded ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
+                        }`}
+                    >
+                      <div className="overflow-hidden">
+                        <div className={`p-3 border-t flex flex-col gap-1
+                          ${isDarkMode ? 'bg-[#0d1825] border-[#1e3a5f]' : 'bg-gray-50 border-gray-100'}`}>
+                          {category.options.map(option => {
+                            const isChecked = activeFilters[category.id]?.includes(option) || false;
+                            return (
+                              <label
+                                key={option}
+                                className={`flex justify-between items-center px-3 py-2.5 rounded-lg cursor-pointer transition-all
+                                  ${isChecked
+                                    ? isDarkMode ? 'bg-teal-500/20 text-teal-300' : 'bg-[#0b5e5e]/10 text-[#0b5e5e]'
+                                    : isDarkMode ? 'text-gray-300 hover:bg-[#1a2d47] hover:text-white' : 'text-gray-700 hover:bg-gray-100'}`}
+                              >
+                                <span className="text-sm font-medium">{option}</span>
+                                <div className={`w-4 h-4 rounded flex items-center justify-center border-2 transition-all
+                                  ${isChecked
+                                    ? 'bg-teal-500 border-teal-500'
+                                    : isDarkMode ? 'border-gray-500' : 'border-gray-300'}`}>
+                                  {isChecked && (
+                                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3">
+                                      <polyline points="20 6 9 17 4 12" />
+                                    </svg>
+                                  )}
+                                </div>
+                                <input
+                                  type="checkbox"
+                                  checked={isChecked}
+                                  onChange={() => handleToggleFilter(category.id, option)}
+                                  className="sr-only"
+                                />
+                              </label>
+                            );
+                          })}
+                        </div>
                       </div>
-                    )}
+                    </div>
                   </div>
                 );
               })}
@@ -1504,7 +1514,6 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
                       <div className="text-center text-gray-500 py-8 text-sm">No products match your search or filters.</div>
                     )
                   }
-
                   // NEW ACCORDION LOGIC
                   const isSearching = searchQuery.trim().length > 0;
                   const isExpanded = isSearching
@@ -1522,7 +1531,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
                   };
 
                   return (
-                    <div key={categoryName} className="mb-3">
+                    <div key={categoryName} className="mb-3 shrink-0">
                       <button
                         onClick={handleAccordionToggle}
                         className={`w-full flex justify-between items-center py-3 px-4 border rounded-lg transition-all duration-300 cursor-pointer
@@ -1533,69 +1542,75 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
                           <polyline points="6 9 12 15 18 9"></polyline>
                         </svg>
                       </button>
-                      {isExpanded && (
-                        <div className="pt-3 pb-1">
-                          {viewMode === 'list' ? (
-                            <div className="flex flex-col gap-3">
-                              {categoryProducts.map((prod) => {
-                                const isFavorite = favoriteProducts.includes(prod.id);
-                                const isSelected = isCompareMode
-                                  ? (activeCompareSide === 'left' ? compareLeftProduct?.id === prod.id : compareRightProduct?.id === prod.id)
-                                  : selectedProduct.id === prod.id;
-                                return (
-                                  <div
-                                    key={prod.id}
-                                    onClick={() => handleTileSelection(prod)}
-                                    className={`relative flex gap-3 md:gap-4 p-2 md:p-3 border rounded-lg cursor-pointer transition-all duration-300
+
+                      <div
+                        className={`grid transition-[grid-template-rows] duration-300 ease-in-out ${isExpanded ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
+                          }`}
+                      >
+                        <div className="overflow-hidden">
+                          <div className="pt-3 pb-1">
+                            {viewMode === 'list' ? (
+                              <div className="flex flex-col gap-3">
+                                {categoryProducts.map((prod) => {
+                                  const isFavorite = favoriteProducts.includes(prod.id);
+                                  const isSelected = isCompareMode
+                                    ? (activeCompareSide === 'left' ? compareLeftProduct?.id === prod.id : compareRightProduct?.id === prod.id)
+                                    : selectedProduct.id === prod.id;
+                                  return (
+                                    <div
+                                      key={prod.id}
+                                      onClick={() => handleTileSelection(prod)}
+                                      className={`relative flex gap-3 md:gap-4 p-2 md:p-3 border rounded-lg cursor-pointer transition-all duration-300
   ${isSelected ? dm.cardSelected : `${dm.card} hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:-translate-y-1`}`}
-                                  >
-                                    <button onClick={(e) => toggleFavorite(e, prod.id)} className="absolute top-2 right-2 p-1 z-10 cursor-pointer">
-                                      <svg width="20" height="20" viewBox="0 0 24 24" fill={isFavorite ? "#ef4444" : "none"} stroke={isFavorite ? "#ef4444" : "#9ca3af"} strokeWidth="2" className="transition-colors hover:scale-110">
-                                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                                      </svg>
-                                    </button>
-                                    <img src={prod.img} alt={prod.name} className="w-16 h-16 md:w-20 md:h-20 object-cover rounded shadow-sm bg-gray-100 shrink-0 border border-gray-200" />
-                                    <div className="flex flex-col justify-center min-w-0 flex-1">
-                                      <span className={`text-[10px] md:text-[11px] uppercase tracking-wide font-semibold ${dm.brandLabel}`}>Wonderfloor</span>
-                                      <span className={`font-bold text-sm truncate mt-0.5 pr-6 ${dm.text}`}>{prod.name}</span>
-                                      <span className={`text-xs mt-1 ${dm.sizeText}`}>Size: {prod.size}</span>
-                                      <button
-                                        onClick={(e) => handleOpenDetails(e, prod)}
-                                        className={`text-xs mt-1 text-left cursor-pointer z-10 block w-max font-medium transition-colors ${dm.moreDetails}`}
-                                      >
-                                        More details →
+                                    >
+                                      <button onClick={(e) => toggleFavorite(e, prod.id)} className="absolute top-2 right-2 p-1 z-10 cursor-pointer">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill={isFavorite ? "#ef4444" : "none"} stroke={isFavorite ? "#ef4444" : "#9ca3af"} strokeWidth="2" className="transition-colors hover:scale-110">
+                                          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                        </svg>
                                       </button>
+                                      <img src={prod.img} alt={prod.name} className="w-16 h-16 md:w-20 md:h-20 object-cover rounded shadow-sm bg-gray-100 shrink-0 border border-gray-200" />
+                                      <div className="flex flex-col justify-center min-w-0 flex-1">
+                                        <span className={`text-[10px] md:text-[11px] uppercase tracking-wide font-semibold ${dm.brandLabel}`}>Wonderfloor</span>
+                                        <span className={`font-bold text-sm truncate mt-0.5 pr-6 ${dm.text}`}>{prod.name}</span>
+                                        <span className={`text-xs mt-1 ${dm.sizeText}`}>Size: {prod.size}</span>
+                                        <button
+                                          onClick={(e) => handleOpenDetails(e, prod)}
+                                          className={`text-xs mt-1 text-left cursor-pointer z-10 block w-max font-medium transition-colors ${dm.moreDetails}`}
+                                        >
+                                          More details →
+                                        </button>
+                                      </div>
                                     </div>
-                                  </div>
-                                );
-                              })}
-                            </div>
-                          ) : (
-                            <div className="grid grid-cols-3 gap-2">
-                              {categoryProducts.map((prod) => {
-                                const isFavorite = favoriteProducts.includes(prod.id);
-                                const isSelected = isCompareMode
-                                  ? (activeCompareSide === 'left' ? compareLeftProduct?.id === prod.id : compareRightProduct?.id === prod.id)
-                                  : selectedProduct.id === prod.id;
-                                return (
-                                  <div
-                                    key={prod.id}
-                                    onClick={() => handleTileSelection(prod)}
-                                    className={`relative aspect-square rounded overflow-hidden cursor-pointer border-2 transition-all duration-300 bg-white ${isSelected ? 'border-[#0b5e5e] shadow-lg transform scale-105 z-10' : 'border-transparent hover:border-gray-200 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:scale-105'}`}
-                                  >
-                                    <button onClick={(e) => toggleFavorite(e, prod.id)} className="absolute top-1.5 right-1.5 p-1 bg-white/70 backdrop-blur-sm rounded-full z-20 cursor-pointer shadow-sm">
-                                      <svg width="14" height="14" viewBox="0 0 24 24" fill={isFavorite ? "#ef4444" : "none"} stroke={isFavorite ? "#ef4444" : "#6b7280"} strokeWidth="2" className="transition-colors hover:scale-110">
-                                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                                      </svg>
-                                    </button>
-                                    <img src={prod.img} alt={prod.name} className="w-full h-full object-cover bg-gray-100" />
-                                  </div>
-                                );
-                              })}
-                            </div>
-                          )}
+                                  );
+                                })}
+                              </div>
+                            ) : (
+                              <div className="grid grid-cols-3 gap-2">
+                                {categoryProducts.map((prod) => {
+                                  const isFavorite = favoriteProducts.includes(prod.id);
+                                  const isSelected = isCompareMode
+                                    ? (activeCompareSide === 'left' ? compareLeftProduct?.id === prod.id : compareRightProduct?.id === prod.id)
+                                    : selectedProduct.id === prod.id;
+                                  return (
+                                    <div
+                                      key={prod.id}
+                                      onClick={() => handleTileSelection(prod)}
+                                      className={`relative aspect-square rounded overflow-hidden cursor-pointer border-2 transition-all duration-300 bg-white ${isSelected ? 'border-[#0b5e5e] shadow-lg transform scale-105 z-10' : 'border-transparent hover:border-gray-200 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:scale-105'}`}
+                                    >
+                                      <button onClick={(e) => toggleFavorite(e, prod.id)} className="absolute top-1.5 right-1.5 p-1 bg-white/70 backdrop-blur-sm rounded-full z-20 cursor-pointer shadow-sm">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill={isFavorite ? "#ef4444" : "none"} stroke={isFavorite ? "#ef4444" : "#6b7280"} strokeWidth="2" className="transition-colors hover:scale-110">
+                                          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                        </svg>
+                                      </button>
+                                      <img src={prod.img} alt={prod.name} className="w-full h-full object-cover bg-gray-100" />
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            )}
+                          </div>
                         </div>
-                      )}
+                      </div>
                     </div>
                   );
                 })}
