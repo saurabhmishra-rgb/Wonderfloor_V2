@@ -13,7 +13,7 @@ import SidebarNavTabs from './SidebarNavTabs';
 
 
 // const PYTHON_BACKEND_URL = 'http://127.0.0.1:8000';
-   const NODE_BACKEND_URL = 'https://wonderfloor-dashboard.vercel.app'
+const NODE_BACKEND_URL = 'https://wonderfloor-dashboard.vercel.app'
 // const BACKEND_URL = 'https://wonderfloor-backend-1.onrender.com';
 const PYTHON_BACKEND_URL = 'https://python-floor-backend.onrender.com';
 
@@ -185,65 +185,70 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
   const { productId } = useParams(); // <-- NEW CLEAN URL EXTRACTOR
   const navigate = useNavigate();
 
-const [combinedProducts, setCombinedProducts] = useState([...ALL_PRODUCTS]);
+  const [combinedProducts, setCombinedProducts] = useState([...ALL_PRODUCTS]);
 
 
-// ── 2. NEW: FETCH PRODUCTS FROM MONGODB ──
-useEffect(() => {
-  async function fetchDatabaseProducts() {
-    try {
-      const response = await fetch(`${NODE_BACKEND_URL}/products`);
-      if (response.ok) {
-        const data = await response.json();
-        
-        // ✅ CORRECT CODE — single declaration
-const formattedProducts = data
-  .filter(prod => prod.isVisible !== false)
-  .map(prod => {
+  // ── 2. NEW: FETCH PRODUCTS FROM MONGODB ──
+  useEffect(() => {
+    async function fetchDatabaseProducts() {
+      try {
+        const response = await fetch(`${NODE_BACKEND_URL}/products`);
+        if (response.ok) {
+          const data = await response.json();
 
-    let translatedNav = prod.navCategory || '';
-    if (translatedNav === 'Flooring Products') {
-      translatedNav = 'flooring-products';
-    } else if (translatedNav === 'Luxury Vinyl Tile') {
-      translatedNav = 'luxury-vinyl-tile';
-    }
+          // ✅ CORRECT CODE — single declaration
+          const formattedProducts = data
+            .filter(prod => prod.isVisible !== false)
+            .map(prod => {
 
-   return {
-      id: prod._id,
-      navCategory: translatedNav,
-      accordionCategory: (prod.accordionCategory || '').trim(),
-      name: prod.name,
-      sku: (prod.sku || '').trim(),
-      size: prod.size,
-      img: prod.img,
-      colour: prod.colour,
-      shade: prod.shade,
-      collection: prod.collection || '',
-      category: prod.accordionCategory,
-      description: prod.description || '',
-      userIndustry: prod.userIndustry || [],
-      // NEW: Safely parse tags into an array
-      tags: Array.isArray(prod.tags) 
-              ? prod.tags 
-              : (typeof prod.tags === 'string' ? prod.tags.split(',').map(t => t.trim()) : []),
-    };
-  });
-        // Merge and update the bucket!
-        setCombinedProducts([...ALL_PRODUCTS, ...formattedProducts]);
+              let translatedNav = prod.navCategory || '';
+              if (translatedNav === 'Flooring Products') {
+                translatedNav = 'flooring-products';
+              } else if (translatedNav === 'Luxury Vinyl Tile') {
+                translatedNav = 'luxury-vinyl-tile';
+              }
+
+              return {
+                id: prod._id,
+                navCategory: translatedNav,
+                accordionCategory: (prod.accordionCategory || '').trim(),
+                name: prod.name,
+                sku: (prod.sku || '').trim(),
+                size: prod.size,
+                img: prod.img,
+                colour: prod.colour,
+                shade: prod.shade,
+                collection: prod.collection || '',
+                category: prod.accordionCategory,
+                description: prod.description || '',
+                userIndustry: prod.userIndustry || [],
+                // NEW: Safely parse tags into an array
+                tags: Array.isArray(prod.tags)
+                  ? prod.tags
+                  : (typeof prod.tags === 'string' ? prod.tags.split(',').map(t => t.trim()) : []),
+                // ── NEW ──────────────────────────────────────────
+                thickness: prod.thickness || '',
+                style: prod.style || '',
+                productLink: prod.productLink || '',
+                pattern: prod.pattern || '',
+              };
+            });
+          // Merge and update the bucket!
+          setCombinedProducts([...ALL_PRODUCTS, ...formattedProducts]);
+        }
+      } catch (error) {
+        console.error("Failed to fetch dynamic products:", error);
       }
-    } catch (error) {
-      console.error("Failed to fetch dynamic products:", error);
     }
-  }
-  fetchDatabaseProducts();
-}, []);
+    fetchDatabaseProducts();
+  }, []);
 
 
   const [initialPinchDist, setInitialPinchDist] = useState(null);
   const [uploadedRoom, setUploadedRoom] = useState(null);
 
   const [activeNavCategory, setActiveNavCategory] = useState('flooring-products');
- // Dynamically extracts unique categories so newly created admin collections appear automatically!
+  // Dynamically extracts unique categories so newly created admin collections appear automatically!
   const productCategories = Array.from(new Set(
     combinedProducts
       .filter(p => p.navCategory === activeNavCategory)
@@ -251,30 +256,30 @@ const formattedProducts = data
   ));
 
   // 2. READ URL DIRECTLY INTO INITIAL STATE
-const [selectedProduct, setSelectedProduct] = useState(() => {
-  // Priority 1: Explicitly clicked History Item
-  if (initialImage?.historyEntryId && initialImage?.lastProduct) {
-    const match = combinedProducts.find(p => p.id === initialImage.lastProduct.id);
-    if (match) return match;
-  }
+  const [selectedProduct, setSelectedProduct] = useState(() => {
+    // Priority 1: Explicitly clicked History Item
+    if (initialImage?.historyEntryId && initialImage?.lastProduct) {
+      const match = combinedProducts.find(p => p.id === initialImage.lastProduct.id);
+      if (match) return match;
+    }
 
-  // Priority 2: URL param 
-  if (productId) {
-    const decodedSku = decodeURIComponent(productId);
-    const matchedProduct = combinedProducts.find(p => p.sku === decodedSku);
-    if (matchedProduct) return matchedProduct;
-  }
+    // Priority 2: URL param 
+    if (productId) {
+      const decodedSku = decodeURIComponent(productId);
+      const matchedProduct = combinedProducts.find(p => p.sku === decodedSku);
+      if (matchedProduct) return matchedProduct;
+    }
 
-  // Priority 3: General last used tile
-  if (initialImage?.lastProduct) {
-    const match = combinedProducts.find(p => p.id === initialImage.lastProduct.id);
-    if (match) return match;
-  }
+    // Priority 3: General last used tile
+    if (initialImage?.lastProduct) {
+      const match = combinedProducts.find(p => p.id === initialImage.lastProduct.id);
+      if (match) return match;
+    }
 
-  // Priority 4: Fallback
-  const savedProduct = localStorage.getItem('savedSelectedProduct');
-  return savedProduct ? JSON.parse(savedProduct) : combinedProducts[0];
-});
+    // Priority 4: Fallback
+    const savedProduct = localStorage.getItem('savedSelectedProduct');
+    return savedProduct ? JSON.parse(savedProduct) : combinedProducts[0];
+  });
 
 
   // ── NEW: WATCH FOR DB PRODUCTS ON INITIAL LOAD FROM URL ──
@@ -397,7 +402,7 @@ const [selectedProduct, setSelectedProduct] = useState(() => {
   const [viewMode, setViewMode] = useState('list');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-// NEW: Track accordions manually closed during a search
+  // NEW: Track accordions manually closed during a search
   const [collapsedDuringSearch, setCollapsedDuringSearch] = useState([]);
   useEffect(() => {
     // Reset the collapsed list when typing a new search so all results auto-expand again
@@ -967,14 +972,47 @@ const [selectedProduct, setSelectedProduct] = useState(() => {
     setIsShareMenuOpen(false);
   };
 
-  const filterCategories = [
-    { id: 'accordionCategory', label: 'Product Collections', options: ['Braavo', 'Krayons', 'Durofloor', 'Siggma', 'Orbit', 'Stoneland Monza', 'Meteor', 'Aventus'] },
-    { id: 'colour', label: 'Colour Family', options: ['Grey', 'cherry-red', 'neo-silver', 'Beige', 'Brown', 'Black', 'White', 'Blue', 'Green', 'Lemon', 'Orange', 'Purple', 'Cherry', 'Pink'] },
-    { id: 'shade', label: 'Shade', options: ['Light', 'Medium', 'Dark'] },
-    { id: 'userIndustry', label: 'Application Area', options: ['Industrial Flooring', 'Office Flooring', 'Residential Flooring', 'School Flooring', 'Sports Flooring', 'Hotel/ Hospitality Flooring'] },
-    { id: 'Pattern/Layout', label: 'Pattern/ Layout', options: ['Herringbone'] },
-    { id: 'collection', label: 'Style', options: ['Wood', 'Stone', 'Non Directional'] },
-  ];
+ const filterCategories = [
+  {
+    id: 'accordionCategory',
+    label: 'Product Collections',
+    options: ['Braavo', 'Krayons', 'Durofloor', 'Siggma', 'Orbit',
+              'Stoneland Monza', 'Meteor', 'Aventus'],
+  },
+  {
+    id: 'colour',
+    label: 'Colour Family',
+    options: ['Grey', 'Beige', 'Brown', 'Black', 'White',
+              'Blue', 'Green', 'Orange', 'Purple', 'Pink'],
+  },
+  {
+    id: 'shade',
+    label: 'Shade',
+    options: ['Light', 'Medium', 'Dark'],
+  },
+  {
+    id: 'thickness',
+    label: 'Thickness',
+    options: ['1.0mm', '1.5mm', '2.0mm', '2.5mm', '3.0mm', '3.5mm', '4.0mm', '5.0mm'],
+  },
+  {
+    id: 'style',
+    label: 'Style',
+    options: ['Homogeneous Flooring', 'Cushion Vinyl', 'Heterogeneous Flooring',
+              'SPC Flooring', 'WPC Flooring', 'Printed Vinyl'],
+  },
+  {
+    id: 'pattern',
+    label: 'Pattern / Layout',
+    options: ['Non-Directional', 'Directional', 'Herringbone', 'Random', 'Linear'],
+  },
+  {
+    id: 'userIndustry',
+    label: 'Application Area',
+    options: ['Industrial Flooring', 'Office Flooring', 'Residential Flooring',
+              'School Flooring', 'Sports Flooring', 'Hotel/ Hospitality Flooring'],
+  },
+];
 
   const handleToggleFilter = (categoryId, option) => {
     setActiveFilters(prev => {
@@ -986,16 +1024,16 @@ const [selectedProduct, setSelectedProduct] = useState(() => {
 
   const clearFilters = () => setActiveFilters({});
   // Filter Logic
- const navProducts = combinedProducts.filter(p => p.navCategory === activeNavCategory);
+  const navProducts = combinedProducts.filter(p => p.navCategory === activeNavCategory);
   console.log('activeNavCategory:', activeNavCategory);
   console.log('navProducts count:', navProducts.length);
   console.log('ALL_PRODUCTS count:', ALL_PRODUCTS.length);
 
   // ── FILTER LOGIC: APPLIES GLOBALLY ACROSS ALL PRODUCTS ──
-// ── FILTER LOGIC ──
-const filteredProducts = combinedProducts.filter(prod => {
+  // ── FILTER LOGIC ──
+  const filteredProducts = combinedProducts.filter(prod => {
     const searchLower = searchQuery.trim().toLowerCase();
-    
+
     // ✅ Safe navigation using optional chaining (?.) prevents crashes on undefined fields
     const matchesSearch = searchLower === '' ||
       (prod.name && prod.name.toLowerCase().includes(searchLower)) ||
@@ -1018,7 +1056,7 @@ const filteredProducts = combinedProducts.filter(prod => {
     });
 
     return matchesSearch && matchesFilters;
-});
+  });
 
   // Isolate filtered results matching the current tab category
   const currentTabFilteredProducts = filteredProducts.filter(p => p.navCategory === activeNavCategory);
@@ -1087,7 +1125,7 @@ const filteredProducts = combinedProducts.filter(prod => {
   ${isImmersiveMode ? 'md:hidden' : ''}
   ${dm.sidebar}`}>
 
-      {isFavoritesViewOpen ? (
+        {isFavoritesViewOpen ? (
           <FavoritesView
             favoriteIds={favoriteProducts}
             allProducts={combinedProducts}  // <--- Updated to the Single Source of Truth
@@ -1460,22 +1498,22 @@ const filteredProducts = combinedProducts.filter(prod => {
                     );
                   }
                   if (categoryProducts.length === 0) return null;
-                {/* Change filteredProducts.length to currentTabFilteredProducts.length */ }
+                  {/* Change filteredProducts.length to currentTabFilteredProducts.length */ }
                   {
                     currentTabFilteredProducts.length === 0 && (
                       <div className="text-center text-gray-500 py-8 text-sm">No products match your search or filters.</div>
                     )
                   }
-                  
+
                   // NEW ACCORDION LOGIC
                   const isSearching = searchQuery.trim().length > 0;
-                  const isExpanded = isSearching 
+                  const isExpanded = isSearching
                     ? !collapsedDuringSearch.includes(categoryName) // Auto-open on search, unless explicitly closed
                     : expandedProductCategory === categoryName;     // Normal accordion behavior
 
                   const handleAccordionToggle = () => {
                     if (isSearching) {
-                      setCollapsedDuringSearch(prev => 
+                      setCollapsedDuringSearch(prev =>
                         isExpanded ? [...prev, categoryName] : prev.filter(c => c !== categoryName)
                       );
                     } else {
@@ -1677,7 +1715,7 @@ const filteredProducts = combinedProducts.filter(prod => {
                         currentSrc={downloadImageUrl || currentSrc}
                         compositeRef={!isSafari && activeBaseImage?.maskUrl ? compositeRef : null}
                         onClose={() => setIsDownloadMenuOpen(false)}
-                        
+
                       />
                     </div>
                   )}
@@ -1953,7 +1991,7 @@ const filteredProducts = combinedProducts.filter(prod => {
                   ))}
                 </div>
                 <div className="flex overflow-x-auto gap-3 py-1 items-center [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-                 {combinedProducts.filter(p => p.navCategory === activeNavCategory && p.accordionCategory === activeFooterCategory).map(prod => {
+                  {combinedProducts.filter(p => p.navCategory === activeNavCategory && p.accordionCategory === activeFooterCategory).map(prod => {
                     const isSelected = selectedProduct.id === prod.id;
                     return (
                       <div
@@ -2021,32 +2059,44 @@ const filteredProducts = combinedProducts.filter(prod => {
                 <div className="border-t border-gray-200 flex flex-col">
                   {[
                     { label: 'SKU', value: detailsProduct.sku || detailsProduct.name },
-                    { label: 'Style', value: detailsProduct.collection },
-                    { label: 'Flooring Product', value: detailsProduct.category },
+                    { label: 'Collection', value: detailsProduct.accordionCategory },
                     { label: 'Colour', value: detailsProduct.colour },
                     { label: 'Shade', value: detailsProduct.shade },
+
+                    // ── NEW ──────────────────────────────────────────
+                    { label: 'Thickness', value: detailsProduct.thickness },
+                    { label: 'Style', value: detailsProduct.style },
+                    { label: 'Pattern / Layout', value: detailsProduct.pattern },
+                    // ─────────────────────────────────────────────────
+
                     {
                       label: 'Application Area',
-                      // If it's an array, join values visually with a comma, else fallback to direct display
                       value: Array.isArray(detailsProduct.userIndustry)
                         ? detailsProduct.userIndustry.join(', ')
-                        : detailsProduct.userIndustry
+                        : detailsProduct.userIndustry,
                     },
-                  ].map(({ label, value }) => (
-                    <div key={label} className="flex py-3 sm:py-4 border-b border-gray-100 items-center">
-                      <span className="w-1/3 text-sm text-gray-500 font-medium">{label}</span>
-                      <span className="w-2/3 text-sm font-bold text-gray-900">{value}</span>
-                    </div>
-                  ))}
+                  ].filter(row => row.value)   // ← hides blank rows for products that predate the new fields
+                    .map(({ label, value }) => (
+                      <div key={label} className="flex py-3 sm:py-4 border-b border-gray-100 items-center">
+                        <span className="w-1/3 text-sm text-gray-500 font-medium">{label}</span>
+                        <span className="w-2/3 text-sm font-bold text-gray-900">{value}</span>
+                      </div>
+                    ))}
                 </div>
               </div>
             </div>
             <div className="p-4 sm:p-5 border-t border-gray-200 bg-gray-50 flex flex-col sm:flex-row justify-between items-center gap-4 shrink-0">
               <a
                 href={detailsProduct.url}
+                href={detailsProduct.productLink || '#'}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-[#0b5e5e] hover:underline transition-colors w-full sm:w-auto justify-center sm:justify-start cursor-pointer"
+                // Also disable the link visually when there's no URL
+                className={`flex items-center gap-2 text-sm font-medium transition-colors w-full sm:w-auto justify-center sm:justify-start
+                 ${detailsProduct.productLink
+                    ? 'text-gray-600 hover:text-[#0b5e5e] hover:underline cursor-pointer'
+                    : 'text-gray-300 cursor-not-allowed pointer-events-none'}`}
+                onClick={e => !detailsProduct.productLink && e.preventDefault()}
               >
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                 Go to product page
