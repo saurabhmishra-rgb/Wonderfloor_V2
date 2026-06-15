@@ -1,5 +1,5 @@
 // ARVisualization.jsx
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import FavoritesView from './FavouritesView';
 import RoomUploader from './RoomUploader';
 import DownloadView from './DownloadView';
@@ -152,7 +152,48 @@ const CompareView = ({
 };
 
 
-
+// ── Place this OUTSIDE the ARVisualizer component (module-level constant) ──
+const BASE_FILTER_CATEGORIES = [
+  {
+    id: 'accordionCategory',
+    label: 'Product Collections',
+    options: ['Braavo', 'Krayons', 'Durofloor', 'Siggma', 'Orbit',
+      'Stoneland Monza', 'Meteor', 'Aventus'],
+  },
+  {
+    id: 'colour',
+    label: 'Colour Family',
+    options: ['Grey', 'Beige', 'Brown', 'Black', 'White',
+      'Blue', 'Green', 'Orange', 'Purple', 'Pink'],
+  },
+  {
+    id: 'shade',
+    label: 'Shade',
+    options: ['Light', 'Medium', 'Dark'],
+  },
+  {
+    id: 'thickness',
+    label: 'Thickness',
+    options: ['1.0mm', '1.5mm', '2.0mm', '2.5mm', '3.0mm', '3.5mm', '4.0mm', '5.0mm'],
+  },
+  {
+    id: 'style',
+    label: 'Style',
+    options: ['Homogeneous Flooring', 'Cushion Vinyl', 'Heterogeneous Flooring',
+      'SPC Flooring', 'WPC Flooring', 'Printed Vinyl'],
+  },
+  {
+    id: 'pattern',
+    label: 'Pattern / Layout',
+    options: ['Non-Directional', 'Directional', 'Herringbone', 'Random', 'Linear'],
+  },
+  {
+    id: 'userIndustry',
+    label: 'Application Area',
+    options: ['Industrial Flooring', 'Office Flooring', 'Residential Flooring',
+      'School Flooring', 'Sports Flooring', 'Hotel/ Hospitality Flooring'],
+  },
+];
 
 const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCount = 0, onProductChange, }) => {
   // Browser detector: True if Safari (Mac/iOS), False if Chrome/Edge/Windows
@@ -972,47 +1013,32 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
     setIsShareMenuOpen(false);
   };
 
-  const filterCategories = [
-    {
-      id: 'accordionCategory',
-      label: 'Product Collections',
-      options: ['Braavo', 'Krayons', 'Durofloor', 'Siggma', 'Orbit',
-        'Stoneland Monza', 'Meteor', 'Aventus'],
-    },
-    {
-      id: 'colour',
-      label: 'Colour Family',
-      options: ['Grey', 'Beige', 'Brown', 'Black', 'White',
-        'Blue', 'Green', 'Orange', 'Purple', 'Pink'],
-    },
-    {
-      id: 'shade',
-      label: 'Shade',
-      options: ['Light', 'Medium', 'Dark'],
-    },
-    {
-      id: 'thickness',
-      label: 'Thickness',
-      options: ['1.0mm', '1.5mm', '2.0mm', '2.5mm', '3.0mm', '3.5mm', '4.0mm', '5.0mm'],
-    },
-    {
-      id: 'style',
-      label: 'Style',
-      options: ['Homogeneous Flooring', 'Cushion Vinyl', 'Heterogeneous Flooring',
-        'SPC Flooring', 'WPC Flooring', 'Printed Vinyl'],
-    },
-    {
-      id: 'pattern',
-      label: 'Pattern / Layout',
-      options: ['Non-Directional', 'Directional', 'Herringbone', 'Random', 'Linear'],
-    },
-    {
-      id: 'userIndustry',
-      label: 'Application Area',
-      options: ['Industrial Flooring', 'Office Flooring', 'Residential Flooring',
-        'School Flooring', 'Sports Flooring', 'Hotel/ Hospitality Flooring'],
-    },
-  ];
+  //add filter option by dashboard when it is not available in ARVisualizer in filter if exist then it is not place inside filter option
+
+  const filterCategories = useMemo(() => {
+    return BASE_FILTER_CATEGORIES.map(category => {
+      const newOptions = new Set();
+
+      combinedProducts.forEach(prod => {
+        const value = prod[category.id];
+
+        if (Array.isArray(value)) {
+          value.forEach(v => {
+            if (v && !category.options.includes(v)) newOptions.add(v);
+          });
+        } else if (value && typeof value === 'string' && !category.options.includes(value)) {
+          newOptions.add(value);
+        }
+      });
+
+      return {
+        ...category,
+        options: newOptions.size > 0
+          ? [...category.options, ...newOptions]
+          : category.options,
+      };
+    });
+  }, [combinedProducts]);
 
   const handleToggleFilter = (categoryId, option) => {
     setActiveFilters(prev => {
@@ -1134,9 +1160,9 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
             onToggleFavorite={toggleFavorite}
           />
         ) : isFilterMenuOpen ? (
-          <div className={`flex flex-col h-full absolute inset-0 z-40 animate-fade-in
-            md:rounded-none rounded-t-3xl overflow-hidden transition-colors
-            ${isDarkMode ? 'bg-[#0f1b2d]' : 'bg-white'}`}>
+          <div className={`flex flex-col w-full h-full z-40 animate-fade-in
+    md:rounded-none rounded-t-3xl overflow-hidden transition-colors
+    ${isDarkMode ? 'bg-[#0f1b2d]' : 'bg-white'}`}>
 
             {/* ── HEADER ── */}
             <div className={`p-4 md:p-5 flex items-center gap-3 border-b shrink-0
@@ -1170,7 +1196,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
             </div>
 
             {/* ── SCROLLABLE BODY ── */}
-            <div className="flex-1 overflow-y-auto px-3 md:px-4 py-3 flex flex-col gap-1.5">
+            <div className="flex-1 overflow-y-auto min-h-0 px-3 md:px-4 py-3 flex flex-col gap-1.5">
 
               {/* Sort By Accordion */}
               {/* Sort By Accordion */}
@@ -1212,7 +1238,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
                       ].map(({ label, value }) => (
                         <label
                           key={value}
-                          className={`flex justify-between items-center px-3 py-2.5 rounded-lg cursor-pointer transition-all
+                          className={`relative flex justify-between items-center px-3 py-2.5 rounded-lg cursor-pointer transition-all
                             ${sortOrder === value
                               ? isDarkMode ? 'bg-teal-500/20 text-teal-300' : 'bg-[#0b5e5e]/10 text-[#0b5e5e]'
                               : isDarkMode ? 'text-gray-300 hover:bg-[#1a2d47] hover:text-white' : 'text-gray-700 hover:bg-gray-100'}`}
@@ -1281,8 +1307,8 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
                             return (
                               <label
                                 key={option}
-                                className={`flex justify-between items-center px-3 py-2.5 rounded-lg cursor-pointer transition-all
-                                  ${isChecked
+                                className={`relative flex justify-between items-center px-3 py-2.5 rounded-lg cursor-pointer transition-all
+    ${isChecked
                                     ? isDarkMode ? 'bg-teal-500/20 text-teal-300' : 'bg-[#0b5e5e]/10 text-[#0b5e5e]'
                                     : isDarkMode ? 'text-gray-300 hover:bg-[#1a2d47] hover:text-white' : 'text-gray-700 hover:bg-gray-100'}`}
                               >
@@ -1490,7 +1516,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
               </div>
             )}
 
-            <div className="flex-1 overflow-y-auto px-4 md:px-5 pb-5 pt-4 flex flex-col relative">
+            <div className="flex-1 overflow-y-auto min-h-0 px-4 md:px-5 pb-5 pt-4 flex flex-col relative">
               <div className="flex-1">
                 {displayCategories.map(categoryName => {
                   // Change filteredProducts to currentTabFilteredProducts
