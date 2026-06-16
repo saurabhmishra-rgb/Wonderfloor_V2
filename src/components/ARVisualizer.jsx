@@ -187,9 +187,9 @@ const BASE_FILTER_CATEGORIES = [
     label: 'Pattern / Layout',
     options: ['Non-Directional', 'Directional', 'Herringbone', 'Random', 'Linear'],
   },
-  {
+ {
     id: 'userIndustry',
-    label: 'Application Area',
+    label: 'User Industry',
     options: ['Industrial Flooring', 'Office Flooring', 'Residential Flooring',
       'School Flooring', 'Sports Flooring', 'Hotel/ Hospitality Flooring'],
   },
@@ -261,8 +261,9 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
                 shade: prod.shade,
                 collection: prod.collection || '',
                 category: prod.accordionCategory,
-                description: prod.description || '',
+               description: prod.description || '',
                 userIndustry: prod.userIndustry || [],
+                applicationArea: prod.applicationArea || [], // <-- ADD THIS LINE
                 // NEW: Safely parse tags into an array
                 tags: Array.isArray(prod.tags)
                   ? prod.tags
@@ -2110,11 +2111,17 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
                     { label: 'Pattern / Layout', value: detailsProduct.pattern },
                     // ─────────────────────────────────────────────────
 
-                    {
-                      label: 'Application Area',
+                   {
+                      label: 'User Industry',
                       value: Array.isArray(detailsProduct.userIndustry)
                         ? detailsProduct.userIndustry.join(', ')
                         : detailsProduct.userIndustry,
+                    },
+                    {
+                      label: 'Application Area',
+                      value: Array.isArray(detailsProduct.applicationArea)
+                        ? detailsProduct.applicationArea.join(', ')
+                        : detailsProduct.applicationArea,
                     },
                   ].filter(row => row.value)   // ← hides blank rows for products that predate the new fields
                     .map(({ label, value }) => (
