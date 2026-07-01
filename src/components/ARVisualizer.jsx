@@ -155,11 +155,16 @@ const CompareView = ({
 // ── Place this OUTSIDE the ARVisualizer component (module-level constant) ──
 const BASE_FILTER_CATEGORIES = [
   {
-    id: 'accordionCategory',
+  id: 'accordionCategory',
     label: 'Product Collections',
-    options: ['Braavo', 'Krayons', 'Durofloor', 'Siggma', 'Orbit',
-      'Stoneland Monza', 'Meteor', 'Aventus'],
+    options: [],
   },
+  // {
+  //   id: 'accordionCategory',
+  //   label: 'Product Collections',
+  //   options: ['Braavo', 'Krayons', 'Durofloor', 'Siggma', 'Orbit',
+  //     'Stoneland Monza', 'Meteor', 'Aventus'],
+  // },
   {
     id: 'colour',
     label: 'Colour Family',
@@ -174,7 +179,7 @@ const BASE_FILTER_CATEGORIES = [
   {
     id: 'thickness',
     label: 'Thickness',
-    options: ['1.0mm', '1.5mm', '2.0mm', '2.5mm', '3.0mm', '3.5mm', '4.0mm', '5.0mm'],
+    options: [''],
   },
   {
     id: 'style',
@@ -187,13 +192,44 @@ const BASE_FILTER_CATEGORIES = [
     label: 'Pattern / Layout',
     options: ['Non-Directional', 'Directional', 'Herringbone', 'Random', 'Linear'],
   },
- {
+  {
     id: 'userIndustry',
     label: 'User Industry',
     options: ['Industrial Flooring', 'Office Flooring', 'Residential Flooring',
       'School Flooring', 'Sports Flooring', 'Hotel/ Hospitality Flooring'],
   },
 ];
+
+// ✅ Standardize thickness variations uniformly (e.g., "2.0 mm")
+// Helper to clean up structural brackets, quotes, and format decimals evenly
+const normalizeThickness = (val) => {
+  if (val === undefined || val === null) return '';
+  
+  // ✅ Bulletproof fix: Removes [, ], ", and ' safely without character class escaping bugs
+  let cleaned = String(val)
+    .replace(/\[/g, '')
+    .replace(/\]/g, '')
+    .replace(/"/g, '')
+    .replace(/'/g, '')
+    .trim();
+  
+  // Extract the numeric portion
+  const numericMatch = cleaned.match(/[\d.]+/);
+  if (!numericMatch) return cleaned;
+  
+  const num = parseFloat(numericMatch[0]);
+  // Standardizes output formatting uniformly to one decimal spacing (e.g., "2.0 mm")
+  return `${num.toFixed(1)} mm`;
+};
+
+// ✅ Safely checks if a string or array field contains the search term
+const safeSearchMatch = (fieldValue, searchPattern) => {
+  if (!fieldValue) return false;
+  if (Array.isArray(fieldValue)) {
+    return fieldValue.some(val => String(val).toLowerCase().includes(searchPattern));
+  }
+  return String(fieldValue).toLowerCase().includes(searchPattern);
+};
 
 const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCount = 0, onProductChange, }) => {
   // Browser detector: True if Safari (Mac/iOS), False if Chrome/Edge/Windows
@@ -227,9 +263,10 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
   const navigate = useNavigate();
 
   const [combinedProducts, setCombinedProducts] = useState([...ALL_PRODUCTS]);
+  const [isLoadingDbProducts, setIsLoadingDbProducts] = useState(true);
 
 
-  // ── 2. NEW: FETCH PRODUCTS FROM MONGODB ──
+// ── 2. NEW: FETCH PRODUCTS FROM MONGODB ──
   useEffect(() => {
     async function fetchDatabaseProducts() {
       try {
@@ -237,9 +274,28 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
         if (response.ok) {
           const data = await response.json();
 
-          // ✅ CORRECT CODE — single declaration
+          // Optional: If your dashboard drag-and-drop hook saves to localStorage instead of the DB, 
+          // grab that array here. (Change 'drag_swap_order' to whatever key your hook uses).
+          // const localOrder = JSON.parse(localStorage.getItem('drag_swap_order')) || [];
+
+          // ✅ CORRECT CODE — Filter AND Sort before mapping!
+      // Grab the instant drag-and-drop memory from your dashboard
+          const savedProductOrder = JSON.parse(localStorage.getItem('pm_productOrder')) || [];
+
+          // ✅ CORRECT CODE — Filter AND Sort before mapping!
           const formattedProducts = data
             .filter(prod => prod.isVisible !== false)
+            .sort((a, b) => {
+                // Priority 1: Admin's instant local drag-and-drop memory
+                const idxA = savedProductOrder.indexOf(a._id);
+                const idxB = savedProductOrder.indexOf(b._id);
+                if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+                if (idxA !== -1) return -1;
+                if (idxB !== -1) return 1;
+
+                // Priority 2: Database order (uses 99999 so unsorted items go to the bottom)
+                return (a.order ?? 99999) - (b.order ?? 99999);
+            })
             .map(prod => {
 
               let translatedNav = prod.navCategory || '';
@@ -261,25 +317,27 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
                 shade: prod.shade,
                 collection: prod.collection || '',
                 category: prod.accordionCategory,
-               description: prod.description || '',
+                description: prod.description || '',
                 userIndustry: prod.userIndustry || [],
-                applicationArea: prod.applicationArea || [], // <-- ADD THIS LINE
-                // NEW: Safely parse tags into an array
+                applicationArea: prod.applicationArea || [],
                 tags: Array.isArray(prod.tags)
                   ? prod.tags
                   : (typeof prod.tags === 'string' ? prod.tags.split(',').map(t => t.trim()) : []),
-                // ── NEW ──────────────────────────────────────────
                 thickness: prod.thickness || '',
                 style: prod.style || '',
                 productLink: prod.productLink || '',
                 pattern: prod.pattern || '',
+                collectionTierOrder: prod.collectionTierOrder || 0,
               };
             });
+            
           // Merge and update the bucket!
           setCombinedProducts([...ALL_PRODUCTS, ...formattedProducts]);
+          setIsLoadingDbProducts(false); // ← DB products are now ready
         }
       } catch (error) {
         console.error("Failed to fetch dynamic products:", error);
+        setIsLoadingDbProducts(false); // ← still unblock UI on failure
       }
     }
     fetchDatabaseProducts();
@@ -291,11 +349,15 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
 
   const [activeNavCategory, setActiveNavCategory] = useState('flooring-products');
   // Dynamically extracts unique categories so newly created admin collections appear automatically!
-  const productCategories = Array.from(new Set(
-    combinedProducts
-      .filter(p => p.navCategory === activeNavCategory)
-      .map(p => p.accordionCategory)
-  ));
+  // const productCategories = Array.from(new Set(
+  //   combinedProducts
+  //     .filter(p => p.navCategory === activeNavCategory)
+  //     // Only show accordion categories the room supports
+  //     .filter(p =>
+  //       !hasRoomFilter || roomSupportedCollections.includes(p.accordionCategory)
+  //     )
+  //     .map(p => p.accordionCategory)
+  // ));
 
   // 2. READ URL DIRECTLY INTO INITIAL STATE
   const [selectedProduct, setSelectedProduct] = useState(() => {
@@ -457,7 +519,30 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
 
   const imageContainerRef = useRef(null);
   const activeBaseImage = uploadedRoom || initialImage;
-  const currentSrc = processedImage || activeBaseImage?.previewUrl || 'https://images.unsplash.com/photo-1595844730298-b960fa25fa48?auto=format&fit=crop&w=1200&q=80';
+
+  // ── Room-level collection gate ──
+  // DB rooms carry supportedCollections from UploadRoomModal admin selection
+  // Static demo rooms carry it from their hardcoded `product` array
+  // User-uploaded rooms have [] so no filter is applied
+  const roomSupportedCollections = activeBaseImage?.supportedCollections || [];
+const hasRoomFilter = roomSupportedCollections.length > 0;
+
+// ── Moved here so hasRoomFilter is already defined ──
+const productCategories = Array.from(new Set(
+  combinedProducts
+    .filter(p => p.navCategory === activeNavCategory)
+    .filter(p => {
+      // Track if the user is actively searching
+      const isSearching = searchQuery.trim().length > 0;
+      const isExplicitlyFiltered = activeFilters['accordionCategory']?.includes(p.accordionCategory);
+      
+      // ✅ UPDATED: Include "|| isSearching" so the accordion shows up during global searches
+      return !hasRoomFilter || roomSupportedCollections.includes(p.accordionCategory) || isExplicitlyFiltered || isSearching;
+    })
+    .map(p => p.accordionCategory)
+));
+
+const currentSrc = processedImage || activeBaseImage?.previewUrl || 'https://images.unsplash.com/photo-1595844730298-b960fa25fa48?auto=format&fit=crop&w=1200&q=80';
   useEffect(() => {
     // For 3D rooms (maskUrl), your existing visualizerInstance hook already handles it.
     // For 2D rooms (rawFile), we need to trigger the python backend once the image is ready.
@@ -478,6 +563,25 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
       setExpandedProductCategory(selectedProduct.accordionCategory);
     }
   }, [selectedProduct]);
+
+  // ── NEW: If the active product is outside the room's filter,
+  //         auto-switch to the first available product ──
+  useEffect(() => {
+    if (!hasRoomFilter || isLoadingDbProducts) return;
+    const isCurrentProductAllowed = roomSupportedCollections.includes(
+      selectedProduct?.accordionCategory
+    );
+    if (!isCurrentProductAllowed) {
+      const firstAllowed = combinedProducts.find(p =>
+        roomSupportedCollections.includes(p.accordionCategory)
+      );
+      if (firstAllowed) {
+        setSelectedProduct(firstAllowed);
+        applyFloorOverlay(firstAllowed, 0);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasRoomFilter, isLoadingDbProducts, roomSupportedCollections]);
 
   useEffect(() => {
     const container = imageContainerRef.current;
@@ -1015,37 +1119,69 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
   };
 
   //add filter option by dashboard when it is not available in ARVisualizer in filter if exist then it is not place inside filter option
+// ✅ DYNAMIC FILTER GENERATION WITH COMPLETE DE-DUPLICATION
+const filterCategories = useMemo(() => {
+  return BASE_FILTER_CATEGORIES.map(category => {
+    // 1. Create a unified Set to house unique parsed variations
+    const uniqueOptionsSet = new Set();
 
-  const filterCategories = useMemo(() => {
-    return BASE_FILTER_CATEGORIES.map(category => {
-      const newOptions = new Set();
-
-      combinedProducts.forEach(prod => {
-        const value = prod[category.id];
-
-        if (Array.isArray(value)) {
-          value.forEach(v => {
-            if (v && !category.options.includes(v)) newOptions.add(v);
-          });
-        } else if (value && typeof value === 'string' && !category.options.includes(value)) {
-          newOptions.add(value);
+    // 2. Process predefined static configuration elements (skip empty markers)
+    if (Array.isArray(category.options)) {
+      category.options.forEach(opt => {
+        if (opt !== undefined && opt !== null) {
+          const cleaned = String(opt).trim();
+          if (cleaned !== '') uniqueOptionsSet.add(cleaned);
         }
       });
+    }
 
-      return {
-        ...category,
-        options: newOptions.size > 0
-          ? [...category.options, ...newOptions]
-          : category.options,
-      };
+    // 3. Extract and normalize dynamic entries from product lists
+    combinedProducts.forEach(prod => {
+      const value = prod[category.id];
+
+      if (Array.isArray(value)) {
+        value.forEach(v => {
+          if (v !== undefined && v !== null) {
+            const cleaned = String(v).trim();
+            if (cleaned !== '') uniqueOptionsSet.add(cleaned);
+          }
+        });
+      } else if (value !== undefined && value !== null) {
+        const cleaned = String(value).trim();
+        if (cleaned !== '') uniqueOptionsSet.add(cleaned);
+      }
     });
-  }, [combinedProducts]);
 
-  const handleToggleFilter = (categoryId, option) => {
+    // 4. Human-friendly alphanumeric sort (Handles "1.5mm", "2mm", "10mm" properly)
+    const sortedOptions = Array.from(uniqueOptionsSet).sort((a, b) => {
+      return a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' });
+    });
+
+    return {
+      ...category,
+      options: sortedOptions,
+    };
+  });
+}, [combinedProducts]);// Removed room dependencies so the filter menu is always full
+ 
+
+const handleToggleFilter = (categoryId, option) => {
     setActiveFilters(prev => {
       const currentSelected = prev[categoryId] || [];
-      if (currentSelected.includes(option)) return { ...prev, [categoryId]: currentSelected.filter(item => item !== option) };
-      else return { ...prev, [categoryId]: [...currentSelected, option] };
+      const isRemoving = currentSelected.includes(option);
+
+      // ── NEW LOGIC: Auto-open the accordion when selected in the filter ──
+      if (categoryId === 'accordionCategory' && !isRemoving) {
+        setExpandedProductCategory(option); // Opens the accordion
+        setActiveFooterCategory(option);    // Syncs the mobile bottom bar
+      }
+      // ────────────────────────────────────────────────────────────────────
+
+      if (isRemoving) {
+        return { ...prev, [categoryId]: currentSelected.filter(item => item !== option) };
+      } else {
+        return { ...prev, [categoryId]: [...currentSelected, option] };
+      }
     });
   };
 
@@ -1057,43 +1193,81 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
   console.log('ALL_PRODUCTS count:', ALL_PRODUCTS.length);
 
   // ── FILTER LOGIC: APPLIES GLOBALLY ACROSS ALL PRODUCTS ──
-  // ── FILTER LOGIC ──
-  const filteredProducts = combinedProducts.filter(prod => {
-    const searchLower = searchQuery.trim().toLowerCase();
+// ── FILTER LOGIC ──
+const filteredProducts = combinedProducts.filter(prod => {
+  const searchLower = searchQuery.trim().toLowerCase();
+  const isSearching = searchLower !== ''; // Check if search bar has input
 
-    // ✅ Safe navigation using optional chaining (?.) prevents crashes on undefined fields
-    const matchesSearch = searchLower === '' ||
-      (prod.name && prod.name.toLowerCase().includes(searchLower)) ||
-      (prod.accordionCategory && prod.accordionCategory.toLowerCase().includes(searchLower)) ||
-      (prod.collection && prod.collection.toLowerCase().includes(searchLower)) ||
-      (prod.category && prod.category.toLowerCase().includes(searchLower)) ||
-      (prod.colour && prod.colour.toLowerCase().includes(searchLower)) ||
-      // NEW: Check if the search query matches any of our custom tags
-      (prod.tags && prod.tags.some(tag => tag.toLowerCase().includes(searchLower)));
+  const isExplicitlyFiltered = activeFilters['accordionCategory']?.includes(prod.accordionCategory);
+  
+  // Bypasses background room restriction layers when actively typing a search query
+  if (hasRoomFilter && !roomSupportedCollections.includes(prod.accordionCategory) && !isExplicitlyFiltered && !isSearching) {
+    return false;
+  }
 
-    const matchesFilters = Object.entries(activeFilters).every(([key, selectedValues]) => {
-      if (selectedValues.length === 0) return true;
-      if (!prod[key]) return false;
+  // ✅ UPDATED: Comprehensive matching engine across ALL metadata properties
+  const matchesSearch = searchLower === '' ||
+    safeSearchMatch(prod.name, searchLower) ||
+    safeSearchMatch(prod.accordionCategory, searchLower) ||
+    safeSearchMatch(prod.collection, searchLower) ||
+    safeSearchMatch(prod.colour, searchLower) ||
+    safeSearchMatch(prod.shade, searchLower) ||
+    safeSearchMatch(prod.style, searchLower) ||
+    safeSearchMatch(prod.pattern, searchLower) ||
+    safeSearchMatch(prod.thickness, searchLower) || 
+    safeSearchMatch(normalizeThickness(prod.thickness), searchLower) || // Matches normalized formats like "2.0 mm"
+    safeSearchMatch(prod.userIndustry, searchLower) ||
+    safeSearchMatch(prod.applicationArea, searchLower) ||
+    (prod.tags && prod.tags.some(tag => tag.toLowerCase().includes(searchLower)));
 
-      if (Array.isArray(prod[key])) {
-        return selectedValues.some(val => prod[key].includes(val));
+  const matchesFilters = Object.entries(activeFilters).every(([key, selectedValues]) => {
+    if (selectedValues.length === 0) return true;
+    if (!prod[key]) return false;
+
+    // Standardize filter evaluations for thickness variations
+    if (key === 'thickness') {
+      const rawValue = prod.thickness;
+      if (Array.isArray(rawValue)) {
+        return rawValue.some(v => selectedValues.includes(normalizeThickness(v)));
       }
+      return selectedValues.includes(normalizeThickness(rawValue));
+    }
 
-      return selectedValues.includes(prod[key]);
-    });
-
-    return matchesSearch && matchesFilters;
+    if (Array.isArray(prod[key])) {
+      return selectedValues.some(val => prod[key].includes(val));
+    }
+    return selectedValues.includes(prod[key]);
   });
 
+  return matchesSearch && matchesFilters;
+});
   // Isolate filtered results matching the current tab category
   const currentTabFilteredProducts = filteredProducts.filter(p => p.navCategory === activeNavCategory);
 
-  const displayCategories = [...productCategories].sort((a, b) => {
-    if (sortOrder === 'Cat-A-Z') return a.localeCompare(b);
-    if (sortOrder === 'Cat-Z-A') return b.localeCompare(a);
-    return 0;
-  });
+const displayCategories = [...productCategories].sort((a, b) => {
+  // Manual sort overrides everything
+  if (sortOrder === 'Cat-A-Z') return a.localeCompare(b);
+  if (sortOrder === 'Cat-Z-A') return b.localeCompare(a);
 
+  // ── NEW: If the room has an ordered collection list, respect that order ──
+  if (hasRoomFilter) {
+    const idxA = roomSupportedCollections.indexOf(a);
+    const idxB = roomSupportedCollections.indexOf(b);
+    // Both found → sort by selection order
+    if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+    // Only one found → put the found one first
+    if (idxA !== -1) return -1;
+    if (idxB !== -1) return 1;
+    // Neither found (e.g. explicit filter override) → fall through
+  }
+
+  // Fallback: global collectionTierOrder from DB
+  const prodA = combinedProducts.find(p => p.accordionCategory === a);
+  const prodB = combinedProducts.find(p => p.accordionCategory === b);
+  const tierA = prodA?.collectionTierOrder ?? 999;
+  const tierB = prodB?.collectionTierOrder ?? 999;
+  return tierA - tierB;
+});
   const totalActiveFiltersCount = Object.values(activeFilters).reduce((acc, curr) => acc + curr.length, 0);
   const dm = {
     root: isDarkMode ? 'bg-[#0f172a] text-gray-100' : 'bg-[#f9fafb] text-gray-800',
@@ -1488,7 +1662,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
                 <div className="mt-3 animate-fade-in">
                   <input
                     type="text"
-                    placeholder="Search products, collections, colors..."
+                    placeholder="Search any..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className={`w-full h-10 border rounded px-3 text-[16px] md:text-sm focus:outline-none focus:border-[#0b5e5e] focus:ring-1 focus:ring-[#0b5e5e] transition-colors ${dm.input}`}
@@ -1519,6 +1693,31 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
 
             <div className="flex-1 overflow-y-auto min-h-0 px-4 md:px-5 pb-5 pt-4 flex flex-col relative">
               <div className="flex-1">
+
+                {/* ── Loading state: DB products not yet fetched ── */}
+                {isLoadingDbProducts && productCategories.length === 0 && (
+                  <div className="flex flex-col gap-3 animate-pulse">
+                    {[1, 2, 3].map(n => (
+                      <div key={n} className={`h-11 rounded-lg ${isDarkMode ? 'bg-[#243447]' : 'bg-gray-100'}`} />
+                    ))}
+                    <p className={`text-xs text-center mt-2 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                      Loading products…
+                    </p>
+                  </div>
+                )}
+
+                {/* ── Empty state: DB loaded but room has no matching products ── */}
+                {!isLoadingDbProducts && productCategories.length === 0 && hasRoomFilter && (
+                  <div className={`flex flex-col items-center justify-center py-10 px-4 text-center rounded-xl border border-dashed gap-3
+        ${isDarkMode ? 'border-[#334155] text-gray-400' : 'border-gray-200 text-gray-400'}`}>
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="opacity-40">
+                      <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
+                    </svg>
+                    <p className="text-sm font-medium">No products assigned to this room.</p>
+                    <p className="text-xs opacity-70">Contact your admin to add collections.</p>
+                  </div>
+                )}
+
                 {displayCategories.map(categoryName => {
                   // Change filteredProducts to currentTabFilteredProducts
                   let categoryProducts = currentTabFilteredProducts.filter(
@@ -2033,26 +2232,33 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
                   ))}
                 </div>
                 <div className="flex overflow-x-auto gap-3 py-1 items-center [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-                  {combinedProducts.filter(p => p.navCategory === activeNavCategory && p.accordionCategory === activeFooterCategory).map(prod => {
-                    const isSelected = selectedProduct.id === prod.id;
-                    return (
-                      <div
-                        key={prod.id}
-                        onClick={(e) => { e.stopPropagation(); handleTileSelection(prod); }}
-                        className={`relative shrink-0 w-12 h-12 md:w-14 md:h-14 rounded-md cursor-pointer border-2 transition-all duration-200 overflow-hidden ${isSelected ? 'border-[#0b5e5e] shadow-md scale-105 z-10' : 'border-transparent hover:border-gray-300'}`}
-                        title={prod.name}
-                      >
-                        <img src={prod.img} alt={prod.name} className="w-full h-full object-cover" />
-                        {isSelected && (
-                          <div className="absolute inset-0 bg-[#0b5e5e]/10 flex items-center justify-center">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" className="drop-shadow-md">
-                              <polyline points="20 6 9 17 4 12"></polyline>
-                            </svg>
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
+                  {combinedProducts
+                    .filter(p =>
+                      p.navCategory === activeNavCategory &&
+                      p.accordionCategory === activeFooterCategory &&
+                      // Apply same room-level gate to mobile strip
+                      (!hasRoomFilter || roomSupportedCollections.includes(p.accordionCategory))
+                    )
+                    .map(prod => {
+                      const isSelected = selectedProduct.id === prod.id;
+                      return (
+                        <div
+                          key={prod.id}
+                          onClick={(e) => { e.stopPropagation(); handleTileSelection(prod); }}
+                          className={`relative shrink-0 w-12 h-12 md:w-14 md:h-14 rounded-md cursor-pointer border-2 transition-all duration-200 overflow-hidden ${isSelected ? 'border-[#0b5e5e] shadow-md scale-105 z-10' : 'border-transparent hover:border-gray-300'}`}
+                          title={prod.name}
+                        >
+                          <img src={prod.img} alt={prod.name} className="w-full h-full object-cover" />
+                          {isSelected && (
+                            <div className="absolute inset-0 bg-[#0b5e5e]/10 flex items-center justify-center">
+                              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" className="drop-shadow-md">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                              </svg>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
                 </div>
               </div>
             </div>
@@ -2111,7 +2317,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
                     { label: 'Pattern / Layout', value: detailsProduct.pattern },
                     // ─────────────────────────────────────────────────
 
-                   {
+                    {
                       label: 'User Industry',
                       value: Array.isArray(detailsProduct.userIndustry)
                         ? detailsProduct.userIndustry.join(', ')
