@@ -222,6 +222,39 @@ const normalizeThickness = (val) => {
   return `${num.toFixed(1)} mm`;
 };
 
+// ✅ NEW HELPER: Safely parses stringified DB arrays like '["Grey", "White"]' into real arrays
+const parseFieldToArray = (val) => {
+  if (Array.isArray(val)) return val;
+  if (!val) return [];
+  if (typeof val === 'string') {
+    const trimmed = val.trim();
+    // Check if it's a stringified array from the database
+    if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
+      try {
+        // Replace single quotes with double quotes for valid JSON parsing
+        const parsed = JSON.parse(trimmed.replace(/'/g, '"'));
+        if (Array.isArray(parsed)) return parsed.map(String);
+      } catch (e) {
+        // Fallback: manually strip brackets and quotes
+        return trimmed
+          .replace(/^\[|\]$/g, '')
+          .split(',')
+          .map(s => s.replace(/["']/g, '').trim())
+          .filter(Boolean);
+      }
+    }
+    return [trimmed];
+  }
+  return [String(val)];
+};
+
+
+const formatDisplayValue = (val, isThickness = false) => {
+    const arr = parseFieldToArray(val);
+    if (isThickness) return arr.map(normalizeThickness).join(', ');
+    return arr.join(', ');
+};
+
 // ✅ Safely checks if a string or array field contains the search term
 const safeSearchMatch = (fieldValue, searchPattern) => {
   if (!fieldValue) return false;
@@ -1119,13 +1152,12 @@ const currentSrc = processedImage || activeBaseImage?.previewUrl || 'https://ima
   };
 
   //add filter option by dashboard when it is not available in ARVisualizer in filter if exist then it is not place inside filter option
-// ✅ DYNAMIC FILTER GENERATION WITH COMPLETE DE-DUPLICATION
+// ✅ DYNAMIC FILTER GENERATION WITH DE-DUPLICATION & CLEANING
 const filterCategories = useMemo(() => {
   return BASE_FILTER_CATEGORIES.map(category => {
-    // 1. Create a unified Set to house unique parsed variations
     const uniqueOptionsSet = new Set();
 
-    // 2. Process predefined static configuration elements (skip empty markers)
+    // 1. Process predefined static configuration elements
     if (Array.isArray(category.options)) {
       category.options.forEach(opt => {
         if (opt !== undefined && opt !== null) {
@@ -1135,24 +1167,24 @@ const filterCategories = useMemo(() => {
       });
     }
 
-    // 3. Extract and normalize dynamic entries from product lists
+    // 2. Extract and normalize dynamic entries from product lists
     combinedProducts.forEach(prod => {
-      const value = prod[category.id];
+      const rawValue = prod[category.id];
+      const valuesArray = parseFieldToArray(rawValue); // Parse messy strings safely
 
-      if (Array.isArray(value)) {
-        value.forEach(v => {
-          if (v !== undefined && v !== null) {
-            const cleaned = String(v).trim();
-            if (cleaned !== '') uniqueOptionsSet.add(cleaned);
+      valuesArray.forEach(v => {
+        if (v !== undefined && v !== null) {
+          let cleaned = String(v).trim();
+          // Apply uniform thickness formatting for the sidebar (e.g. 2.0 mm)
+          if (category.id === 'thickness') {
+            cleaned = normalizeThickness(cleaned);
           }
-        });
-      } else if (value !== undefined && value !== null) {
-        const cleaned = String(value).trim();
-        if (cleaned !== '') uniqueOptionsSet.add(cleaned);
-      }
+          if (cleaned !== '') uniqueOptionsSet.add(cleaned);
+        }
+      });
     });
 
-    // 4. Human-friendly alphanumeric sort (Handles "1.5mm", "2mm", "10mm" properly)
+    // 3. Human-friendly alphanumeric sort
     const sortedOptions = Array.from(uniqueOptionsSet).sort((a, b) => {
       return a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' });
     });
@@ -1220,23 +1252,25 @@ const filteredProducts = combinedProducts.filter(prod => {
     safeSearchMatch(prod.applicationArea, searchLower) ||
     (prod.tags && prod.tags.some(tag => tag.toLowerCase().includes(searchLower)));
 
+ // ✅ UPDATED: Comprehensive matching engine for filters
   const matchesFilters = Object.entries(activeFilters).every(([key, selectedValues]) => {
     if (selectedValues.length === 0) return true;
-    if (!prod[key]) return false;
+    
+    const rawValue = prod[key];
+    if (rawValue === undefined || rawValue === null) return false;
 
-    // Standardize filter evaluations for thickness variations
+    // Convert the database value into a clean array
+    let prodValues = parseFieldToArray(rawValue);
+
+    // Apply exact uniform formatting so it perfectly matches the selected sidebar filter
     if (key === 'thickness') {
-      const rawValue = prod.thickness;
-      if (Array.isArray(rawValue)) {
-        return rawValue.some(v => selectedValues.includes(normalizeThickness(v)));
-      }
-      return selectedValues.includes(normalizeThickness(rawValue));
+      prodValues = prodValues.map(normalizeThickness);
+    } else {
+      prodValues = prodValues.map(v => String(v).trim());
     }
 
-    if (Array.isArray(prod[key])) {
-      return selectedValues.some(val => prod[key].includes(val));
-    }
-    return selectedValues.includes(prod[key]);
+    // Check if the product has ANY of the selected filter values for this category
+    return selectedValues.some(selected => prodValues.includes(selected));
   });
 
   return matchesSearch && matchesFilters;
@@ -2304,39 +2338,25 @@ const displayCategories = [...productCategories].sort((a, b) => {
                   Specifications
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-400 transform rotate-180"><polyline points="18 15 12 9 6 15"></polyline></svg>
                 </h4>
-                <div className="border-t border-gray-200 flex flex-col">
-                  {[
-                    { label: 'SKU', value: detailsProduct.sku || detailsProduct.name },
-                    { label: 'Collection', value: detailsProduct.accordionCategory },
-                    { label: 'Colour', value: detailsProduct.colour },
-                    { label: 'Shade', value: detailsProduct.shade },
-
-                    // ── NEW ──────────────────────────────────────────
-                    { label: 'Thickness', value: detailsProduct.thickness },
-                    { label: 'Style', value: detailsProduct.style },
-                    { label: 'Pattern / Layout', value: detailsProduct.pattern },
-                    // ─────────────────────────────────────────────────
-
-                    {
-                      label: 'User Industry',
-                      value: Array.isArray(detailsProduct.userIndustry)
-                        ? detailsProduct.userIndustry.join(', ')
-                        : detailsProduct.userIndustry,
-                    },
-                    {
-                      label: 'Application Area',
-                      value: Array.isArray(detailsProduct.applicationArea)
-                        ? detailsProduct.applicationArea.join(', ')
-                        : detailsProduct.applicationArea,
-                    },
-                  ].filter(row => row.value)   // ← hides blank rows for products that predate the new fields
-                    .map(({ label, value }) => (
-                      <div key={label} className="flex py-3 sm:py-4 border-b border-gray-100 items-center">
-                        <span className="w-1/3 text-sm text-gray-500 font-medium">{label}</span>
-                        <span className="w-2/3 text-sm font-bold text-gray-900">{value}</span>
-                      </div>
-                    ))}
-                </div>
+               <div className="border-t border-gray-200 flex flex-col">
+  {[
+    { label: 'SKU', value: detailsProduct.sku || detailsProduct.name },
+    { label: 'Collection', value: detailsProduct.accordionCategory },
+    { label: 'Colour', value: formatDisplayValue(detailsProduct.colour) },
+    { label: 'Shade', value: formatDisplayValue(detailsProduct.shade) },
+    { label: 'Thickness', value: formatDisplayValue(detailsProduct.thickness, true) },
+    { label: 'Style', value: formatDisplayValue(detailsProduct.style) },
+    { label: 'Pattern / Layout', value: formatDisplayValue(detailsProduct.pattern) },
+    { label: 'User Industry', value: formatDisplayValue(detailsProduct.userIndustry) },
+    { label: 'Application Area', value: formatDisplayValue(detailsProduct.applicationArea) },
+  ].filter(row => row.value)
+    .map(({ label, value }) => (
+      <div key={label} className="flex py-3 sm:py-4 border-b border-gray-100 items-center">
+        <span className="w-1/3 text-sm text-gray-500 font-medium">{label}</span>
+        <span className="w-2/3 text-sm font-bold text-gray-900">{value}</span>
+      </div>
+  ))}
+</div>
               </div>
             </div>
             <div className="p-4 sm:p-5 border-t border-gray-200 bg-gray-50 flex flex-col sm:flex-row justify-between items-center gap-4 shrink-0">
