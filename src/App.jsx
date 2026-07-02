@@ -10,34 +10,35 @@ import { Upload, ScanLine, Play } from 'lucide-react';
 import { useLocation, useParams, useNavigate } from 'react-router-dom';
 
 // --- Import all local images ---
-import Hospital from './assets/Hospital_02.jpg';
-import office02 from './assets/Office-Flooring_02.jpg';
-import residential03 from './assets/Residential-Flooring_02.jpg';
-import school03 from './assets/School-Flooring_02.jpg';
-import superMarket01 from './assets/Super-Market-Flooring_01.jpg';
-import HeroImage from './assets/hero.png';
-import Sport from './assets/Sports-Flooring_01.jpg';
-import Transport from './assets/Transport-Flooring_03.jpg';
-import Auditorial from './assets/Auditorium-Flooring_01.jpg';
-import Hotel from './assets/Hotel_Hospitality-Flooring_01.jpg';
-import Industrial from './assets/Industrial-Flooring_02.jpg';
-import DefaultImage from './assets/Default.jpg';
+// import Industrial from './assets/Industrial-Flooring_02.jpg';
+// import Hospital from './assets/Hospital_02.jpg';
+// import office02 from './assets/Office-Flooring_02.jpg';
+// import residential03 from './assets/Residential-Flooring_02.jpg';
+// import school03 from './assets/School-Flooring_02.jpg';
+// import superMarket01 from './assets/Super-Market-Flooring_01.jpg';
+// import HeroImage from './assets/hero.png';
+// import Sport from './assets/Sports-Flooring_01.jpg';
+// import Transport from './assets/Transport-Flooring_03.jpg';
+// import Auditorial from './assets/Auditorium-Flooring_01.jpg';
+// import Hotel from './assets/Hotel_Hospitality-Flooring_01.jpg';
+
+// import DefaultImage from './assets/Default.jpg';
 import Logo from './assets/logo.png';
-import room1 from './assets/room1.jpg';
-import room2 from './assets/room2.jpg';
-import room1copy from './assets/room1copy.png';
-import room2copy from './assets/room2copy.png';
-import schoolcopy1 from './assets/School-Flooring_02 copy.png';
-import schoolcopy2 from './assets/School-Flooring_03 copy.png';
-import schoolcopy3 from './assets/School-Flooring_04 copy.png';
-import schoolcopy4 from './assets/School-Flooring_05 copy.png';
-import schoolcopy5 from './assets/School-Flooring_06 copy.png';
-import schoolcopy6 from './assets/School-Flooring_07.png';
-import school01 from './assets/school1.jpg';
-import school02 from './assets/school2.jpg';
-import school04 from './assets/school3.jpg';
-import school05 from './assets/school4.jpg';
-import school06 from './assets/school6.jpg';
+// import room1 from './assets/room1.jpg';
+// import room2 from './assets/room2.jpg';
+// import room1copy from './assets/room1copy.png';
+// import room2copy from './assets/room2copy.png';
+// import schoolcopy1 from './assets/School-Flooring_02 copy.png';
+// import schoolcopy2 from './assets/School-Flooring_03 copy.png';
+// import schoolcopy3 from './assets/School-Flooring_04 copy.png';
+// import schoolcopy4 from './assets/School-Flooring_05 copy.png';
+// import schoolcopy5 from './assets/School-Flooring_06 copy.png';
+// import schoolcopy6 from './assets/School-Flooring_07.png';
+// import school01 from './assets/school1.jpg';
+// import school02 from './assets/school2.jpg';
+// import school04 from './assets/school3.jpg';
+// import school05 from './assets/school4.jpg';
+// import school06 from './assets/school6.jpg';
 import visualizerDemo from './assets/visualizer-demo.mp4';
 
 // ── Socket ───────────────────────────────────────────────────────────────────
@@ -75,59 +76,59 @@ const flooringProducts_static = [
 ];
 
 const allDemoRooms = [
-  { id: 'ind-1', name: 'Industrial Flooring Option 1', img: Industrial, category: 'Industrial Flooring', product: ['Durofloor', 'Antique'] },
-  { id: 'ind-2', name: 'Industrial Flooring Option 2', img: DefaultImage, category: 'Industrial Flooring', product: 'Siggma' },
-  { id: 'ind-3', name: 'Industrial Flooring Option 3', img: DefaultImage, category: 'Industrial Flooring', product: 'Siggma' },
-  { id: 'ind-4', name: 'Industrial Flooring Option 4', img: DefaultImage, category: 'Industrial Flooring', product: 'Siggma' },
+  // { id: 'ind-1', name: 'Industrial Flooring Option 1', img: Industrial, category: 'Industrial Flooring', product: ['Durofloor', 'Antique'] },
+  // { id: 'ind-2', name: 'Industrial Flooring Option 2', img: DefaultImage, category: 'Industrial Flooring', product: 'Siggma' },
+  // { id: 'ind-3', name: 'Industrial Flooring Option 3', img: DefaultImage, category: 'Industrial Flooring', product: 'Siggma' },
+  // { id: 'ind-4', name: 'Industrial Flooring Option 4', img: DefaultImage, category: 'Industrial Flooring', product: 'Siggma' },
 
-  { id: 'off-1', name: 'Office Flooring Option 1', img: office02, category: 'Office Flooring', product: ['Siggma', 'Trendo wood', 'Ornate', 'Antique', 'Hi-Tech', 'Trendo Chips', 'Stoneland Monza', 'Adventus'] },
-  { id: 'off-2', name: 'Office Flooring Option 2', img: DefaultImage, category: 'Office Flooring', product: ['Siggma', 'Trendo wood', 'Ornate', 'Antique', 'Hi-Tech', 'Trendo Chips', 'Stoneland Monza', 'Adventus'] },
-  { id: 'off-3', name: 'Office Flooring Option 3', img: DefaultImage, category: 'Office Flooring', product: ['Siggma', 'Trendo wood', 'Ornate', 'Antique', 'Hi-Tech', 'Trendo Chips', 'Stoneland Monza', 'Adventus'] },
-  { id: 'off-4', name: 'Office Flooring Option 4', img: DefaultImage, category: 'Office Flooring', product: ['Siggma', 'Trendo wood', 'Ornate', 'Antique', 'Hi-Tech', 'Trendo Chips', 'Stoneland Monza', 'Adventus'] },
+  // { id: 'off-1', name: 'Office Flooring Option 1', img: office02, category: 'Office Flooring', product: ['Siggma', 'Trendo wood', 'Ornate', 'Antique', 'Hi-Tech', 'Trendo Chips', 'Stoneland Monza', 'Adventus'] },
+  // { id: 'off-2', name: 'Office Flooring Option 2', img: DefaultImage, category: 'Office Flooring', product: ['Siggma', 'Trendo wood', 'Ornate', 'Antique', 'Hi-Tech', 'Trendo Chips', 'Stoneland Monza', 'Adventus'] },
+  // { id: 'off-3', name: 'Office Flooring Option 3', img: DefaultImage, category: 'Office Flooring', product: ['Siggma', 'Trendo wood', 'Ornate', 'Antique', 'Hi-Tech', 'Trendo Chips', 'Stoneland Monza', 'Adventus'] },
+  // { id: 'off-4', name: 'Office Flooring Option 4', img: DefaultImage, category: 'Office Flooring', product: ['Siggma', 'Trendo wood', 'Ornate', 'Antique', 'Hi-Tech', 'Trendo Chips', 'Stoneland Monza', 'Adventus'] },
 
-  { id: 'res-1', name: 'Residential Flooring Option 1', img: residential03, category: 'Residential Flooring', product: ['Trendo wood', 'Ornate', 'Duratek', 'Galaxxy', 'Luxuria', 'Antique', 'GDP', 'Hi-Tech', 'Uttsav', 'Oriion', 'Rangolie'] },
-  { id: 'res-2', name: 'Residential Flooring Option 2', img: DefaultImage, category: 'Residential Flooring', product: ['Trendo wood', 'Ornate', 'Duratek', 'Galaxxy', 'Luxuria', 'Antique', 'GDP', 'Hi-Tech', 'Uttsav', 'Oriion', 'Rangolie'] },
-  { id: 'res-3', name: 'Residential Flooring Option 3', img: DefaultImage, category: 'Residential Flooring', product: ['Trendo wood', 'Ornate', 'Duratek', 'Galaxxy', 'Luxuria', 'Antique', 'GDP', 'Hi-Tech', 'Uttsav', 'Oriion', 'Rangolie'] },
-  { id: 'res-4', name: 'Residential Flooring Option 4', img: DefaultImage, category: 'Residential Flooring', product: ['Trendo wood', 'Ornate', 'Duratek', 'Galaxxy', 'Luxuria', 'Antique', 'GDP', 'Hi-Tech', 'Uttsav', 'Oriion', 'Rangolie'] },
-  { id: 'res-6', name: 'Residential Flooring Option 5', img: room1, mask: room1copy, category: 'Residential Flooring', product: ['Trendo wood', 'Ornate', 'Duratek', 'Galaxxy', 'Luxuria', 'Antique', 'GDP', 'Hi-Tech', 'Uttsav', 'Oriion', 'Rangolie', 'Durofloor', 'Adventus', 'Bravo', 'Krayons', 'Siggma', 'Robust', 'Timberworld 1.5mm'] },
-  { id: 'res-7', name: 'Residential Flooring Option 6', img: room2, mask: room2copy, category: 'Residential Flooring', product: ['Trendo wood', 'Ornate', 'Duratek', 'Galaxxy', 'Luxuria', 'Antique', 'GDP', 'Hi-Tech', 'Uttsav', 'Oriion', 'Rangolie', 'Durofloor', 'Adventus', 'Bravo', 'Krayons', 'Siggma', 'Robust', 'Timberworld 1.5mm'] },
+  // { id: 'res-1', name: 'Residential Flooring Option 1', img: residential03, category: 'Residential Flooring', product: ['Trendo wood', 'Ornate', 'Duratek', 'Galaxxy', 'Luxuria', 'Antique', 'GDP', 'Hi-Tech', 'Uttsav', 'Oriion', 'Rangolie'] },
+  // { id: 'res-2', name: 'Residential Flooring Option 2', img: DefaultImage, category: 'Residential Flooring', product: ['Trendo wood', 'Ornate', 'Duratek', 'Galaxxy', 'Luxuria', 'Antique', 'GDP', 'Hi-Tech', 'Uttsav', 'Oriion', 'Rangolie'] },
+  // { id: 'res-3', name: 'Residential Flooring Option 3', img: DefaultImage, category: 'Residential Flooring', product: ['Trendo wood', 'Ornate', 'Duratek', 'Galaxxy', 'Luxuria', 'Antique', 'GDP', 'Hi-Tech', 'Uttsav', 'Oriion', 'Rangolie'] },
+  // { id: 'res-4', name: 'Residential Flooring Option 4', img: DefaultImage, category: 'Residential Flooring', product: ['Trendo wood', 'Ornate', 'Duratek', 'Galaxxy', 'Luxuria', 'Antique', 'GDP', 'Hi-Tech', 'Uttsav', 'Oriion', 'Rangolie'] },
+  // { id: 'res-6', name: 'Residential Flooring Option 5', img: room1, mask: room1copy, category: 'Residential Flooring', product: ['Trendo wood', 'Ornate', 'Duratek', 'Galaxxy', 'Luxuria', 'Antique', 'GDP', 'Hi-Tech', 'Uttsav', 'Oriion', 'Rangolie', 'Durofloor', 'Adventus', 'Bravo', 'Krayons', 'Siggma', 'Robust', 'Timberworld 1.5mm'] },
+  // { id: 'res-7', name: 'Residential Flooring Option 6', img: room2, mask: room2copy, category: 'Residential Flooring', product: ['Trendo wood', 'Ornate', 'Duratek', 'Galaxxy', 'Luxuria', 'Antique', 'GDP', 'Hi-Tech', 'Uttsav', 'Oriion', 'Rangolie', 'Durofloor', 'Adventus', 'Bravo', 'Krayons', 'Siggma', 'Robust', 'Timberworld 1.5mm'] },
 
-  { id: 'sch-1', name: 'School Flooring Option 1', mask: schoolcopy1, img: school03, category: 'School Flooring', product: ['Krayons', 'Rhythm', 'Trendo Chips'] },
-  { id: 'sch-2', name: 'School Flooring Option 2', mask: schoolcopy2, img: school02, category: 'School Flooring', product: ['Krayons', 'Rhythm', 'Trendo Chips'] },
-  { id: 'sch-3', name: 'School Flooring Option 3', mask: schoolcopy3, img: school01, category: 'School Flooring', product: ['Krayons', 'Rhythm', 'Trendo Chips'] },
-  { id: 'sch-4', name: 'School Flooring Option 4', mask: schoolcopy4, img: school04, category: 'School Flooring', product: ['Krayons', 'Rhythm', 'Trendo Chips'] },
-  { id: 'sch-5', name: 'School Flooring Option 5', mask: schoolcopy5, img: school05, category: 'School Flooring', product: ['Krayons', 'Rhythm', 'Trendo Chips'] },
-  { id: 'sch-6', name: 'School Flooring Option 6', mask: schoolcopy6, img: school06, category: 'School Flooring', product: ['Krayons', 'Rhythm', 'Trendo Chips'] },
+  // { id: 'sch-1', name: 'School Flooring Option 1', mask: schoolcopy1, img: school03, category: 'School Flooring', product: ['Krayons', 'Rhythm', 'Trendo Chips'] },
+  // { id: 'sch-2', name: 'School Flooring Option 2', mask: schoolcopy2, img: school02, category: 'School Flooring', product: ['Krayons', 'Rhythm', 'Trendo Chips'] },
+  // { id: 'sch-3', name: 'School Flooring Option 3', mask: schoolcopy3, img: school01, category: 'School Flooring', product: ['Krayons', 'Rhythm', 'Trendo Chips'] },
+  // { id: 'sch-4', name: 'School Flooring Option 4', mask: schoolcopy4, img: school04, category: 'School Flooring', product: ['Krayons', 'Rhythm', 'Trendo Chips'] },
+  // { id: 'sch-5', name: 'School Flooring Option 5', mask: schoolcopy5, img: school05, category: 'School Flooring', product: ['Krayons', 'Rhythm', 'Trendo Chips'] },
+  // { id: 'sch-6', name: 'School Flooring Option 6', mask: schoolcopy6, img: school06, category: 'School Flooring', product: ['Krayons', 'Rhythm', 'Trendo Chips'] },
 
-  { id: 'spo-1', name: 'Sports Flooring Option 1', img: Sport, category: 'Sports Flooring', product: ['Ornate', 'Braavo'] },
-  { id: 'spo-2', name: 'Sports Flooring Option 2', img: DefaultImage, category: 'Sports Flooring', product: ['Ornate', 'Braavo'] },
-  { id: 'spo-3', name: 'Sports Flooring Option 3', img: DefaultImage, category: 'Sports Flooring', product: ['Ornate', 'Braavo'] },
-  { id: 'spo-4', name: 'Sports Flooring Option 4', img: DefaultImage, category: 'Sports Flooring', product: ['Ornate', 'Braavo'] },
+  // { id: 'spo-1', name: 'Sports Flooring Option 1', img: Sport, category: 'Sports Flooring', product: ['Ornate', 'Braavo'] },
+  // { id: 'spo-2', name: 'Sports Flooring Option 2', img: DefaultImage, category: 'Sports Flooring', product: ['Ornate', 'Braavo'] },
+  // { id: 'spo-3', name: 'Sports Flooring Option 3', img: DefaultImage, category: 'Sports Flooring', product: ['Ornate', 'Braavo'] },
+  // { id: 'spo-4', name: 'Sports Flooring Option 4', img: DefaultImage, category: 'Sports Flooring', product: ['Ornate', 'Braavo'] },
 
-  { id: 'sup-1', name: 'Supermarket Flooring Option 1', img: superMarket01, category: 'Supermarket Flooring', product: ['Durofloor', 'Siggma', 'Timberland Exotica 2mm', 'Trendo wood', 'Ornate', 'Trendo Chips', 'Oriion'] },
-  { id: 'sup-2', name: 'Supermarket Flooring Option 2', img: DefaultImage, category: 'Supermarket Flooring', product: ['Durofloor', 'Siggma', 'Timberland Exotica 2mm', 'Trendo wood', 'Ornate', 'Trendo Chips', 'Oriion'] },
-  { id: 'sup-3', name: 'Supermarket Flooring Option 3', img: DefaultImage, category: 'Supermarket Flooring', product: ['Durofloor', 'Siggma', 'Timberland Exotica 2mm', 'Trendo wood', 'Ornate', 'Trendo Chips', 'Oriion'] },
-  { id: 'sup-4', name: 'Supermarket Flooring Option 4', img: DefaultImage, category: 'Supermarket Flooring', product: ['Durofloor', 'Siggma', 'Timberland Exotica 2mm', 'Trendo wood', 'Ornate', 'Trendo Chips', 'Oriion'] },
+  // { id: 'sup-1', name: 'Supermarket Flooring Option 1', img: superMarket01, category: 'Supermarket Flooring', product: ['Durofloor', 'Siggma', 'Timberland Exotica 2mm', 'Trendo wood', 'Ornate', 'Trendo Chips', 'Oriion'] },
+  // { id: 'sup-2', name: 'Supermarket Flooring Option 2', img: DefaultImage, category: 'Supermarket Flooring', product: ['Durofloor', 'Siggma', 'Timberland Exotica 2mm', 'Trendo wood', 'Ornate', 'Trendo Chips', 'Oriion'] },
+  // { id: 'sup-3', name: 'Supermarket Flooring Option 3', img: DefaultImage, category: 'Supermarket Flooring', product: ['Durofloor', 'Siggma', 'Timberland Exotica 2mm', 'Trendo wood', 'Ornate', 'Trendo Chips', 'Oriion'] },
+  // { id: 'sup-4', name: 'Supermarket Flooring Option 4', img: DefaultImage, category: 'Supermarket Flooring', product: ['Durofloor', 'Siggma', 'Timberland Exotica 2mm', 'Trendo wood', 'Ornate', 'Trendo Chips', 'Oriion'] },
 
-  { id: 'tra-1', name: 'Transport Flooring Option 1', img: Transport, category: 'Transport Flooring', product: ['Traction / Safety', 'Matrixx (Export)', "D'ziner"] },
-  { id: 'tra-2', name: 'Transport Flooring Option 2', img: DefaultImage, category: 'Transport Flooring', product: ['Traction / Safety', 'Matrixx (Export)', "D'ziner"] },
-  { id: 'tra-3', name: 'Transport Flooring Option 3', img: DefaultImage, category: 'Transport Flooring', product: ['Traction / Safety', 'Matrixx (Export)', "D'ziner"] },
-  { id: 'tra-4', name: 'Transport Flooring Option 4', img: DefaultImage, category: 'Transport Flooring', product: ['Traction / Safety', 'Matrixx (Export)', "D'ziner"] },
+  // { id: 'tra-1', name: 'Transport Flooring Option 1', img: Transport, category: 'Transport Flooring', product: ['Traction / Safety', 'Matrixx (Export)', "D'ziner"] },
+  // { id: 'tra-2', name: 'Transport Flooring Option 2', img: DefaultImage, category: 'Transport Flooring', product: ['Traction / Safety', 'Matrixx (Export)', "D'ziner"] },
+  // { id: 'tra-3', name: 'Transport Flooring Option 3', img: DefaultImage, category: 'Transport Flooring', product: ['Traction / Safety', 'Matrixx (Export)', "D'ziner"] },
+  // { id: 'tra-4', name: 'Transport Flooring Option 4', img: DefaultImage, category: 'Transport Flooring', product: ['Traction / Safety', 'Matrixx (Export)', "D'ziner"] },
 
-  { id: 'hos-1', name: 'Hospital Flooring Option 1', img: Hospital, category: 'Hospital Flooring', product: ['Siggma', 'Orbit', 'Trendo Chips', 'Wallspro Plus', 'Adventus'] },
-  { id: 'hos-2', name: 'Hospital Flooring Option 2', img: DefaultImage, category: 'Hospital Flooring', product: ['Siggma', 'Orbit', 'Trendo Chips', 'Wallspro Plus', 'Adventus'] },
-  { id: 'hos-3', name: 'Hospital Flooring Option 3', img: DefaultImage, category: 'Hospital Flooring', product: ['Siggma', 'Orbit', 'Trendo Chips', 'Wallspro Plus', 'Adventus'] },
-  { id: 'hos-4', name: 'Hospital Flooring Option 4', img: DefaultImage, category: 'Hospital Flooring', product: ['Siggma', 'Orbit', 'Trendo Chips', 'Wallspro Plus', 'Adventus'] },
+  // { id: 'hos-1', name: 'Hospital Flooring Option 1', img: Hospital, category: 'Hospital Flooring', product: ['Siggma', 'Orbit', 'Trendo Chips', 'Wallspro Plus', 'Adventus'] },
+  // { id: 'hos-2', name: 'Hospital Flooring Option 2', img: DefaultImage, category: 'Hospital Flooring', product: ['Siggma', 'Orbit', 'Trendo Chips', 'Wallspro Plus', 'Adventus'] },
+  // { id: 'hos-3', name: 'Hospital Flooring Option 3', img: DefaultImage, category: 'Hospital Flooring', product: ['Siggma', 'Orbit', 'Trendo Chips', 'Wallspro Plus', 'Adventus'] },
+  // { id: 'hos-4', name: 'Hospital Flooring Option 4', img: DefaultImage, category: 'Hospital Flooring', product: ['Siggma', 'Orbit', 'Trendo Chips', 'Wallspro Plus', 'Adventus'] },
 
-  { id: 'aud-1', name: 'Auditorium Flooring Option 1', img: Auditorial, category: 'Auditorium Flooring', product: ['Timberland Exotica 2mm', 'Trendo wood', 'Braavo', 'Stoneland Monza', 'Timberland Herringbone 2mm'] },
-  { id: 'aud-2', name: 'Auditorium Flooring Option 2', img: DefaultImage, category: 'Auditorium Flooring', product: ['Timberland Exotica 2mm', 'Trendo wood', 'Braavo', 'Stoneland Monza', 'Timberland Herringbone 2mm'] },
-  { id: 'aud-3', name: 'Auditorium Flooring Option 3', img: DefaultImage, category: 'Auditorium Flooring', product: ['Timberland Exotica 2mm', 'Trendo wood', 'Braavo', 'Stoneland Monza', 'Timberland Herringbone 2mm'] },
-  { id: 'aud-4', name: 'Auditorium Flooring Option 4', img: DefaultImage, category: 'Auditorium Flooring', product: ['Timberland Exotica 2mm', 'Trendo wood', 'Braavo', 'Stoneland Monza', 'Timberland Herringbone 2mm'] },
+  // { id: 'aud-1', name: 'Auditorium Flooring Option 1', img: Auditorial, category: 'Auditorium Flooring', product: ['Timberland Exotica 2mm', 'Trendo wood', 'Braavo', 'Stoneland Monza', 'Timberland Herringbone 2mm'] },
+  // { id: 'aud-2', name: 'Auditorium Flooring Option 2', img: DefaultImage, category: 'Auditorium Flooring', product: ['Timberland Exotica 2mm', 'Trendo wood', 'Braavo', 'Stoneland Monza', 'Timberland Herringbone 2mm'] },
+  // { id: 'aud-3', name: 'Auditorium Flooring Option 3', img: DefaultImage, category: 'Auditorium Flooring', product: ['Timberland Exotica 2mm', 'Trendo wood', 'Braavo', 'Stoneland Monza', 'Timberland Herringbone 2mm'] },
+  // { id: 'aud-4', name: 'Auditorium Flooring Option 4', img: DefaultImage, category: 'Auditorium Flooring', product: ['Timberland Exotica 2mm', 'Trendo wood', 'Braavo', 'Stoneland Monza', 'Timberland Herringbone 2mm'] },
 
-  { id: 'hot-1', name: 'Hotel Flooring Option 1', img: Hotel, category: 'Hotel/ Hospitality Flooring', product: ['Timberland Exotica 2mm', 'Trendo wood', 'Ornate', 'Braavo', 'Timberworld 1.5 mm', 'Stoneland Monza', 'Meteor', 'Timberland Herringbone 2mm', 'Grandeure Premium Luxury Planks 2mm'] },
-  { id: 'hot-2', name: 'Hotel Flooring Option 2', img: DefaultImage, category: 'Hotel/ Hospitality Flooring', product: ['Timberland Exotica 2mm', 'Trendo wood', 'Ornate', 'Braavo', 'Timberworld 1.5 mm', 'Stoneland Monza', 'Meteor', 'Timberland Herringbone 2mm', 'Grandeure Premium Luxury Planks 2mm'] },
-  { id: 'hot-3', name: 'Hotel Flooring Option 3', img: DefaultImage, category: 'Hotel/ Hospitality Flooring', product: ['Timberland Exotica 2mm', 'Trendo wood', 'Ornate', 'Braavo', 'Timberworld 1.5 mm', 'Stoneland Monza', 'Meteor', 'Timberland Herringbone 2mm', 'Grandeure Premium Luxury Planks 2mm'] },
-  { id: 'hot-4', name: 'Hotel Flooring Option 4', img: DefaultImage, category: 'Hotel/ Hospitality Flooring', product: ['Timberland Exotica 2mm', 'Trendo wood', 'Ornate', 'Braavo', 'Timberworld 1.5 mm', 'Stoneland Monza', 'Meteor', 'Timberland Herringbone 2mm', 'Grandeure Premium Luxury Planks 2mm'] },
+  // { id: 'hot-1', name: 'Hotel Flooring Option 1', img: Hotel, category: 'Hotel/ Hospitality Flooring', product: ['Timberland Exotica 2mm', 'Trendo wood', 'Ornate', 'Braavo', 'Timberworld 1.5 mm', 'Stoneland Monza', 'Meteor', 'Timberland Herringbone 2mm', 'Grandeure Premium Luxury Planks 2mm'] },
+  // { id: 'hot-2', name: 'Hotel Flooring Option 2', img: DefaultImage, category: 'Hotel/ Hospitality Flooring', product: ['Timberland Exotica 2mm', 'Trendo wood', 'Ornate', 'Braavo', 'Timberworld 1.5 mm', 'Stoneland Monza', 'Meteor', 'Timberland Herringbone 2mm', 'Grandeure Premium Luxury Planks 2mm'] },
+  // { id: 'hot-3', name: 'Hotel Flooring Option 3', img: DefaultImage, category: 'Hotel/ Hospitality Flooring', product: ['Timberland Exotica 2mm', 'Trendo wood', 'Ornate', 'Braavo', 'Timberworld 1.5 mm', 'Stoneland Monza', 'Meteor', 'Timberland Herringbone 2mm', 'Grandeure Premium Luxury Planks 2mm'] },
+  // { id: 'hot-4', name: 'Hotel Flooring Option 4', img: DefaultImage, category: 'Hotel/ Hospitality Flooring', product: ['Timberland Exotica 2mm', 'Trendo wood', 'Ornate', 'Braavo', 'Timberworld 1.5 mm', 'Stoneland Monza', 'Meteor', 'Timberland Herringbone 2mm', 'Grandeure Premium Luxury Planks 2mm'] },
 ];
 
 function App() {
@@ -543,12 +544,11 @@ function App() {
     <div className={`w-full min-h-screen font-sans transition-colors duration-300 overflow-x-hidden ${isDarkMode ? 'bg-slate-900 text-white' : 'bg-[#f8fafc] text-gray-900'}`}>
 
       {/* ── HEADER / NAVIGATION ── */}
-     <header
-  className={`w-full border-b backdrop-blur-md fixed top-0 left-0 z-40 transition-all duration-500 ${
-    isDarkMode ? 'bg-slate-900/90 border-slate-800' : 'border-slate-200'
-  }`}
-  style={!isDarkMode ? { backgroundColor: '#F8F8FB' } : {}}
->
+      <header
+        className={`w-full border-b backdrop-blur-md fixed top-0 left-0 z-40 transition-all duration-500 ${isDarkMode ? 'bg-slate-900/90 border-slate-800' : 'border-slate-200'
+          }`}
+        style={!isDarkMode ? { backgroundColor: '#F8F8FB' } : {}}
+      >
         <div className="max-w-[1300px] mx-auto px-4 sm:px-6 h-20 flex items-center justify-between">
           <a href='https://www.wonderfloor.co.in/index.php' target="_blank" className="flex items-center gap-2 cursor-pointer group" onClick={() => navigate('/')}>
             <img src={Logo} alt="Wonderfloor Logo" className="h-15  w-auto object-contain transition-transform duration-300 group-hover:scale-105" />
@@ -642,7 +642,7 @@ function App() {
 `}</style>
 
       {/* ── HERO SECTION ── */}
-      <section className="relative w-full pt-8 pb-20 lg:pt-23 lg:pb-28 overflow-hidden">
+      <section className=" relative w-full pt-8 pb-20 lg:pt-23 lg:pb-28 overflow-hidden">
 
         {/* Subtle Dot Grid Background matching the design */}
         <div className="absolute inset-0 z-0 bg-[radial-gradient(#e5e7eb_1.5px,transparent_1.5px)] [background-size:24px_24px] dark:bg-[radial-gradient(#334155_1.5px,transparent_1.5px)] opacity-60"></div>
@@ -731,120 +731,120 @@ function App() {
           </div>
 
 
-         {/* RIGHT COLUMN: Interactive App Window Container */}
-<div className="w-full lg:flex-[1.2] max-w-[850px] relative z-10 mb-16 sm:mb-20 animate-slide-up-4">
+          {/* RIGHT COLUMN: Interactive App Window Container */}
+          <div className="w-full lg:flex-[1.2] max-w-[850px] relative z-10 mb-16 sm:mb-20 animate-slide-up-4">
 
-  {/* Keyframes not built into Tailwind by default */}
-  <style>{`
+            {/* Keyframes not built into Tailwind by default */}
+            <style>{`
     @keyframes floatY { 0%,100%{ transform: translateY(0);} 50%{ transform: translateY(-8px);} }
     @keyframes floatY2 { 0%,100%{ transform: translateY(0);} 50%{ transform: translateY(-6px);} }
   `}</style>
 
-  {/* Floating card 1 — AI Confidence */}
-  <div className="absolute -left-7 bottom-[60px] z-[999] min-w-[170px] rounded-2xl border border-black/[0.08] bg-white p-3.5 shadow-[0_12px_40px_rgba(0,0,0,0.1)] animate-[floatY_4s_ease-in-out_infinite]">
-    <div className="mb-1.5 text-[10px] font-semibold uppercase tracking-[0.8px] text-slate-400">
-      AI Confidence
-    </div>
-    <div className="mb-0.5 text-lg font-extrabold tracking-[-0.5px] text-slate-950">
-      98.4%
-    </div>
-    <div className="text-[11px] font-semibold text-[#F4500A]">
-      Floor detected ✓
-    </div>
-  </div>
+            {/* Floating card 1 — AI Confidence */}
+            <div className="absolute -left-7 bottom-[60px] z-[999] min-w-[170px] rounded-2xl border border-black/[0.08] bg-white p-3.5 shadow-[0_12px_40px_rgba(0,0,0,0.1)] animate-[floatY_4s_ease-in-out_infinite]">
+              <div className="mb-1.5 text-[10px] font-semibold uppercase tracking-[0.8px] text-slate-400">
+                AI Confidence
+              </div>
+              <div className="mb-0.5 text-lg font-extrabold tracking-[-0.5px] text-slate-950">
+                98.4%
+              </div>
+              <div className="text-[11px] font-semibold text-[#F4500A]">
+                Floor detected ✓
+              </div>
+            </div>
 
-  {/* Floating card 2 — Scenes Available */}
-  <div className="absolute -right-5 top-[120px] z-[999] rounded-2xl bg-gradient-to-br from-[#F4500A] to-[#FF6B2B] p-3.5 shadow-[0_12px_40px_rgba(244,80,10,0.12)] animate-[floatY2_5s_ease-in-out_infinite]">
-    <div className="mb-1 text-[10px] font-semibold uppercase tracking-[0.8px] text-white/70">
-      Scenes Available
-    </div>
-    <div className="text-[22px] font-extrabold tracking-[-0.5px] text-white">
-      60+
-    </div>
-  </div>
+            {/* Floating card 2 — Scenes Available */}
+            <div className="absolute -right-5 top-[120px] z-[999] rounded-2xl bg-gradient-to-br from-[#F4500A] to-[#FF6B2B] p-3.5 shadow-[0_12px_40px_rgba(244,80,10,0.12)] animate-[floatY2_5s_ease-in-out_infinite]">
+              <div className="mb-1 text-[10px] font-semibold uppercase tracking-[0.8px] text-white/70">
+                Scenes Available
+              </div>
+              <div className="text-[22px] font-extrabold tracking-[-0.5px] text-white">
+                60+
+              </div>
+            </div>
 
-  {/* MAC WINDOW */}
-  <div className="relative overflow-hidden rounded-[20px] border border-black/[0.08] bg-white shadow-[0_32px_80px_rgba(0,0,0,0.1),0_8px_30px_rgba(244,80,10,0.06)]">
+            {/* MAC WINDOW */}
+            <div className="relative overflow-hidden rounded-[20px] border border-black/[0.08] bg-white shadow-[0_32px_80px_rgba(0,0,0,0.1),0_8px_30px_rgba(244,80,10,0.06)]">
 
-    {/* Title Bar */}
-    <div className="flex items-center gap-2.5 border-b border-black/[0.06] bg-[#F2F2F6] px-[18px] py-3">
-      <div className="flex gap-1.5">
-        <div className="h-[9px] w-[9px] rounded-full bg-[#FF5F57]"></div>
-        <div className="h-[9px] w-[9px] rounded-full bg-[#FEBC2E]"></div>
-        <div className="h-[9px] w-[9px] rounded-full bg-[#28C840]"></div>
-      </div>
-      <div className="flex-1 text-center text-[11px] font-semibold tracking-[0.3px] text-gray-500">
-        WonderVision AI · Visualiser 2.0
-      </div>
-      <svg className="h-3.5 w-3.5 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="12" cy="12" r="10"></circle>
-        <path d="M12 8v4l3 3"></path>
-      </svg>
-    </div>
+              {/* Title Bar */}
+              <div className="flex items-center gap-2.5 border-b border-black/[0.06] bg-[#F2F2F6] px-[18px] py-3">
+                <div className="flex gap-1.5">
+                  <div className="h-[9px] w-[9px] rounded-full bg-[#FF5F57]"></div>
+                  <div className="h-[9px] w-[9px] rounded-full bg-[#FEBC2E]"></div>
+                  <div className="h-[9px] w-[9px] rounded-full bg-[#28C840]"></div>
+                </div>
+                <div className="flex-1 text-center text-[11px] font-semibold tracking-[0.3px] text-gray-500">
+                  WonderVision AI · Visualiser 2.0
+                </div>
+                <svg className="h-3.5 w-3.5 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <path d="M12 8v4l3 3"></path>
+                </svg>
+              </div>
 
-    {/* Body */}
-    <div className="relative h-[340px] overflow-hidden bg-[#FAFAFA]">
+              {/* Body */}
+              <div className="relative h-[340px] overflow-hidden bg-[#FAFAFA]">
 
-      {/* Video / room content */}
-      <video
-        autoPlay
-        loop
-        muted
-        playsInline
-        className="absolute inset-0 h-full w-full object-cover"
-        src={visualizerDemo}
-      />
+                {/* Video / room content */}
+                <video
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="absolute inset-0 h-full w-full object-cover"
+                  src={visualizerDemo}
+                />
 
-      {/* AI Processing status pill */}
-      <div className="absolute right-3 top-3 flex items-center gap-1.5 rounded-lg bg-[#F4500A]/90 px-2.5 py-1.5 backdrop-blur-[10px]">
-        <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-white"></div>
-        <div className="text-[10px] font-bold uppercase tracking-[0.5px] text-white">
-          AI Processing
+                {/* AI Processing status pill */}
+                <div className="absolute right-3 top-3 flex items-center gap-1.5 rounded-lg bg-[#F4500A]/90 px-2.5 py-1.5 backdrop-blur-[10px]">
+                  <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-white"></div>
+                  <div className="text-[10px] font-bold uppercase tracking-[0.5px] text-white">
+                    AI Processing
+                  </div>
+                </div>
+
+                {/* Swatches bar */}
+                <div className="absolute inset-x-0 bottom-0 flex items-center gap-1.5 border-t border-black/[0.06] bg-white/[0.92] px-3.5 py-2.5 backdrop-blur-[12px]">
+                  <div className="h-6.5 w-6.5 h-[26px] w-[26px] cursor-pointer rounded-md border-2 border-[#F4500A] bg-gradient-to-br from-[#C9A060] to-[#D4AA68] shadow-[0_0_0_1px_#F4500A]"></div>
+                  <div className="h-[26px] w-[26px] cursor-pointer rounded-md border-2 border-transparent bg-gradient-to-br from-[#5A5858] to-[#6A6860]"></div>
+                  <div className="h-[26px] w-[26px] cursor-pointer rounded-md border-2 border-transparent bg-gradient-to-br from-[#C8B8A0] to-[#D4C4AC]"></div>
+                  <div className="h-[26px] w-[26px] cursor-pointer rounded-md border-2 border-transparent bg-gradient-to-br from-[#3A4A3A] to-[#4A5A4A]"></div>
+                  <div className="h-[26px] w-[26px] cursor-pointer rounded-md border-2 border-transparent bg-gradient-to-br from-[#8A7068] to-[#9A8075]"></div>
+                  <div className="h-[26px] w-[26px] cursor-pointer rounded-md border-2 border-transparent bg-gradient-to-br from-[#2A3A5A] to-[#3A4A7A]"></div>
+                  <button
+                    onClick={() => navigate(`/visualizer/${activeRooms[1].id}`)}
+                    className="ml-auto rounded-md bg-[#F4500A] px-3.5 py-1.5 text-[11px] font-bold tracking-[0.2px] text-white"
+                  >
+                    Apply
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
         </div>
-      </div>
 
-      {/* Swatches bar */}
-      <div className="absolute inset-x-0 bottom-0 flex items-center gap-1.5 border-t border-black/[0.06] bg-white/[0.92] px-3.5 py-2.5 backdrop-blur-[12px]">
-        <div className="h-6.5 w-6.5 h-[26px] w-[26px] cursor-pointer rounded-md border-2 border-[#F4500A] bg-gradient-to-br from-[#C9A060] to-[#D4AA68] shadow-[0_0_0_1px_#F4500A]"></div>
-        <div className="h-[26px] w-[26px] cursor-pointer rounded-md border-2 border-transparent bg-gradient-to-br from-[#5A5858] to-[#6A6860]"></div>
-        <div className="h-[26px] w-[26px] cursor-pointer rounded-md border-2 border-transparent bg-gradient-to-br from-[#C8B8A0] to-[#D4C4AC]"></div>
-        <div className="h-[26px] w-[26px] cursor-pointer rounded-md border-2 border-transparent bg-gradient-to-br from-[#3A4A3A] to-[#4A5A4A]"></div>
-        <div className="h-[26px] w-[26px] cursor-pointer rounded-md border-2 border-transparent bg-gradient-to-br from-[#8A7068] to-[#9A8075]"></div>
-        <div className="h-[26px] w-[26px] cursor-pointer rounded-md border-2 border-transparent bg-gradient-to-br from-[#2A3A5A] to-[#3A4A7A]"></div>
-        <button
-          onClick={() => navigate(`/visualizer/${activeRooms[1].id}`)}
-          className="ml-auto rounded-md bg-[#F4500A] px-3.5 py-1.5 text-[11px] font-bold tracking-[0.2px] text-white"
-        >
-          Apply
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
-
-        </div>
-        
       </section>
-{/* ══ TICKER — sits between Hero and Demo Scenes ══ */}
-<div className="relative z-10 w-full overflow-hidden border-y border-black/[0.07] dark:border-white/10 bg-[#F2F2F6] dark:bg-slate-900 py-3.5">
-  <style>{`
+      {/* ══ TICKER — sits between Hero and Demo Scenes ══ */}
+      <div className="relative z-10 w-full overflow-hidden border-y border-black/[0.07] dark:border-white/10 bg-[#F8FAFC] dark:bg-slate-900 py-3.5">
+        <style>{`
     @keyframes tick { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
   `}</style>
-  <div className="flex w-max whitespace-nowrap animate-[tick_28s_linear_infinite]">
-    {[...Array(2)].map((_, i) => (
-      <div key={i} className="flex">
-        {['Krayons','Durofloor','Trendo Wood','Braavo','Robust','Luxuria','Matrixx','Galaxxy','Ornate','Rangolie','Uttsav',"D'ZINER",'Adventus','Antique','Oriion','Orbit','Hi-Tech','Siggma','Meteor','Rhythm'].map((item, idx) => (
-          <span
-            key={idx}
-            className="inline-flex items-center gap-2.5 px-7 text-[12px] font-semibold uppercase tracking-[1.5px] text-slate-400 dark:text-slate-500 after:content-['·'] after:text-[#F4500A] after:text-[14px]"
-          >
-            {item}
-          </span>
-        ))}
+        <div className="flex w-max whitespace-nowrap animate-[tick_28s_linear_infinite]">
+          {[...Array(2)].map((_, i) => (
+            <div key={i} className="flex">
+              {['Krayons', 'Durofloor', 'Trendo Wood', 'Braavo', 'Robust', 'Luxuria', 'Matrixx', 'Galaxxy', 'Ornate', 'Rangolie', 'Uttsav', "D'ZINER", 'Adventus', 'Antique', 'Oriion', 'Orbit', 'Hi-Tech', 'Siggma', 'Meteor', 'Rhythm'].map((item, idx) => (
+                <span
+                  key={idx}
+                  className="inline-flex items-center gap-2.5 px-7 text-[12px] font-semibold uppercase tracking-[1.5px] text-slate-400 dark:text-slate-500 after:content-['·'] after:text-[#F4500A] after:text-[14px]"
+                >
+                  {item}
+                </span>
+              ))}
+            </div>
+          ))}
+        </div>
       </div>
-    ))}
-  </div>
-</div>
       {/* ── EXPLORE FLOORING IDEAS (DEMO SCENES) ── */}
       < section ref={demoSectionRef} className={`w-full py-16 sm:py-24 border-t ${isDarkMode ? 'bg-slate-950/40 border-slate-800' : 'bg-slate-50 border-slate-200'}`
       }>
@@ -862,13 +862,28 @@ function App() {
                 </p>
               </div>
 
-              <div className="flex flex-col sm:flex-row items-center gap-3">
+              <div className="flex flex-col  relative -top-7 sm:flex-row items-center gap-3">
                 <button
                   onClick={() => setIsHistoryOpen(true)}
-                  className="shrink-0 flex items-center justify-center gap-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 px-4 py-2.5 rounded-md text-[12px] font-bold tracking-wider uppercase transition-all hover:border-[#f05c3f] shadow-sm cursor-pointer"
+                  className="group shrink-0 relative -mt-3 flex items-center justify-center gap-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 px-4 py-2.5 rounded-full text-[12px] font-bold tracking-wider uppercase transition-all duration-300 hover:border-[#f05c3f] hover:-translate-y-0.5 hover:shadow-[0_8px_20px_rgba(240,92,63,0.15)] shadow-sm cursor-pointer"
                 >
-                  <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                  My History {history.length > 0 && `(${history.length})`}
+                  <svg
+                    className="w-4 h-4 text-gray-400 group-hover:text-[#f05c3f] transition-colors duration-300 group-hover:rotate-[-15deg]"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span className="group-hover:text-[#f05c3f] transition-colors duration-300">
+                    My History
+                  </span>
+                  {history.length > 0 && (
+                    <span className="flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-[#f05c3f] text-white text-[10px] font-black leading-none">
+                      {history.length}
+                    </span>
+                  )}
                 </button>
               </div>
             </div>
@@ -1021,15 +1036,20 @@ function App() {
           ) : (
             /* ── STEP 2: DEEP-DIVE ROOM CARDS VIEW FOR CHOSEN INDUSTRY ── */
             <div>
-              <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 animate-fade-in">
+              <div className="mb-6 animate-fade-in">
                 <button
                   onClick={() => {
                     setSelectedIndustry('ALL INDUSTRY');
                     setSelectedProduct('Product Collections');
                   }}
-                  className="flex items-center gap-2 text-[13px] font-extrabold text-gray-600 dark:text-slate-300 hover:text-[#f05c3f] dark:hover:text-[#f05c3f] transition-colors cursor-pointer bg-white dark:bg-slate-900 px-4 py-2 rounded-md border border-slate-200 dark:border-slate-800 shadow-sm uppercase tracking-wider w-max"
+                  className="group flex items-center gap-1.5 text-[11px] font-bold text-gray-500 dark:text-slate-400 hover:text-[#f05c3f] dark:hover:text-[#f05c3f] transition-all duration-200 cursor-pointer bg-white dark:bg-slate-900 px-3 py-1.5 rounded-full border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow hover:border-orange-200 dark:hover:border-orange-900/50 uppercase tracking-wide w-max"
                 >
-                  <svg className="w-4 h-4 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg
+                    className="w-3.5 h-3.5 stroke-[2.5] transition-transform duration-200 group-hover:-translate-x-0.5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
                     <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
                   </svg>
                   Go Back
@@ -1149,7 +1169,7 @@ function App() {
 
           <div className="flex items-center gap-6 font-medium text-slate-400">
             <a href="https://www.wonderfloor.co.in/news.php" target="_blank" className="hover:text-white transition-colors">News</a>
-            <a href="#" target="_blank" className="hover:text-white transition-colors">Terms</a>
+            <a href="https://www.wonderfloor.co.in/" target="_blank" className="hover:text-white transition-colors">Wonderfloor.com</a>
             <a href='https://www.wonderfloor.co.in/contact-us.php' target="_blank" className="hover:text-white transition-colors">Contact</a>
             <a href="https://www.wonderfloor.co.in/downloads.php" target="_blank" className="hover:text-white transition-colors">Downloads</a>
           </div>
