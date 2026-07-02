@@ -543,9 +543,12 @@ function App() {
     <div className={`w-full min-h-screen font-sans transition-colors duration-300 overflow-x-hidden ${isDarkMode ? 'bg-slate-900 text-white' : 'bg-[#f8fafc] text-gray-900'}`}>
 
       {/* ── HEADER / NAVIGATION ── */}
-      <header className={`w-full border-b backdrop-blur-md sticky top-0 z-40 transition-all duration-500 animate-[slideDown_0.5s_ease-out] ${isDarkMode ? 'bg-slate-900/90 border-slate-800' : 'border-slate-200'}`}
-        style={!isDarkMode ? { backgroundColor: '#F8F8FB' } : {}}
-      >
+     <header
+  className={`w-full border-b backdrop-blur-md fixed top-0 left-0 z-40 transition-all duration-500 ${
+    isDarkMode ? 'bg-slate-900/90 border-slate-800' : 'border-slate-200'
+  }`}
+  style={!isDarkMode ? { backgroundColor: '#F8F8FB' } : {}}
+>
         <div className="max-w-[1300px] mx-auto px-4 sm:px-6 h-20 flex items-center justify-between">
           <a href='https://www.wonderfloor.co.in/index.php' target="_blank" className="flex items-center gap-2 cursor-pointer group" onClick={() => navigate('/')}>
             <img src={Logo} alt="Wonderfloor Logo" className="h-15  w-auto object-contain transition-transform duration-300 group-hover:scale-105" />
