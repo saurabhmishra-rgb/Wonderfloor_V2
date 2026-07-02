@@ -823,7 +823,7 @@ function App() {
         
       </section>
 {/* ══ TICKER — sits between Hero and Demo Scenes ══ */}
-<div className="relative z-10 w-full overflow-hidden border-y border-black/[0.07] dark:border-white/10 bg-white dark:bg-slate-900 py-3.5">
+<div className="relative z-10 w-full overflow-hidden border-y border-black/[0.07] dark:border-white/10 bg-[#F2F2F6] dark:bg-slate-900 py-3.5">
   <style>{`
     @keyframes tick { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
   `}</style>
