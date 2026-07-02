@@ -642,7 +642,7 @@ function App() {
 `}</style>
 
       {/* ── HERO SECTION ── */}
-      <section className="relative w-full pt-8 pb-20 lg:pt-12 lg:pb-28 overflow-hidden">
+      <section className="relative w-full pt-8 pb-20 lg:pt-23 lg:pb-28 overflow-hidden">
 
         {/* Subtle Dot Grid Background matching the design */}
         <div className="absolute inset-0 z-0 bg-[radial-gradient(#e5e7eb_1.5px,transparent_1.5px)] [background-size:24px_24px] dark:bg-[radial-gradient(#334155_1.5px,transparent_1.5px)] opacity-60"></div>
