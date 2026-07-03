@@ -895,13 +895,15 @@ function App() {
           </div>
 
           {/* Inline Navigation & Control Matrix Layout */}
-          <div className="flex flex-col gap-2 mb-10 w-full">
+          <div className="flex flex-col gap-4 md:gap-3 mb-10 w-full select-none">
 
             {/* Industry Row Filter Matrix */}
-            {/* Industry Row Filter Matrix */}
-            <div className="flex flex-col sm:flex-row sm:items-start gap-1">
-              <span className="text-[11px] font-extrabold tracking-wider text-gray-400 uppercase w-24 shrink-0 pt-1.5">Industry:</span>
-              <div className="flex flex-wrap gap-2">
+            <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4">
+              <span className="text-[11px] font-extrabold tracking-wider text-gray-400 uppercase w-24 shrink-0 md:pt-0">
+                Industry:
+              </span>
+              {/* Clean fluid wrap for laptop; smooth scrolling overview for smaller mobile screens */}
+              <div className="flex overflow-x-auto md:flex-wrap gap-2 pb-1 md:pb-0 scrollbar-none snap-x">
                 {industries.map((industry) => {
                   const isSelected = selectedIndustry === industry;
                   return (
@@ -911,10 +913,9 @@ function App() {
                         setSelectedIndustry(industry);
                         setSelectedProduct('Product Collections');
                       }}
-                      className={`px-3 py-1.5 rounded-full text-[11.5px] font-bold tracking-wide border cursor-pointer transition-all ${isSelected
-                        ? 'bg-[#f05c3f] text-white border-[#f05c3f] shadow-sm'
-                        // Changed hover:border-gray-400 to hover:border-[#f05c3f] (or hover:border-red-500)
-                        : 'bg-slate-50 dark:bg-slate-800 text-gray-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-[#f05c3f]'
+                      className={`px-3.5 py-1.5 rounded-full text-[11.5px] font-bold tracking-wide border cursor-pointer transition-all shrink-0 snap-mini snap-start ${isSelected
+                          ? 'bg-[#f05c3f] text-white border-[#f05c3f] shadow-sm'
+                          : 'bg-slate-50 dark:bg-slate-800 text-gray-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-[#f05c3f]'
                         }`}
                     >
                       {industry === 'ALL INDUSTRY' ? 'All' : industry.replace(' Flooring', '')}
@@ -924,72 +925,82 @@ function App() {
               </div>
             </div>
 
-            <div className="h-[1px] bg-slate-100 dark:bg-slate-800 w-full" />
+            <div className="h-[1px] bg-slate-100 dark:bg-slate-800 w-full my-1" />
 
             {/* Collection Row Filter Matrix */}
-            <div className="flex flex-col sm:flex-row sm:items-start gap-1 relative">
-              <span className="text-[11px] font-extrabold tracking-wider text-gray-400 uppercase w-24 shrink-0 pt-1.5">Collection:</span>
+            <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4">
+              <span className="text-[11px] font-extrabold tracking-wider text-gray-400 uppercase w-24 shrink-0 md:pt-0">
+                Collection:
+              </span>
 
-              <div className="flex flex-wrap gap-2 w-full pr-12">
+              <div className="flex flex-wrap items-center gap-2 w-full">
                 <button
                   onClick={() => setSelectedProduct('Product Collections')}
-                  className={`px-3 py-1.5 rounded-full text-[11px] font-bold tracking-wide border cursor-pointer transition-all ${selectedProduct === 'Product Collections'
-                    ? 'bg-[#f05c3f] text-white border-[#f05c3f] shadow-sm'
-                    : 'bg-slate-50 dark:bg-slate-800 text-gray-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-gray-400'
+                  className={`px-3.5 py-1.5 rounded-full text-[11px] font-bold tracking-wide border cursor-pointer transition-all shrink-0 ${selectedProduct === 'Product Collections'
+                      ? 'bg-[#f05c3f] text-white border-[#f05c3f] shadow-sm'
+                      : 'bg-slate-50 dark:bg-slate-800 text-gray-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-[#f05c3f]'
                     }`}
                 >
                   All Collections
                 </button>
+
                 {flooringProducts.slice(0, 10).map((product) => {
-                  if (product === 'Product Collections') return null; // handled above
+                  if (product === 'Product Collections') return null;
                   const isSelected = selectedProduct === product;
                   return (
                     <button
                       key={product}
                       onClick={() => setSelectedProduct(product)}
-                      className={`px-3 py-1.5 rounded-full text-[11.5px] font-bold tracking-wide border cursor-pointer transition-all ${isSelected
-                        ? 'bg-[#f05c3f] text-white border-[#f05c3f] shadow-sm'
-                        : 'bg-slate-50 dark:bg-slate-800 text-gray-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-[#f05c3f]'
+                      className={`px-3.5 py-1.5 rounded-full text-[11.5px] font-bold tracking-wide border cursor-pointer transition-all shrink-0 ${isSelected
+                          ? 'bg-[#f05c3f] text-white border-[#f05c3f] shadow-sm'
+                          : 'bg-slate-50 dark:bg-slate-800 text-gray-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-[#f05c3f]'
                         }`}
                     >
                       {product}
                     </button>
                   );
                 })}
+
+                {/* Handled natively inside the layout container wrapper */}
+                {flooringProducts.length > 10 && (
+                  <div className="relative inline-block" ref={productDropdownRef}>
+                    <button
+                      onClick={() => setIsProductDropdownOpen(!isProductDropdownOpen)}
+                      className="px-3.5 py-1.5 rounded-full text-[12px] font-bold tracking-wide border bg-slate-50 dark:bg-slate-800 text-gray-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-[#f05c3f] cursor-pointer transition-all flex items-center gap-1"
+                    >
+                      More
+                      <svg
+                        className={`w-3 h-3 transition-transform duration-200 ${isProductDropdownOpen ? 'rotate-180' : ''}`}
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+
+                    {isProductDropdownOpen && (
+                      <div className="absolute left-0 md:left-auto md:right-0 top-full mt-2 w-52 bg-white dark:bg-slate-900 shadow-[0_10px_30px_rgba(0,0,0,0.15)] border border-slate-100 dark:border-slate-800 py-1.5 z-50 rounded-xl max-h-[280px] overflow-y-auto">
+                        {flooringProducts.slice(10).map((product, index) => (
+                          <button
+                            key={index}
+                            onClick={() => {
+                              setSelectedProduct(product);
+                              setIsProductDropdownOpen(false);
+                            }}
+                            className={`cursor-pointer w-full text-left px-4 py-2 text-[12.5px] transition-colors ${selectedProduct === product
+                                ? 'text-[#f05c3f] bg-orange-50/60 dark:bg-slate-800 font-bold'
+                                : 'text-gray-600 dark:text-slate-300 hover:text-[#f05c3f] hover:bg-slate-50 dark:hover:bg-slate-800/50'
+                              }`}
+                          >
+                            {product}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
-
-              {/* The Dropdown toggler for remaining products (Replacing original dropdown) */}
-              {flooringProducts.length > 10 && (
-                <div className="absolute right-[21%] top-0" ref={productDropdownRef}>
-                  <button
-                    onClick={() => setIsProductDropdownOpen(!isProductDropdownOpen)}
-                    className="px-3 py-1.5 rounded-full text-[12px] font-bold tracking-wide border bg-slate-50 dark:bg-slate-800 text-gray-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-[#f05c3f] cursor-pointer transition-all flex items-center gap-1"
-                  >
-                    More
-                    <svg className={`w-3 h-3 transition-transform ${isProductDropdownOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" /></svg>
-                  </button>
-
-                  {isProductDropdownOpen && (
-                    <div className="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-slate-800 shadow-[0_10px_40px_rgba(0,0,0,0.15)] border border-slate-100 dark:border-slate-700 py-2 z-50 rounded max-h-[300px] overflow-y-auto">
-                      {flooringProducts.slice(10).map((product, index) => (
-                        <button
-                          key={index}
-                          onClick={() => {
-                            setSelectedProduct(product);
-                            setIsProductDropdownOpen(false);
-                          }}
-                          className={`cursor-pointer w-full text-left px-5 py-2.5 text-[13px] transition-colors ${selectedProduct === product
-                            ? 'text-[#fc6c3f] bg-orange-50 dark:bg-slate-700 font-bold'
-                            : 'text-gray-600 dark:text-slate-300 hover:text-[#fc6c3f] hover:bg-slate-50 dark:hover:bg-slate-700'
-                            }`}
-                        >
-                          {product}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
             </div>
           </div>
 
