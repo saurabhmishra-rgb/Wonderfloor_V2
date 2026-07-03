@@ -657,8 +657,8 @@ function App() {
           <div className="w-full lg:max-w-[650px] flex flex-col items-start text-left">
 
             {/* AI Badge */}
-            <div className="animate-slide-up-1 inline-flex items-center gap-2.5 bg-orange-50 dark:bg-orange-950/40 text-[#f05c3f] text-[12px] font-bold tracking-wide px-1.5 py-1.5 pr-4 rounded-full mb-8 border border-orange-100 dark:border-orange-900/50 shadow-sm">
-              <span className="flex items-center justify-center w-6 h-6 rounded-full bg-[#f05c3f] text-white text-[9px] font-black tracking-tighter">
+            <div className="animate-slide-up-1 inline-flex items-center gap-1.5 bg-orange-50 dark:bg-orange-950/40 text-[#f05c3f] text-[10px] font-bold tracking-wide px-1 py-1 pr-3 rounded-full mb-6 border border-orange-100 dark:border-orange-900/50 shadow-sm">
+              <span className="flex items-center justify-center w-5 h-5 rounded-full bg-[#f05c3f] text-white text-[7px] font-black tracking-tighter">
                 AI
               </span>
               WonderVision AI · Powered by Real-Time Floor Visualisation
@@ -677,8 +677,13 @@ function App() {
             </h1>
 
             {/* Subtext */}
-            <p className="animate-slide-up-3 text-[17px] sm:text-[19px] text-gray-500 dark:text-slate-300 font-normal leading-relaxed mb-10 max-w-[500px]">
-              See <span className="font-bold text-slate-800 dark:text-white">Wonderfloor vinyl flooring</span> in your space instantly. Upload a photo, scan from your phone, or explore demo scenes.
+            <p
+              className="animate-slide-up-3 text-[14px] sm:text-[15px] text-gray-500 dark:text-slate-300 font-normal leading-relaxed mb-10 max-w-[500px]"
+              style={{ fontFamily: '"Inter Tight", Inter, system-ui, sans-serif' }}
+            >
+              See <span className="font-bold text-slate-800 dark:text-white">Wonderfloor vinyl flooring</span> in your space instantly. Upload a
+              <br />
+              photo, scan from your phone, or explore demo scenes.
             </p>
 
             {/* Action Buttons Row */}
@@ -741,24 +746,24 @@ function App() {
   `}</style>
 
             {/* Floating card 1 — AI Confidence */}
-            <div className="absolute -left-7 bottom-[60px] z-[999] min-w-[170px] rounded-2xl border border-black/[0.08] bg-white p-3.5 shadow-[0_12px_40px_rgba(0,0,0,0.1)] animate-[floatY_4s_ease-in-out_infinite]">
-              <div className="mb-1.5 text-[10px] font-semibold uppercase tracking-[0.8px] text-slate-400">
+            <div className="absolute -left-7 bottom-[60px] z-[999] min-w-[110px] rounded-xl border border-black/[0.08] bg-white p-1.5 shadow-[0_8px_28px_rgba(0,0,0,0.1)] animate-[floatY_4s_ease-in-out_infinite]">
+              <div className="mb-1 text-[8px] font-semibold uppercase tracking-[0.6px] text-slate-400">
                 AI Confidence
               </div>
-              <div className="mb-0.5 text-lg font-extrabold tracking-[-0.5px] text-slate-950">
+              <div className="mb-0.5 text-sm font-extrabold tracking-[-0.3px] text-slate-950">
                 98.4%
               </div>
-              <div className="text-[11px] font-semibold text-[#F4500A]">
+              <div className="text-[9px] font-semibold text-[#F4500A]">
                 Floor detected ✓
               </div>
             </div>
 
             {/* Floating card 2 — Scenes Available */}
-            <div className="absolute -right-5 top-[120px] z-[999] rounded-2xl bg-gradient-to-br from-[#F4500A] to-[#FF6B2B] p-3.5 shadow-[0_12px_40px_rgba(244,80,10,0.12)] animate-[floatY2_5s_ease-in-out_infinite]">
-              <div className="mb-1 text-[10px] font-semibold uppercase tracking-[0.8px] text-white/70">
+            <div className="absolute -right-5 top-[120px] z-[999] rounded-xl bg-gradient-to-br from-[#F4500A] to-[#FF6B2B] p-1.5 shadow-[0_8px_28px_rgba(244,80,10,0.12)] animate-[floatY2_5s_ease-in-out_infinite]">
+              <div className="mb-0.5 text-[8px] font-semibold uppercase tracking-[0.6px] text-white/70">
                 Scenes Available
               </div>
-              <div className="text-[22px] font-extrabold tracking-[-0.5px] text-white">
+              <div className="text-base font-extrabold tracking-[-0.3px] text-white">
                 60+
               </div>
             </div>
@@ -796,9 +801,9 @@ function App() {
                 />
 
                 {/* AI Processing status pill */}
-                <div className="absolute right-3 top-3 flex items-center gap-1.5 rounded-lg bg-[#F4500A]/90 px-2.5 py-1.5 backdrop-blur-[10px]">
-                  <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-white"></div>
-                  <div className="text-[10px] font-bold uppercase tracking-[0.5px] text-white">
+                <div className="absolute right-3 top-7 flex items-center gap-1 rounded-md bg-[#F4500A]/90 px-2 py-1 backdrop-blur-[10px]">
+                  <div className="h-1 w-1 animate-pulse rounded-full bg-white"></div>
+                  <div className="text-[8px] font-bold uppercase tracking-[0.4px] text-white">
                     AI Processing
                   </div>
                 </div>
