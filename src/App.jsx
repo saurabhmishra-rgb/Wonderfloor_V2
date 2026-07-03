@@ -545,7 +545,7 @@ function App() {
 
       {/* ── HEADER / NAVIGATION ── */}
       <header
-        className={`w-full border-b backdrop-blur-md fixed top-0 left-0 z-40 transition-all duration-500 ${isDarkMode ? 'bg-slate-900/90 border-slate-800' : 'border-slate-200'
+        className={`w-full border-b backdrop-blur-md fixed -top-1 left-0 z-40 transition-all duration-500 ${isDarkMode ? 'bg-slate-900/90 border-slate-800' : 'border-slate-200'
           }`}
         style={!isDarkMode ? { backgroundColor: '#F8F8FB' } : {}}
       >
@@ -642,7 +642,7 @@ function App() {
 `}</style>
 
       {/* ── HERO SECTION ── */}
-      <section className=" relative w-full pt-8 pb-20 lg:pt-23 lg:pb-28 overflow-hidden">
+      <section className=" relative w-full pt-11 pb-20 lg:pt-29 lg:pb-28 overflow-hidden">
 
         {/* Subtle Dot Grid Background matching the design */}
         <div className="absolute inset-0 z-0 bg-[radial-gradient(#e5e7eb_1.5px,transparent_1.5px)] [background-size:24px_24px] dark:bg-[radial-gradient(#334155_1.5px,transparent_1.5px)] opacity-60"></div>
@@ -661,11 +661,11 @@ function App() {
               <span className="flex items-center justify-center w-5 h-5 rounded-full bg-[#f05c3f] text-white text-[7px] font-black tracking-tighter">
                 AI
               </span>
-              WonderVision AI · Powered by Real-Time Floor Visualisation
+              WonderVision AI · Powered by Real-Time Floor Visualization
             </div>
 
             {/* Main Heading exact match to screenshot with fixed line breaks */}
-            <h1 className="animate-slide-up-2 text-[40px] sm:text-[52px] lg:text-[66px] font-black tracking-tighter leading-[1.05] mb-6 text-slate-900 dark:text-white">
+            <h1 className="animate-slide-up-2 text-[40px] sm:text-[52px] lg:text-[66px] font-black tracking-[-0.02em] leading-[1.05] mb-6 text-slate-900 dark:text-white">
               <span className="whitespace-nowrap">Turn Every Flooring</span><br />
               Discussion into a<br />
               <span className="relative inline-block text-[#F4500A] mt-1 mb-2">
@@ -728,8 +728,8 @@ function App() {
 
             {/* Feature Bullet Points */}
             <div className="animate-slide-up-5 flex flex-wrap items-center gap-x-6 gap-y-3 text-[14px] font-semibold text-gray-500 dark:text-slate-400 w-full">
-              <span className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-[#f05c3f]"></span> 25+ Collections</span>
-              <span className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-[#f05c3f]"></span> 11 Industries</span>
+              <span className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-[#f05c3f]"></span> 30+ Collections</span>
+              <span className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-[#f05c3f]"></span> 10+ Industries</span>
               <span className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-[#f05c3f]"></span> Real-Time AI Preview</span>
             </div>
 
@@ -737,7 +737,7 @@ function App() {
 
 
           {/* RIGHT COLUMN: Interactive App Window Container */}
-          <div className="w-full lg:flex-[1.2] max-w-[850px] relative z-10 mb-16 sm:mb-20 animate-slide-up-4">
+          <div className="w-full h-full lg:flex-[1.2] max-w-[850px] relative z-10 mb-16 sm:mb-5 animate-slide-up-4">
 
             {/* Keyframes not built into Tailwind by default */}
             <style>{`
@@ -779,7 +779,7 @@ function App() {
                   <div className="h-[9px] w-[9px] rounded-full bg-[#28C840]"></div>
                 </div>
                 <div className="flex-1 text-center text-[11px] font-semibold tracking-[0.3px] text-gray-500">
-                  WonderVision AI · Visualiser 2.0
+                  WonderVision AI · Visualiser 1.0
                 </div>
                 <svg className="h-3.5 w-3.5 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <circle cx="12" cy="12" r="10"></circle>
@@ -895,10 +895,11 @@ function App() {
           </div>
 
           {/* Inline Navigation & Control Matrix Layout */}
-          <div className="flex flex-col gap-2 mb-10 bg-[#F7F7FA] dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800/80 shadow-sm">
+          <div className="flex flex-col gap-2 mb-10 w-full">
 
             {/* Industry Row Filter Matrix */}
-            <div className="flex flex-col sm:flex-row sm:items-start gap-2">
+            {/* Industry Row Filter Matrix */}
+            <div className="flex flex-col sm:flex-row sm:items-start gap-1">
               <span className="text-[11px] font-extrabold tracking-wider text-gray-400 uppercase w-24 shrink-0 pt-1.5">Industry:</span>
               <div className="flex flex-wrap gap-2">
                 {industries.map((industry) => {
@@ -912,7 +913,8 @@ function App() {
                       }}
                       className={`px-3 py-1.5 rounded-full text-[11.5px] font-bold tracking-wide border cursor-pointer transition-all ${isSelected
                         ? 'bg-[#f05c3f] text-white border-[#f05c3f] shadow-sm'
-                        : 'bg-slate-50 dark:bg-slate-800 text-gray-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-gray-400'
+                        // Changed hover:border-gray-400 to hover:border-[#f05c3f] (or hover:border-red-500)
+                        : 'bg-slate-50 dark:bg-slate-800 text-gray-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-[#f05c3f]'
                         }`}
                     >
                       {industry === 'ALL INDUSTRY' ? 'All' : industry.replace(' Flooring', '')}
@@ -925,7 +927,7 @@ function App() {
             <div className="h-[1px] bg-slate-100 dark:bg-slate-800 w-full" />
 
             {/* Collection Row Filter Matrix */}
-            <div className="flex flex-col sm:flex-row sm:items-start gap-2 relative">
+            <div className="flex flex-col sm:flex-row sm:items-start gap-1 relative">
               <span className="text-[11px] font-extrabold tracking-wider text-gray-400 uppercase w-24 shrink-0 pt-1.5">Collection:</span>
 
               <div className="flex flex-wrap gap-2 w-full pr-12">
@@ -947,7 +949,7 @@ function App() {
                       onClick={() => setSelectedProduct(product)}
                       className={`px-3 py-1.5 rounded-full text-[11.5px] font-bold tracking-wide border cursor-pointer transition-all ${isSelected
                         ? 'bg-[#f05c3f] text-white border-[#f05c3f] shadow-sm'
-                        : 'bg-slate-50 dark:bg-slate-800 text-gray-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-gray-400'
+                        : 'bg-slate-50 dark:bg-slate-800 text-gray-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-[#f05c3f]'
                         }`}
                     >
                       {product}
@@ -958,10 +960,10 @@ function App() {
 
               {/* The Dropdown toggler for remaining products (Replacing original dropdown) */}
               {flooringProducts.length > 10 && (
-                <div className="absolute right-0 top-0" ref={productDropdownRef}>
+                <div className="absolute right-[21%] top-0" ref={productDropdownRef}>
                   <button
                     onClick={() => setIsProductDropdownOpen(!isProductDropdownOpen)}
-                    className="px-3 py-1.5 rounded-full text-[12px] font-bold tracking-wide border bg-slate-50 dark:bg-slate-800 text-gray-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-gray-400 cursor-pointer transition-all flex items-center gap-1"
+                    className="px-3 py-1.5 rounded-full text-[12px] font-bold tracking-wide border bg-slate-50 dark:bg-slate-800 text-gray-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-[#f05c3f] cursor-pointer transition-all flex items-center gap-1"
                   >
                     More
                     <svg className={`w-3 h-3 transition-transform ${isProductDropdownOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" /></svg>
