@@ -53,6 +53,7 @@ const flooringProducts_static = [
   'Braavo',
   'Durofloor',
   'Duratek',
+ 
   'Galaxxy',
   'GDP',
   'Hi-Tech',
@@ -396,32 +397,39 @@ function App() {
   };
 
   const handleHistorySelect = (entry) => {
-    if (entry.type === 'demo' && entry.roomId) {
-      const room = activeRooms.find(r => r.id === entry.roomId);
-      if (room) {
-        handleDemoRoomClick({
-          ...room,
-          historyEntryId: entry.id,
-          lastProduct: entry.lastProduct || null,
-          // ── Carry collections through history navigation ──
-          product: room.product || [],
-        });
-      }
-    } else {
-      setSelectedRoomImage({
-        previewUrl: entry.thumbnail,
-        id: entry.id,
+  if (entry.type === 'demo' && entry.roomId) {
+    const room = activeRooms.find(r => r.id === entry.roomId);
+    if (room) {
+      setIsModalOpen(true); // ✅ NEW — pehle modal-flag set karo
+
+      handleDemoRoomClick({
+        ...room,
         historyEntryId: entry.id,
-        isDemo: false,
-        rawFile: null,
         lastProduct: entry.lastProduct || null,
-        // ── User-uploaded photo: no collection constraint ──
-        supportedCollections: [],
+        product: room.product || [],
       });
-      setIsModalOpen(true);
+
+      // ✅ NEW — URL ko bhi /visualizer route pe le jao
+      navigate(`/visualizer/${room.id}`, { replace: false });
     }
-    setIsHistoryOpen(false);
-  };
+  } else {
+    setIsModalOpen(true); // ✅ NEW
+
+    setSelectedRoomImage({
+      previewUrl: entry.thumbnail,
+      id: entry.id,
+      historyEntryId: entry.id,
+      isDemo: false,
+      rawFile: null,
+      lastProduct: entry.lastProduct || null,
+      supportedCollections: [],
+    });
+
+    // ✅ NEW — user-uploaded photo ke liye bhi route change karo
+    navigate(`/visualizer/upload/${entry.id}`, { replace: false });
+  }
+  setIsHistoryOpen(false);
+};
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
