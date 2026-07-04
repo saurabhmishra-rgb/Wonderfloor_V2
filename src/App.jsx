@@ -1046,7 +1046,9 @@ function App() {
                   {/* Description metadata section matching image_48a2f9.png verbatim */}
                   <div className="p-5 flex flex-col gap-1.5 flex-grow">
                     <span className="text-[#f05c3f] text-[10px] font-extrabold uppercase tracking-widest">
-                      Industry Category
+                      {cat.category.trim().split(/\s+/).length > 1
+    ? cat.category.trim().split(/\s+/).slice(0, -1).join(" ")
+    : cat.category}
                     </span>
                     <h4 className="text-[16px] font-bold text-slate-900 dark:text-white group-hover:text-[#f05c3f] transition-colors leading-tight">
                       {cat.category}
