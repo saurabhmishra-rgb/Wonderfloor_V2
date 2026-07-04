@@ -53,7 +53,6 @@ const flooringProducts_static = [
   'Braavo',
   'Durofloor',
   'Duratek',
-  "D'ZINER",
   'Galaxxy',
   'GDP',
   'Hi-Tech',
