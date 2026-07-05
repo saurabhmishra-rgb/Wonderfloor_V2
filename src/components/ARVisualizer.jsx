@@ -409,14 +409,14 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
     // Priority 4: Fallback
     // const savedProduct = localStorage.getItem('savedSelectedProduct');
     // return savedProduct ? JSON.parse(savedProduct) : combinedProducts[0];
-      return combinedProducts[0] || ALL_PRODUCTS[0] || {
-    id: 'placeholder',
-    name: 'Loading...',
-    accordionCategory: '',
-    img: '',
-    size: '',
-    sku: '',
-  };
+    return combinedProducts[0] || ALL_PRODUCTS[0] || {
+      id: 'placeholder',
+      name: 'Loading...',
+      accordionCategory: '',
+      img: '',
+      size: '',
+      sku: '',
+    };
   });
 
 
@@ -453,30 +453,30 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
   // useEffect(() => {
   //   localStorage.setItem('savedSelectedProduct', JSON.stringify(selectedProduct));
   // }, [selectedProduct]);
-  
-// ✅ History item click hone par uska exact tile restore karo
-useEffect(() => {
-  if (isLoadingDbProducts) return; // ✅ NEW — DB products load hone tak wait karo
-  if (!(initialImage?.historyEntryId && initialImage?.lastProduct)) return;
 
-  const historyProduct = combinedProducts.find(p => p.id === initialImage.lastProduct.id);
+  // ✅ History item click hone par uska exact tile restore karo
+  useEffect(() => {
+    if (isLoadingDbProducts) return; // ✅ NEW — DB products load hone tak wait karo
+    if (!(initialImage?.historyEntryId && initialImage?.lastProduct)) return;
 
-  if (historyProduct && historyProduct.id !== selectedProduct?.id) {
-    setSelectedProduct(historyProduct);
-    setExpandedProductCategory(historyProduct.accordionCategory);
-    setActiveFooterCategory(historyProduct.accordionCategory);
-    setFloorRotation(0);
+    const historyProduct = combinedProducts.find(p => p.id === initialImage.lastProduct.id);
 
-    const safeSku = encodeURIComponent(historyProduct.sku);
-    const safeRoom = encodeURIComponent(initialImage?.id || 'default');
-    navigate(`/visualizer/${safeSku}/${safeRoom}`, { replace: true });
+    if (historyProduct && historyProduct.id !== selectedProduct?.id) {
+      setSelectedProduct(historyProduct);
+      setExpandedProductCategory(historyProduct.accordionCategory);
+      setActiveFooterCategory(historyProduct.accordionCategory);
+      setFloorRotation(0);
 
-    if (visualizerInstance.current && visualizerInstance.current.updateTexture) {
-      visualizerInstance.current.updateTexture(historyProduct.img, 0);
+      const safeSku = encodeURIComponent(historyProduct.sku);
+      const safeRoom = encodeURIComponent(initialImage?.id || 'default');
+      navigate(`/visualizer/${safeSku}/${safeRoom}`, { replace: true });
+
+      if (visualizerInstance.current && visualizerInstance.current.updateTexture) {
+        visualizerInstance.current.updateTexture(historyProduct.img, 0);
+      }
     }
-  }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-}, [initialImage, combinedProducts, isLoadingDbProducts]); // ✅ NEW deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialImage, combinedProducts, isLoadingDbProducts]); // ✅ NEW deps
 
   const [processedImage, setProcessedImage] = useState(null);
   const [isProcessing, setIsProcessing] = useState(true);
@@ -567,7 +567,14 @@ useEffect(() => {
   combinedProducts
     .filter(p => p.navCategory === activeNavCategory)
     .filter(p => {
-      // ✅ CHANGED: Room-restriction hamesha apply, filter/search ke case mein bhi
+      const isSearching = searchQuery.trim() !== '';
+      
+      // 💡 NEW: Mirror the filter check here
+      const isFiltering = Object.values(activeFilters).some(selectedValues => selectedValues.length > 0);
+      
+      // 💡 FIX: Show the accordion block globally if searching OR filtering
+      if (isSearching || isFiltering) return true;
+
       return !hasRoomFilter || roomSupportedCollections.some(
         cat => normalizeCompare(cat) === normalizeCompare(p.accordionCategory)
       );
@@ -598,85 +605,85 @@ useEffect(() => {
   }, [selectedProduct]);
 
   // ✅ NEW: Naya room aane par default-tile lock reset karo
-useEffect(() => {
-  hasAppliedDefaultRef.current = null;
-}, [activeBaseImage]);
+  useEffect(() => {
+    hasAppliedDefaultRef.current = null;
+  }, [activeBaseImage]);
 
   // ── NEW: If the active product is outside the room's filter,
   //         auto-switch to the first available product ──
   // ✅ REPLACED: Room ke first supported collection ka first tile always wrap karo (normalized match)
-useEffect(() => {
-  if (isLoadingDbProducts) return;
-  if (initialImage?.historyEntryId && initialImage?.lastProduct) return;
-  if (productId) return;
+  useEffect(() => {
+    if (isLoadingDbProducts) return;
+    if (initialImage?.historyEntryId && initialImage?.lastProduct) return;
+    if (productId) return;
 
-  const currentRoomKey = activeBaseImage?.id || activeBaseImage?.previewUrl || 'none';
-  if (hasAppliedDefaultRef.current === currentRoomKey) return;
+    const currentRoomKey = activeBaseImage?.id || activeBaseImage?.previewUrl || 'none';
+    if (hasAppliedDefaultRef.current === currentRoomKey) return;
 
-  const navProducts = combinedProducts.filter(p => p.navCategory === activeNavCategory);
-  if (navProducts.length === 0) return;
+    const navProducts = combinedProducts.filter(p => p.navCategory === activeNavCategory);
+    if (navProducts.length === 0) return;
 
-  let firstProduct = null;
+    let firstProduct = null;
 
-  if (hasRoomFilter && roomSupportedCollections.length > 0) {
-    for (const cat of roomSupportedCollections) {
-      const match = navProducts.find(
-        p => normalizeCompare(p.accordionCategory) === normalizeCompare(cat)
-      );
-      if (match) {
-        firstProduct = match;
-        break;
+    if (hasRoomFilter && roomSupportedCollections.length > 0) {
+      for (const cat of roomSupportedCollections) {
+        const match = navProducts.find(
+          p => normalizeCompare(p.accordionCategory) === normalizeCompare(cat)
+        );
+        if (match) {
+          firstProduct = match;
+          break;
+        }
       }
     }
-  }
 
-  if (!firstProduct) {
-    firstProduct = navProducts[0];
-  }
+    if (!firstProduct) {
+      firstProduct = navProducts[0];
+    }
 
-  if (firstProduct) {
-    hasAppliedDefaultRef.current = currentRoomKey;
+    if (firstProduct) {
+      hasAppliedDefaultRef.current = currentRoomKey;
 
-    setSelectedProduct(firstProduct);
-    setExpandedProductCategory(firstProduct.accordionCategory);
-    setActiveFooterCategory(firstProduct.accordionCategory);
-    setFloorRotation(0);
-    setIsFloorVisible(true);
-    applyFloorOverlay(firstProduct, 0);
+      setSelectedProduct(firstProduct);
+      setExpandedProductCategory(firstProduct.accordionCategory);
+      setActiveFooterCategory(firstProduct.accordionCategory);
+      setFloorRotation(0);
+      setIsFloorVisible(true);
+      applyFloorOverlay(firstProduct, 0);
 
-    const safeSku = encodeURIComponent(firstProduct.sku);
-    const safeRoom = encodeURIComponent(initialImage?.id || 'default');
-    navigate(`/visualizer/${safeSku}/${safeRoom}`, { replace: true });
-  }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-}, [isLoadingDbProducts, combinedProducts, activeNavCategory, hasRoomFilter, roomSupportedCollections, activeBaseImage]);
+      const safeSku = encodeURIComponent(firstProduct.sku);
+      const safeRoom = encodeURIComponent(initialImage?.id || 'default');
+      navigate(`/visualizer/${safeSku}/${safeRoom}`, { replace: true });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoadingDbProducts, combinedProducts, activeNavCategory, hasRoomFilter, roomSupportedCollections, activeBaseImage]);
 
-// 🔍 TEMP DEBUG — issue confirm hone ke baad hata dena
-useEffect(() => {
-  if (!isLoadingDbProducts) {
-    console.log('roomSupportedCollections:', roomSupportedCollections);
-    console.log('Available accordionCategories:',
-      [...new Set(combinedProducts.map(p => `"${p.accordionCategory}"`))]
-    );
-  }
-}, [isLoadingDbProducts, roomSupportedCollections, combinedProducts]);
+  // 🔍 TEMP DEBUG — issue confirm hone ke baad hata dena
+  useEffect(() => {
+    if (!isLoadingDbProducts) {
+      console.log('roomSupportedCollections:', roomSupportedCollections);
+      console.log('Available accordionCategories:',
+        [...new Set(combinedProducts.map(p => `"${p.accordionCategory}"`))]
+      );
+    }
+  }, [isLoadingDbProducts, roomSupportedCollections, combinedProducts]);
 
-// ✅ NEW: Jab DB products load ho jaayen, productId (URL SKU) ko re-verify/correct karo
-useEffect(() => {
-  if (isLoadingDbProducts) return;
-  if (!productId) return;
+  // ✅ NEW: Jab DB products load ho jaayen, productId (URL SKU) ko re-verify/correct karo
+  useEffect(() => {
+    if (isLoadingDbProducts) return;
+    if (!productId) return;
 
-  const decodedSku = decodeURIComponent(productId);
-  const matchedProduct = combinedProducts.find(p => p.sku === decodedSku);
+    const decodedSku = decodeURIComponent(productId);
+    const matchedProduct = combinedProducts.find(p => p.sku === decodedSku);
 
-  if (matchedProduct && matchedProduct.id !== selectedProduct?.id) {
-    setSelectedProduct(matchedProduct);
-    setExpandedProductCategory(matchedProduct.accordionCategory);
-    setActiveFooterCategory(matchedProduct.accordionCategory);
-    applyFloorOverlay(matchedProduct, 0, false);
-  }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-}, [isLoadingDbProducts, combinedProducts, productId]);
+    if (matchedProduct && matchedProduct.id !== selectedProduct?.id) {
+      setSelectedProduct(matchedProduct);
+      setExpandedProductCategory(matchedProduct.accordionCategory);
+      setActiveFooterCategory(matchedProduct.accordionCategory);
+      applyFloorOverlay(matchedProduct, 0, false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoadingDbProducts, combinedProducts, productId]);
 
   useEffect(() => {
     const container = imageContainerRef.current;
@@ -1238,7 +1245,7 @@ useEffect(() => {
 
   //add filter option by dashboard when it is not available in ARVisualizer in filter if exist then it is not place inside filter option
   // ✅ DYNAMIC FILTER GENERATION WITH DE-DUPLICATION & CLEANING
- const filterCategories = useMemo(() => { 
+  const filterCategories = useMemo(() => {
     return BASE_FILTER_CATEGORIES.map(category => {
       const uniqueOptionsSet = new Set();
 
@@ -1310,50 +1317,53 @@ useEffect(() => {
   console.log('ALL_PRODUCTS count:', ALL_PRODUCTS.length);
 
   // ── FILTER LOGIC: APPLIES GLOBALLY ACROSS ALL PRODUCTS ──
- const filteredProducts = combinedProducts.filter(prod => {
-  const searchLower = searchQuery.trim().toLowerCase();
-  const isSearching = searchLower !== '';
+  const filteredProducts = combinedProducts.filter(prod => {
+    const searchLower = searchQuery.trim().toLowerCase();
+    const isSearching = searchLower !== '';
 
-  // ✅ CHANGED: Room-restriction ab HAMESHA apply hoga (search ke case mein chhod sakte ho, filter ke case mein nahi)
-  if (hasRoomFilter && !roomSupportedCollections.some(
+   // 💡 NEW: Check if any filter option has values selected
+  const isFiltering = Object.values(activeFilters).some(selectedValues => selectedValues.length > 0);
+
+  // 💡 FIX: Bypass room restriction if searching OR filtering!
+  if (!isSearching && !isFiltering && hasRoomFilter && !roomSupportedCollections.some(
     cat => normalizeCompare(cat) === normalizeCompare(prod.accordionCategory)
   )) {
     return false;
   }
 
-  const matchesSearch = searchLower === '' ||
-    safeSearchMatch(prod.name, searchLower) ||
-    safeSearchMatch(prod.accordionCategory, searchLower) ||
-    safeSearchMatch(prod.collection, searchLower) ||
-    safeSearchMatch(prod.colour, searchLower) ||
-    safeSearchMatch(prod.shade, searchLower) ||
-    safeSearchMatch(prod.style, searchLower) ||
-    safeSearchMatch(prod.pattern, searchLower) ||
-    safeSearchMatch(prod.thickness, searchLower) || 
-    safeSearchMatch(normalizeThickness(prod.thickness), searchLower) || 
-    safeSearchMatch(prod.userIndustry, searchLower) ||
-    safeSearchMatch(prod.applicationArea, searchLower) ||
-    (prod.tags && prod.tags.some(tag => tag.toLowerCase().includes(searchLower)));
+    const matchesSearch = searchLower === '' ||
+      safeSearchMatch(prod.name, searchLower) ||
+      safeSearchMatch(prod.accordionCategory, searchLower) ||
+      safeSearchMatch(prod.collection, searchLower) ||
+      safeSearchMatch(prod.colour, searchLower) ||
+      safeSearchMatch(prod.shade, searchLower) ||
+      safeSearchMatch(prod.style, searchLower) ||
+      safeSearchMatch(prod.pattern, searchLower) ||
+      safeSearchMatch(prod.thickness, searchLower) ||
+      safeSearchMatch(normalizeThickness(prod.thickness), searchLower) ||
+      safeSearchMatch(prod.userIndustry, searchLower) ||
+      safeSearchMatch(prod.applicationArea, searchLower) ||
+      (prod.tags && prod.tags.some(tag => tag.toLowerCase().includes(searchLower)));
 
-  const matchesFilters = Object.entries(activeFilters).every(([key, selectedValues]) => {
-    if (selectedValues.length === 0) return true;
-    
-    const rawValue = prod[key];
-    if (rawValue === undefined || rawValue === null) return false;
+    const matchesFilters = Object.entries(activeFilters).every(([key, selectedValues]) => {
+      if (selectedValues.length === 0) return true;
 
-    let prodValues = parseFieldToArray(rawValue);
+      const rawValue = prod[key];
+      if (rawValue === undefined || rawValue === null) return false;
 
-    if (key === 'thickness') {
-      prodValues = prodValues.map(normalizeThickness);
-    } else {
-      prodValues = prodValues.map(v => String(v).trim());
-    }
+      let prodValues = parseFieldToArray(rawValue);
 
-    return selectedValues.some(selected => prodValues.includes(selected));
+      if (key === 'thickness') {
+        prodValues = prodValues.map(normalizeThickness);
+      } else {
+        prodValues = prodValues.map(v => String(v).trim());
+      }
+
+      return selectedValues.some(selected => prodValues.includes(selected));
+    });
+
+    return matchesSearch && matchesFilters;
   });
-
-  return matchesSearch && matchesFilters;
-});
   // Isolate filtered results matching the current tab category
   const currentTabFilteredProducts = filteredProducts.filter(p => p.navCategory === activeNavCategory);
 
