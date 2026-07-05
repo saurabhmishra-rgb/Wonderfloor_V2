@@ -563,24 +563,24 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
   const hasRoomFilter = roomSupportedCollections.length > 0;
 
   // ── Moved here so hasRoomFilter is already defined ──
- const productCategories = Array.from(new Set(
-  combinedProducts
-    .filter(p => p.navCategory === activeNavCategory)
-    .filter(p => {
-      const isSearching = searchQuery.trim() !== '';
-      
-      // 💡 NEW: Mirror the filter check here
-      const isFiltering = Object.values(activeFilters).some(selectedValues => selectedValues.length > 0);
-      
-      // 💡 FIX: Show the accordion block globally if searching OR filtering
-      if (isSearching || isFiltering) return true;
+  const productCategories = Array.from(new Set(
+    combinedProducts
+      .filter(p => p.navCategory === activeNavCategory)
+      .filter(p => {
+        const isSearching = searchQuery.trim() !== '';
 
-      return !hasRoomFilter || roomSupportedCollections.some(
-        cat => normalizeCompare(cat) === normalizeCompare(p.accordionCategory)
-      );
-    })
-    .map(p => p.accordionCategory)
-));
+        // 💡 NEW: Mirror the filter check here
+        const isFiltering = Object.values(activeFilters).some(selectedValues => selectedValues.length > 0);
+
+        // 💡 FIX: Show the accordion block globally if searching OR filtering
+        if (isSearching || isFiltering) return true;
+
+        return !hasRoomFilter || roomSupportedCollections.some(
+          cat => normalizeCompare(cat) === normalizeCompare(p.accordionCategory)
+        );
+      })
+      .map(p => p.accordionCategory)
+  ));
 
   const currentSrc = processedImage || activeBaseImage?.previewUrl || 'https://images.unsplash.com/photo-1595844730298-b960fa25fa48?auto=format&fit=crop&w=1200&q=80';
   useEffect(() => {
@@ -1308,7 +1308,22 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
       }
     });
   };
+  // ✅ NEW: Toggle "Select All" for a given filter category
+  const handleToggleSelectAll = (categoryId, allOptions) => {
+    setActiveFilters(prev => {
+      const currentSelected = prev[categoryId] || [];
+      // Check karo ki kya pehle se saare options selected hain
+      const isAllSelected = currentSelected.length === allOptions.length;
 
+      if (isAllSelected) {
+        // Agar sab selected the, to ab khali (uncheck) kar do
+        return { ...prev, [categoryId]: [] };
+      } else {
+        // Agar sab selected nahi the, to saare options ko array mein daal do
+        return { ...prev, [categoryId]: [...allOptions] };
+      }
+    });
+  };
   const clearFilters = () => setActiveFilters({});
   // Filter Logic
   const navProducts = combinedProducts.filter(p => p.navCategory === activeNavCategory);
@@ -1321,15 +1336,15 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
     const searchLower = searchQuery.trim().toLowerCase();
     const isSearching = searchLower !== '';
 
-   // 💡 NEW: Check if any filter option has values selected
-  const isFiltering = Object.values(activeFilters).some(selectedValues => selectedValues.length > 0);
+    // 💡 NEW: Check if any filter option has values selected
+    const isFiltering = Object.values(activeFilters).some(selectedValues => selectedValues.length > 0);
 
-  // 💡 FIX: Bypass room restriction if searching OR filtering!
-  if (!isSearching && !isFiltering && hasRoomFilter && !roomSupportedCollections.some(
-    cat => normalizeCompare(cat) === normalizeCompare(prod.accordionCategory)
-  )) {
-    return false;
-  }
+    // 💡 FIX: Bypass room restriction if searching OR filtering!
+    if (!isSearching && !isFiltering && hasRoomFilter && !roomSupportedCollections.some(
+      cat => normalizeCompare(cat) === normalizeCompare(prod.accordionCategory)
+    )) {
+      return false;
+    }
 
     const matchesSearch = searchLower === '' ||
       safeSearchMatch(prod.name, searchLower) ||
@@ -1599,7 +1614,37 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
                     >
                       <div className="overflow-hidden">
                         <div className={`p-3 border-t flex flex-col gap-1
-                          ${isDarkMode ? 'bg-[#0d1825] border-[#1e3a5f]' : 'bg-gray-50 border-gray-100'}`}>
+  ${isDarkMode ? 'bg-[#0d1825] border-[#1e3a5f]' : 'bg-gray-50 border-gray-100'}`}>
+
+                          {/* 💡 NEW: Agar category 'Product Collection' ya 'User Industry' hai, to 'Select All' dikhao */}
+                          {(category.id === 'accordionCategory' || category.id === 'userIndustry') && (
+                            <label
+                              className={`relative flex justify-between items-center px-3 py-2.5 rounded-lg cursor-pointer transition-all
+        ${activeFilters[category.id]?.length === category.options.length
+                                  ? isDarkMode ? 'bg-teal-500/20 text-teal-300' : 'bg-[#0b5e5e]/10 text-[#0b5e5e]'
+                                  : isDarkMode ? 'text-gray-300 hover:bg-[#1a2d47] hover:text-white' : 'text-gray-700 hover:bg-gray-100'}`}
+                            >
+                              <span className="text-sm font-bold">Select All</span>
+                              <div className={`w-4 h-4 rounded flex items-center justify-center border-2 transition-all
+        ${activeFilters[category.id]?.length === category.options.length
+                                  ? 'bg-teal-500 border-teal-500'
+                                  : isDarkMode ? 'border-gray-500' : 'border-gray-300'}`}>
+                                {activeFilters[category.id]?.length === category.options.length && (
+                                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3">
+                                    <polyline points="20 6 9 17 4 12" />
+                                  </svg>
+                                )}
+                              </div>
+                              <input
+                                type="checkbox"
+                                checked={activeFilters[category.id]?.length === category.options.length}
+                                onChange={() => handleToggleSelectAll(category.id, category.options)}
+                                className="sr-only"
+                              />
+                            </label>
+                          )}
+
+                          {/* Aapka purana dynamic options loop yahan se continue hoga */}
                           {category.options.map(option => {
                             const isChecked = activeFilters[category.id]?.includes(option) || false;
                             return (
