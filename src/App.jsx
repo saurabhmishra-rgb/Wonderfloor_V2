@@ -218,6 +218,7 @@ function App() {
               mask: room.maskUrl || null,
               category: room.category,
               product: room.supportedCollections || [],
+              position: room.position || 0,
             }));
           setDbRooms(formattedDbRooms);
           setDbRoomsLoaded(true); // ← mark DB as ready
@@ -232,7 +233,7 @@ function App() {
 
   // ── COMBINE STATIC AND DATABASE ROOMS ────────────────────────────────────
   const activeRooms = useMemo(() => {
-    return [...allDemoRooms, ...dbRooms];
+   return [...allDemoRooms, ...dbRooms].sort((a, b) => (a.position || 0) - (b.position || 0)); 
   }, [dbRooms]);
 
   // ── AUTO-HIDE THEME SWITCH AFTER 3 SECONDS ON CHANGE ──
