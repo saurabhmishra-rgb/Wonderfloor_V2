@@ -53,7 +53,7 @@ const flooringProducts_static = [
   'Braavo',
   'Durofloor',
   'Duratek',
- 
+
   'Galaxxy',
   'GDP',
   'Hi-Tech',
@@ -397,39 +397,39 @@ function App() {
   };
 
   const handleHistorySelect = (entry) => {
-  if (entry.type === 'demo' && entry.roomId) {
-    const room = activeRooms.find(r => r.id === entry.roomId);
-    if (room) {
-      setIsModalOpen(true); // ✅ NEW — pehle modal-flag set karo
+    if (entry.type === 'demo' && entry.roomId) {
+      const room = activeRooms.find(r => r.id === entry.roomId);
+      if (room) {
+        setIsModalOpen(true); // ✅ NEW — pehle modal-flag set karo
 
-      handleDemoRoomClick({
-        ...room,
+        handleDemoRoomClick({
+          ...room,
+          historyEntryId: entry.id,
+          lastProduct: entry.lastProduct || null,
+          product: room.product || [],
+        });
+
+        // ✅ NEW — URL ko bhi /visualizer route pe le jao
+        navigate(`/visualizer/${room.id}`, { replace: false });
+      }
+    } else {
+      setIsModalOpen(true); // ✅ NEW
+
+      setSelectedRoomImage({
+        previewUrl: entry.thumbnail,
+        id: entry.id,
         historyEntryId: entry.id,
+        isDemo: false,
+        rawFile: null,
         lastProduct: entry.lastProduct || null,
-        product: room.product || [],
+        supportedCollections: [],
       });
 
-      // ✅ NEW — URL ko bhi /visualizer route pe le jao
-      navigate(`/visualizer/${room.id}`, { replace: false });
+      // ✅ NEW — user-uploaded photo ke liye bhi route change karo
+      navigate(`/visualizer/upload/${entry.id}`, { replace: false });
     }
-  } else {
-    setIsModalOpen(true); // ✅ NEW
-
-    setSelectedRoomImage({
-      previewUrl: entry.thumbnail,
-      id: entry.id,
-      historyEntryId: entry.id,
-      isDemo: false,
-      rawFile: null,
-      lastProduct: entry.lastProduct || null,
-      supportedCollections: [],
-    });
-
-    // ✅ NEW — user-uploaded photo ke liye bhi route change karo
-    navigate(`/visualizer/upload/${entry.id}`, { replace: false });
-  }
-  setIsHistoryOpen(false);
-};
+    setIsHistoryOpen(false);
+  };
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
@@ -744,98 +744,105 @@ function App() {
 
 
           {/* RIGHT COLUMN: Interactive App Window Container */}
-          <div className="w-full h-full lg:flex-[1.2] max-w-[850px] relative z-10 mb-16 sm:mb-5 animate-slide-up-4">
+       
+<div className="w-full h-auto lg:flex-[1.2] max-w-[850px] relative z-10 mb-10 sm:mb-16 mt-5 animate-slide-up-4 px-4 sm:px-0">
 
-            {/* Keyframes not built into Tailwind by default */}
-            <style>{`
+  {/* Keyframes for floating effects */}
+  <style>{`
     @keyframes floatY { 0%,100%{ transform: translateY(0);} 50%{ transform: translateY(-8px);} }
     @keyframes floatY2 { 0%,100%{ transform: translateY(0);} 50%{ transform: translateY(-6px);} }
   `}</style>
 
-            {/* Floating card 1 — AI Confidence */}
-            <div className="absolute -left-7 bottom-[60px] z-[999] min-w-[110px] rounded-xl border border-black/[0.08] bg-white p-1.5 shadow-[0_8px_28px_rgba(0,0,0,0.1)] animate-[floatY_4s_ease-in-out_infinite]">
-              <div className="mb-1 text-[8px] font-semibold uppercase tracking-[0.6px] text-slate-400">
-                AI Confidence
-              </div>
-              <div className="mb-0.5 text-sm font-extrabold tracking-[-0.3px] text-slate-950">
-                98.4%
-              </div>
-              <div className="text-[9px] font-semibold text-[#F4500A]">
-                Floor detected ✓
-              </div>
-            </div>
+  {/* Floating card 1 — AI Confidence */}
+  <div className="absolute left-2 sm:-left-7 bottom-[70px] sm:bottom-[60px] z-[40] min-w-[95px] sm:min-w-[110px] rounded-xl border border-black/[0.08] bg-white p-1.5 shadow-[0_8px_28px_rgba(0,0,0,0.1)] animate-[floatY_4s_ease-in-out_infinite]">
+    <div className="mb-1 text-[7px] sm:text-[8px] font-semibold uppercase tracking-[0.6px] text-slate-400">
+      AI Confidence
+    </div>
+    <div className="mb-0.5 text-xs sm:text-sm font-extrabold tracking-[-0.3px] text-slate-950">
+      98.4%
+    </div>
+    <div className="text-[8px] sm:text-[9px] font-semibold text-[#F4500A]">
+      Floor detected ✓
+    </div>
+  </div>
 
-            {/* Floating card 2 — Scenes Available */}
-            <div className="absolute -right-5 top-[120px] z-[999] rounded-xl bg-gradient-to-br from-[#F4500A] to-[#FF6B2B] p-1.5 shadow-[0_8px_28px_rgba(244,80,10,0.12)] animate-[floatY2_5s_ease-in-out_infinite]">
-              <div className="mb-0.5 text-[8px] font-semibold uppercase tracking-[0.6px] text-white/70">
-                Scenes Available
-              </div>
-              <div className="text-base font-extrabold tracking-[-0.3px] text-white">
-                60+
-              </div>
-            </div>
+  {/* Floating card 2 — Scenes Available */}
+  <div className="absolute right-2 sm:-right-5 top-[70px] sm:top-[120px] z-[40] rounded-xl bg-gradient-to-br from-[#F4500A] to-[#FF6B2B] p-1.5 shadow-[0_8px_28px_rgba(244,80,10,0.12)] animate-[floatY2_5s_ease-in-out_infinite]">
+    <div className="mb-0.5 text-[7px] sm:text-[8px] font-semibold uppercase tracking-[0.6px] text-white/70">
+      Scenes Available
+    </div>
+    <div className="text-sm sm:text-base font-extrabold tracking-[-0.3px] text-white">
+      60+
+    </div>
+  </div>
 
-            {/* MAC WINDOW */}
-            <div className="relative overflow-hidden rounded-[20px] border border-black/[0.08] bg-white shadow-[0_32px_80px_rgba(0,0,0,0.1),0_8px_30px_rgba(244,80,10,0.06)]">
+  {/* MAC WINDOW */}
+  <div className="relative overflow-hidden rounded-[16px] sm:rounded-[20px] border border-black/[0.08] bg-white shadow-[0_20px_50px_rgba(0,0,0,0.08),0_8px_30px_rgba(244,80,10,0.04)] sm:shadow-[0_32px_80px_rgba(0,0,0,0.1),0_8px_30px_rgba(244,80,10,0.06)]">
 
-              {/* Title Bar */}
-              <div className="flex items-center gap-2.5 border-b border-black/[0.06] bg-[#F2F2F6] px-[18px] py-3">
-                <div className="flex gap-1.5">
-                  <div className="h-[9px] w-[9px] rounded-full bg-[#FF5F57]"></div>
-                  <div className="h-[9px] w-[9px] rounded-full bg-[#FEBC2E]"></div>
-                  <div className="h-[9px] w-[9px] rounded-full bg-[#28C840]"></div>
-                </div>
-                <div className="flex-1 text-center text-[11px] font-semibold tracking-[0.3px] text-gray-500">
-                  WonderVision AI · Visualiser 1.0
-                </div>
-                <svg className="h-3.5 w-3.5 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="12" r="10"></circle>
-                  <path d="M12 8v4l3 3"></path>
-                </svg>
-              </div>
+    {/* Title Bar */}
+    <div className="flex items-center gap-2 border-b border-black/[0.06] bg-[#F2F2F6] px-4 py-2.5 sm:py-3">
+      <div className="flex gap-1.5">
+        <div className="h-[7px] w-[7px] sm:h-[9px] sm:w-[9px] rounded-full bg-[#FF5F57]"></div>
+        <div className="h-[7px] w-[7px] sm:h-[9px] sm:w-[9px] rounded-full bg-[#FEBC2E]"></div>
+        <div className="h-[7px] w-[7px] sm:h-[9px] sm:w-[9px] rounded-full bg-[#28C840]"></div>
+      </div>
+      <div className="flex-1 text-center text-[10px] sm:text-[11px] font-semibold tracking-[0.3px] text-gray-500 truncate px-2">
+        WonderVision AI · Visualiser 1.0
+      </div>
+      <svg className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-gray-300 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="12" r="10"></circle>
+        <path d="M12 8v4l3 3"></path>
+      </svg>
+    </div>
 
-              {/* Body */}
-              <div className="relative h-[340px] overflow-hidden bg-[#FAFAFA]">
+    {/* Body Wrapper */}
+    <div className="relative overflow-hidden bg-[#FAFAFA]">
 
-                {/* Video / room content */}
-                <video
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  className="absolute inset-0 h-full w-full object-cover"
-                  src={visualizerDemo}
-                />
+      {/* Video Container (Aspect Ratio is perfect for responsive behavior) */}
+      <div className="relative w-full aspect-[4/3] sm:aspect-[16/10] w-full h-full">
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 h-full w-full object-cover"
+          src={visualizerDemo}
+        />
 
-                {/* AI Processing status pill */}
-                <div className="absolute right-3 top-7 flex items-center gap-1 rounded-md bg-[#F4500A]/90 px-2 py-1 backdrop-blur-[10px]">
-                  <div className="h-1 w-1 animate-pulse rounded-full bg-white"></div>
-                  <div className="text-[8px] font-bold uppercase tracking-[0.4px] text-white">
-                    AI Processing
-                  </div>
-                </div>
-
-                {/* Swatches bar */}
-                <div className="absolute inset-x-0 bottom-0 flex items-center gap-1.5 border-t border-black/[0.06] bg-white/[0.92] px-3.5 py-2.5 backdrop-blur-[12px]">
-                  <div className="h-6.5 w-6.5 h-[26px] w-[26px] cursor-pointer rounded-md border-2 border-[#F4500A] bg-gradient-to-br from-[#C9A060] to-[#D4AA68] shadow-[0_0_0_1px_#F4500A]"></div>
-                  <div className="h-[26px] w-[26px] cursor-pointer rounded-md border-2 border-transparent bg-gradient-to-br from-[#5A5858] to-[#6A6860]"></div>
-                  <div className="h-[26px] w-[26px] cursor-pointer rounded-md border-2 border-transparent bg-gradient-to-br from-[#C8B8A0] to-[#D4C4AC]"></div>
-                  <div className="h-[26px] w-[26px] cursor-pointer rounded-md border-2 border-transparent bg-gradient-to-br from-[#3A4A3A] to-[#4A5A4A]"></div>
-                  <div className="h-[26px] w-[26px] cursor-pointer rounded-md border-2 border-transparent bg-gradient-to-br from-[#8A7068] to-[#9A8075]"></div>
-                  <div className="h-[26px] w-[26px] cursor-pointer rounded-md border-2 border-transparent bg-gradient-to-br from-[#2A3A5A] to-[#3A4A7A]"></div>
-                  <button
-                    onClick={() => navigate(`/visualizer/${activeRooms[1].id}`)}
-                    className="ml-auto rounded-md bg-[#F4500A] px-3.5 py-1.5 text-[11px] font-bold tracking-[0.2px] text-white"
-                  >
-                    Apply
-                  </button>
-                </div>
-              </div>
-            </div>
+        {/* AI Processing status pill */}
+        <div className="absolute right-2 top-3 sm:right-3 sm:top-4 flex items-center gap-1 rounded-md bg-[#F4500A]/90 px-2 py-1 backdrop-blur-[10px]">
+          <div className="h-1 w-1 animate-pulse rounded-full bg-white"></div>
+          <div className="text-[7px] sm:text-[8px] font-bold uppercase tracking-[0.4px] text-white">
+            AI Processing
           </div>
+        </div>
+      </div>
 
+      {/* Swatches bar: Swatches scroll on small screens, Apply stays right */}
+      <div className="flex items-center justify-between gap-3 border-t border-black/[0.06] bg-white px-3 py-2 sm:px-4 sm:py-3">
+        
+        {/* Scrollable Swatches Area */}
+        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar scroll-smooth pr-2">
+          <div className="flex-shrink-0 h-[24px] w-[24px] sm:h-[26px] sm:w-[26px] cursor-pointer rounded-md border-2 border-[#F4500A] bg-gradient-to-br from-[#C9A060] to-[#D4AA68] shadow-[0_0_0_1px_#F4500A]"></div>
+          <div className="flex-shrink-0 h-[24px] w-[24px] sm:h-[26px] sm:w-[26px] cursor-pointer rounded-md border-2 border-transparent bg-gradient-to-br from-[#5A5858] to-[#6A6860]"></div>
+          <div className="flex-shrink-0 h-[24px] w-[24px] sm:h-[26px] sm:w-[26px] cursor-pointer rounded-md border-2 border-transparent bg-gradient-to-br from-[#C8B8A0] to-[#D4C4AC]"></div>
+          <div className="flex-shrink-0 h-[24px] w-[24px] sm:h-[26px] sm:w-[26px] cursor-pointer rounded-md border-2 border-transparent bg-gradient-to-br from-[#3A4A3A] to-[#4A5A4A]"></div>
+          <div className="flex-shrink-0 h-[24px] w-[24px] sm:h-[26px] sm:w-[26px] cursor-pointer rounded-md border-2 border-transparent bg-gradient-to-br from-[#8A7068] to-[#9A8075]"></div>
+          <div className="flex-shrink-0 h-[24px] w-[24px] sm:h-[26px] sm:w-[26px] cursor-pointer rounded-md border-2 border-transparent bg-gradient-to-br from-[#2A3A5A] to-[#3A4A7A]"></div>
         </div>
 
+        {/* Apply Button */}
+        <button
+          onClick={() => navigate(`/visualizer/${activeRooms[1].id}`)}
+          className="flex-shrink-0 rounded-md bg-[#F4500A] px-3 py-1.5 sm:px-4 sm:py-2 text-[10px] sm:text-[11px] font-bold tracking-[0.2px] text-white shadow-sm hover:bg-[#d64307] transition-colors"
+        >
+          Apply
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
       </section>
       {/* ══ TICKER — sits between Hero and Demo Scenes ══ */}
       <div className="relative z-10 w-full overflow-hidden border-y border-black/[0.07] dark:border-white/10 bg-[#F8FAFC] dark:bg-slate-900 py-3.5">
@@ -921,8 +928,8 @@ function App() {
                         setSelectedProduct('Product Collections');
                       }}
                       className={`px-3.5 py-1.5 rounded-full text-[11.5px] font-bold tracking-wide border cursor-pointer transition-all shrink-0 snap-mini snap-start ${isSelected
-                          ? 'bg-[#f05c3f] text-white border-[#f05c3f] shadow-sm'
-                          : 'bg-slate-50 dark:bg-slate-800 text-gray-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-[#f05c3f]'
+                        ? 'bg-[#f05c3f] text-white border-[#f05c3f] shadow-sm'
+                        : 'bg-slate-50 dark:bg-slate-800 text-gray-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-[#f05c3f]'
                         }`}
                     >
                       {industry === 'ALL INDUSTRY' ? 'All' : industry.replace(' Flooring', '')}
@@ -944,8 +951,8 @@ function App() {
                 <button
                   onClick={() => setSelectedProduct('Product Collections')}
                   className={`px-3.5 py-1.5 rounded-full text-[11px] font-bold tracking-wide border cursor-pointer transition-all shrink-0 ${selectedProduct === 'Product Collections'
-                      ? 'bg-[#f05c3f] text-white border-[#f05c3f] shadow-sm'
-                      : 'bg-slate-50 dark:bg-slate-800 text-gray-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-[#f05c3f]'
+                    ? 'bg-[#f05c3f] text-white border-[#f05c3f] shadow-sm'
+                    : 'bg-slate-50 dark:bg-slate-800 text-gray-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-[#f05c3f]'
                     }`}
                 >
                   All Collections
@@ -959,8 +966,8 @@ function App() {
                       key={product}
                       onClick={() => setSelectedProduct(product)}
                       className={`px-3.5 py-1.5 rounded-full text-[11.5px] font-bold tracking-wide border cursor-pointer transition-all shrink-0 ${isSelected
-                          ? 'bg-[#f05c3f] text-white border-[#f05c3f] shadow-sm'
-                          : 'bg-slate-50 dark:bg-slate-800 text-gray-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-[#f05c3f]'
+                        ? 'bg-[#f05c3f] text-white border-[#f05c3f] shadow-sm'
+                        : 'bg-slate-50 dark:bg-slate-800 text-gray-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-[#f05c3f]'
                         }`}
                     >
                       {product}
@@ -996,8 +1003,8 @@ function App() {
                               setIsProductDropdownOpen(false);
                             }}
                             className={`cursor-pointer w-full text-left px-4 py-2 text-[12.5px] transition-colors ${selectedProduct === product
-                                ? 'text-[#f05c3f] bg-orange-50/60 dark:bg-slate-800 font-bold'
-                                : 'text-gray-600 dark:text-slate-300 hover:text-[#f05c3f] hover:bg-slate-50 dark:hover:bg-slate-800/50'
+                              ? 'text-[#f05c3f] bg-orange-50/60 dark:bg-slate-800 font-bold'
+                              : 'text-gray-600 dark:text-slate-300 hover:text-[#f05c3f] hover:bg-slate-50 dark:hover:bg-slate-800/50'
                               }`}
                           >
                             {product}
@@ -1047,8 +1054,8 @@ function App() {
                   <div className="p-5 flex flex-col gap-1.5 flex-grow">
                     <span className="text-[#f05c3f] text-[10px] font-extrabold uppercase tracking-widest">
                       {cat.category.trim().split(/\s+/).length > 1
-    ? cat.category.trim().split(/\s+/).slice(0, -1).join(" ")
-    : cat.category}
+                        ? cat.category.trim().split(/\s+/).slice(0, -1).join(" ")
+                        : cat.category}
                     </span>
                     <h4 className="text-[16px] font-bold text-slate-900 dark:text-white group-hover:text-[#f05c3f] transition-colors leading-tight">
                       {cat.category}
