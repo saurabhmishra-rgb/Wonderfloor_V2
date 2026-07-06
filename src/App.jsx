@@ -147,17 +147,25 @@ function App() {
   const { history, addToHistory, removeEntry, clearHistory, updateEntryProduct } = useImageHistory();
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
 
-  const industries = useMemo(() => {
-    const staticCategories = allDemoRooms.map(r => r.category);
-    const dbCategories = dbRooms.map(r => r.category);
-    const unique = [
-      'ALL INDUSTRY',
-      ...Array.from(new Set([...staticCategories, ...dbCategories]))
-        .filter(Boolean)
-        .sort(),
-    ];
-    return unique;
+  // ── CALCULATE INDUSTRIES MATRIX (UPDATED MEMO BLOCK) ──
+// ── 1. activeRooms KO SABSE UPAR RAKHEIN (TAAKI NEECHE USE HO SAKE) ──
+  const activeRooms = useMemo(() => {
+    return [...allDemoRooms, ...dbRooms].sort((a, b) => {
+      if ((a.categoryOrder || 0) !== (b.categoryOrder || 0)) {
+        return (a.categoryOrder || 0) - (b.categoryOrder || 0);
+      }
+      return (a.position || 0) - (b.position || 0);
+    });
   }, [dbRooms]);
+
+  // ── 2. INDUSTRIES AB ISKE NEECHE SAFELY CHALEGA (ERROR CHALA JAYEGA) ──
+  const industries = useMemo(() => {
+    const dbCategories = activeRooms.map(r => r.category);
+    return [
+      'ALL INDUSTRY',
+      ...Array.from(new Set(dbCategories)).filter(Boolean)
+    ];
+  }, [activeRooms]);
 
   const flooringProducts = useMemo(() => {
     const dbCollections = dbProducts.map(p => p.accordionCategory).filter(Boolean);
@@ -219,6 +227,7 @@ function App() {
               category: room.category,
               product: room.supportedCollections || [],
               position: room.position || 0,
+              categoryOrder: room.categoryOrder || 0,
             }));
           setDbRooms(formattedDbRooms);
           setDbRoomsLoaded(true); // ← mark DB as ready
@@ -232,9 +241,17 @@ function App() {
   }, []);
 
   // ── COMBINE STATIC AND DATABASE ROOMS ────────────────────────────────────
-  const activeRooms = useMemo(() => {
-   return [...allDemoRooms, ...dbRooms].sort((a, b) => (a.position || 0) - (b.position || 0)); 
-  }, [dbRooms]);
+//  // ── COMBINE STATIC AND DATABASE ROOMS (UPDATED SORT LOGIC) ──
+// const activeRooms = useMemo(() => {
+//   return [...allDemoRooms, ...dbRooms].sort((a, b) => {
+//     // 1. Pehle Category ka sequence hierarchy check karein
+//     if ((a.categoryOrder || 0) !== (b.categoryOrder || 0)) {
+//       return (a.categoryOrder || 0) - (b.categoryOrder || 0);
+//     }
+//     // 2. Agar category same hai, toh card position follow karein
+//     return (a.position || 0) - (b.position || 0);
+//   });
+// }, [dbRooms]);
 
   // ── AUTO-HIDE THEME SWITCH AFTER 3 SECONDS ON CHANGE ──
   useEffect(() => {
