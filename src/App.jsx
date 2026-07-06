@@ -611,7 +611,7 @@ function App() {
               )}
             </button> */}
 
-            <a href="https://www.wonderfloor.co.in/contact-us.php" target="_blank" className="bg-[#707173] hover:bg-[#707173] text-white font-bold py-2 px-5 rounded-md text-[14px] transition-all duration-300 shadow-sm shadow-[#707173]-500/10 hover:shadow-lg hover:shadow-[#707173]-500/30 hover:-translate-y-0.5">
+            <a href="https://www.wonderfloor.co.in/contact-us.php" target="_blank" className="bg-[#11192C] hover:bg-[#11192C] text-white font-bold py-2 px-5 rounded-md text-[14px] transition-all duration-300 shadow-sm shadow-[#11192C]-500/10 hover:shadow-lg hover:shadow-[#11192C]-500/30 hover:-translate-y-0.5">
               Contact Us
             </a>
 
@@ -624,7 +624,7 @@ function App() {
                 rel="noopener noreferrer"
                 className="text-[#1877F2] hover:opacity-70 transition-opacity duration-200"
               >
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" style={{ color: '#707173' }}>
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" style={{ color: '#11192C' }}>
                   <path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.792-4.697 4.533-4.697 1.312 0 2.686.236 2.686.236v2.97h-1.513c-1.491 0-1.956.93-1.956 1.874v2.25h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z" />
                 </svg>
               </a>
@@ -636,7 +636,7 @@ function App() {
                 rel="noopener noreferrer"
                 className="hover:opacity-70 transition-opacity duration-200"
               >
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" style={{ color: '#707173' }}>
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" style={{ color: '#11192C' }}>
                   <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
                 </svg>
               </a>
@@ -690,13 +690,13 @@ function App() {
             </div>
 
             {/* Main Heading exact match to screenshot with fixed line breaks */}
-            <h1 className="animate-slide-up-2 text-[40px] sm:text-[52px] lg:text-[66px] font-black tracking-[-0.02em] leading-[1.05] mb-6 text-[#707173] dark:text-white">
+            <h1 className="animate-slide-up-2 text-[40px] sm:text-[52px] lg:text-[66px] font-black tracking-[-0.02em] leading-[1.05] mb-6 text-[#11192C] dark:text-white">
               <span className="whitespace-nowrap">Turn Every Flooring</span><br />
               Discussion into a<br />
-              <span className="relative inline-block text-[#F4500A]/70 mt-1 mb-2">
+              <span className="relative inline-block text-[#F4500A]/99 mt-1 mb-2">
                 Live Visual
                 {/* Thick Orange Underline */}
-                <span className="absolute left-0 -bottom-1 sm:-bottom-2 w-full h-[5px] sm:h-[8px] bg-[#F4500A]/70 "></span>
+                <span className="absolute left-0 -bottom-1 sm:-bottom-2 w-full h-[5px] sm:h-[8px] bg-[#F4500A]/99"></span>
               </span><br />
               Experience
             </h1>
@@ -717,7 +717,7 @@ function App() {
               {/* Upload Photo Button */}
               <button
                 onClick={handleUploadClick}
-                className="bg-[#f05c3f] hover:bg-[#e04b2f] text-white font-bold py-2.5 px-5 rounded-lg text-[15px] transition-all duration-300 w-full sm:w-auto flex items-center justify-center gap-2.5 shadow-[0_8px_20px_rgba(240,92,63,0.25)] hover:shadow-[0_10px_25px_rgba(240,92,63,0.4)] hover:-translate-y-1 cursor-pointer"
+                className="bg-[#f05c3f]/99 hover:bg-[#e04b2f] text-white font-bold py-2.5 px-5 rounded-lg text-[15px] transition-all duration-300 w-full sm:w-auto flex items-center justify-center gap-2.5 shadow-[0_8px_20px_rgba(240,92,63,0.25)] hover:shadow-[0_10px_25px_rgba(240,92,63,0.4)] hover:-translate-y-1 cursor-pointer"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
@@ -1167,7 +1167,7 @@ function App() {
       </section >
 
       {/* ── LOWER CALL TO ACTION BAND ── */}
-      < section className="w-full bg-gradient-to-br from-[#DB4604] via-[#DB4604] to-[#DB4604] text-white text-center py-20 px-4 relative overflow-hidden" >
+      < section className="w-full bg-gradient-to-br from-[#11192C] via-[#11192C] to-[#11192C] text-white text-center py-20 px-4 relative overflow-hidden" >
         {/* Dotted pattern background */}
 
         < div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,rgba(255,255,255,0.08),transparent)] pointer-events-none" ></div >
