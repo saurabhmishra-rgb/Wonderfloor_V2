@@ -571,17 +571,26 @@ function App() {
   return (
     <div className={`w-full min-h-screen font-sans transition-colors duration-300 overflow-x-hidden ${isDarkMode ? 'bg-slate-900 text-white' : 'bg-[#f8fafc] text-gray-900'}`}>
       {/* ── HEADER / NAVIGATION ── */}
+      {/* ── HEADER / NAVIGATION ── */}
+     {/* ── HEADER / NAVIGATION ── */}
       <header
-        className={`w-full border-b backdrop-blur-md fixed -top-1 left-0 z-50 transition-all duration-500 ${isDarkMode ? 'bg-slate-900/90 border-slate-800' : 'border-slate-200'
-          }`}
+        className={`w-full border-b backdrop-blur-md fixed -top-1 left-0 z-50 transition-all duration-500 ${
+          isDarkMode ? 'bg-slate-900/90 border-slate-800' : 'border-slate-200'
+        }`}
         style={!isDarkMode ? { backgroundColor: '#F8F8FB' } : {}}
       >
         <div className="max-w-[1300px] mx-auto px-4 sm:px-6 h-20 flex items-center justify-between">
-          <a href='https://www.wonderfloor.co.in/index.php' target="_blank" rel="noreferrer" className="flex items-center gap-2 cursor-pointer group" onClick={() => navigate('/')}>
+          <a 
+            href='https://www.wonderfloor.co.in/index.php' 
+            target="_blank" 
+            rel="noreferrer" 
+            className="flex items-center gap-2 cursor-pointer group" 
+            onClick={() => navigate('/')}
+          >
             <img src={Logo} alt="Wonderfloor Logo" className="h-10 sm:h-12 md:h-15 w-auto object-contain transition-transform duration-300 group-hover:scale-105" />
           </a>
 
-          {/* Desktop Nav */}
+          {/* Desktop Nav Links */}
           <nav className="hidden md:flex items-center gap-8 font-semibold text-[14px] text-gray-600 dark:text-slate-300">
             <a href="https://www.wonderfloor.co.in/" target="_blank" rel="noreferrer" className="relative group hover:text-[#f05c3f] transition-colors duration-300">
               Wonderfloor.com
@@ -606,9 +615,31 @@ function App() {
               Contact Us
             </a>
 
-            {/* Social Icons Container (Hidden on mobile) */}
-            <div className="hidden lg:flex items-center gap-3 pl-3 border-l border-gray-200 dark:border-slate-700">
-              {/* Facebook & Instagram Icons remain unchanged */}
+            {/* Desktop View Social Icons Container (Visible from 'sm' breakpoint screens up) */}
+            <div className="hidden sm:flex items-center gap-3 pl-3 border-l border-gray-200 dark:border-slate-700">
+              {/* Facebook Icon (Desktop) */}
+              <a
+                href="https://www.facebook.com/wonderfloor"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[#11192C] dark:text-slate-200 hover:text-red-600 dark:hover:text-red-500 transition-colors duration-200"
+              >
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.792-4.697 4.533-4.697 1.312 0 2.686.236 2.686.236v2.97h-1.513c-1.491 0-1.956.93-1.956 1.874v2.25h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z" />
+                </svg>
+              </a>
+
+              {/* Instagram Icon (Desktop) */}
+              <a
+                href="https://www.instagram.com/wonderfloor"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[#11192C] dark:text-slate-200 hover:text-[#E4405F] dark:hover:text-[#E4405F] transition-colors duration-200"
+              >
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
+                </svg>
+              </a>
             </div>
 
             {/* Mobile Menu Toggle Button */}
@@ -627,14 +658,46 @@ function App() {
           </div>
         </div>
 
-        {/* Mobile Dropdown Menu */}
+        {/* Mobile Dropdown Menu Drawer */}
         {isMobileMenuOpen && (
-          <div className="md:hidden absolute top-full left-0 w-full bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shadow-lg py-4 px-4 flex flex-col gap-4">
+          <div className="md:hidden absolute top-full left-0 w-full bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shadow-lg py-5 px-5 flex flex-col gap-4">
             <a href="https://www.wonderfloor.co.in/" className="text-gray-600 dark:text-slate-300 font-semibold text-sm">Wonderfloor.com</a>
             <a href="https://www.wonderfloor.co.in/about-us.php" className="text-gray-600 dark:text-slate-300 font-semibold text-sm">About Wonderfloor</a>
             <a href="https://www.wonderfloor.co.in/clients.php" className="text-gray-600 dark:text-slate-300 font-semibold text-sm">Our Clients</a>
             <a href="https://www.wonderfloor.co.in/gallery.php" className="text-gray-600 dark:text-slate-300 font-semibold text-sm">Projects</a>
-            <a href="https://www.wonderfloor.co.in/contact-us.php" className="bg-[#11192C] text-white text-center font-bold py-2 px-4 rounded-md text-sm mt-2">Contact Us</a>
+            
+            <hr className="border-slate-100 dark:border-slate-800 my-1" />
+            
+            {/* Mobile Social Row Block */}
+            <div className="flex items-center gap-5 py-1 text-gray-600 dark:text-slate-400">
+              <span className="text-xs uppercase tracking-wider font-bold text-gray-400">Follow Us:</span>
+              
+              {/* Facebook Icon (Mobile) */}
+              <a
+                href="https://www.facebook.com/wonderfloor"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[#11192C] dark:text-slate-200 hover:text-red-600 dark:hover:text-red-500 transition-colors duration-200"
+              >
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.792-4.697 4.533-4.697 1.312 0 2.686.236 2.686.236v2.97h-1.513c-1.491 0-1.956.93-1.956 1.874v2.25h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z" />
+                </svg>
+              </a>
+
+              {/* Instagram Icon (Mobile) */}
+              <a 
+                href="https://www.instagram.com/wonderfloor" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="text-[#11192C] dark:text-slate-200 hover:text-[#E4405F] dark:hover:text-[#E4405F] transition-colors duration-200"
+              >
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.445-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
+                </svg>
+              </a>
+            </div>
+
+            <a href="https://www.wonderfloor.co.in/contact-us.php" className="bg-[#11192C] text-white text-center font-bold py-2.5 px-4 rounded-md text-sm mt-1">Contact Us</a>
           </div>
         )}
       </header>
