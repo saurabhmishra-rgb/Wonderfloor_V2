@@ -318,6 +318,9 @@ function App() {
 
         setShowQR(false);
         setIsModalOpen(true);
+        
+        // FIX: Route the application to the visualizer context so the component renders
+        navigate('/visualizer/upload', { replace: false });
       } catch (error) {
         console.error('Failed to process the mobile image:', error);
         alert('Received the image, but it was unable to be processed.');
@@ -349,6 +352,9 @@ function App() {
     if (!location.pathname.startsWith('/visualizer')) return;
 
     // If the visualizer is already open, do NOT re-trigger.
+    // FIX: If we just loaded a fresh mobile or desktop custom upload, stop execution 
+    // here so the route guard doesn't overwrite your file or force-redirect home.
+    if (selectedRoomImage && !selectedRoomImage.isDemo) return;
     if (isModalOpen) return;
 
     const pathRoomId = roomId || location.pathname.split('/').pop();
@@ -383,6 +389,7 @@ function App() {
     addToHistory(imageObj);
     setIsModalOpen(true);
     localStorage.removeItem('activeDemoRoomId');
+    navigate('/visualizer/upload', { replace: false });
   };
 
   const handleDemoRoomClick = async (room, skipHistory = false) => {
