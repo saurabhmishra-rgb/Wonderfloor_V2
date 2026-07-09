@@ -6,7 +6,7 @@ import { QRCodeCanvas } from 'qrcode.react';
 import { useImageHistory } from './hooks/useImageHistory';
 import ImageHistoryDrawer from './components/ImageHistoryDrawer';
 import { Upload, ScanLine, Play } from 'lucide-react';
-
+import { convertToWebP } from './utils/webpConverter';
 import { useLocation, useParams, useNavigate } from 'react-router-dom';
 
 // --- Import all local images ---
@@ -131,6 +131,30 @@ const allDemoRooms = [
   // { id: 'hot-4', name: 'Hotel Flooring Option 4', img: DefaultImage, category: 'Hotel/ Hospitality Flooring', product: ['Timberland Exotica 2mm', 'Trendo wood', 'Ornate', 'Braavo', 'Timberworld 1.5 mm', 'Stoneland Monza', 'Meteor', 'Timberland Herringbone 2mm', 'Grandeure Premium Luxury Planks 2mm'] },
 ];
 
+// ── RunPod Segmentation Helper ──
+// const SEGMENT_SERVER_URL = 'http://localhost:5000';
+// ── RunPod Segmentation Helper ──
+const SEGMENT_SERVER_URL = 'https://wonderfloor-runpod-backend.onrender.com';
+
+async function generateFloorMask(file) {
+  const formData = new FormData();
+  formData.append('image', file);
+
+  const res = await fetch(`${SEGMENT_SERVER_URL}/api/segment`, {
+    method: 'POST',
+    body: formData,
+  });
+  const data = await res.json();
+
+  if (!res.ok || !data.success) {
+    throw new Error(data.error || 'Mask generation failed');
+  }
+
+  return data.image.startsWith('data:')
+    ? data.image
+    : `data:image/png;base64,${data.image}`;
+}
+
 function App() {
   // ── UI state ───────────────────────────────────────────────────────────────
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -138,6 +162,7 @@ function App() {
   const [showQR, setShowQR] = useState(false);
   const [sessionId, setSessionId] = useState('');
   const [isProductDropdownOpen, setIsProductDropdownOpen] = useState(false);
+  const [isAnalyzingRoom, setIsAnalyzingRoom] = useState(false); // for ANALYZING ROOM(RUNPOD)
 
   // ── NEW: Database Fetched Rooms State ─────────────────────────────────────
   const [dbRooms, setDbRooms] = useState([]);
@@ -307,10 +332,30 @@ function App() {
         const blob = await res.blob();
         const file = new File([blob], 'mobile_upload.jpg', { type: blob.type || 'image/jpeg' });
 
+        // 1. Original Mobile file ki details log karein
+        console.group("📱 Mobile Image Sync & Conversion");
+        console.log("Original Mobile File Type:", file.type);
+        console.log("Original Mobile File Size:", (file.size / 1024).toFixed(2), "KB");
+
+        setIsAnalyzingRoom(true);
+        const webpFile = await convertToWebP(file);
+        console.log("Converted Mobile File Type:", webpFile.type);
+        console.log("Converted Mobile File Size:", (webpFile.size / 1024).toFixed(2), "KB");
+        console.groupEnd();
+
+        let maskUrl = null;
+        try {
+          maskUrl = await generateFloorMask(webpFile);
+        } catch (err) {
+          console.error('Floor mask generation failed, falling back to 2D pipeline:', err);
+        }
+        setIsAnalyzingRoom(false);
+
         const mobileImageObj = {
-          previewUrl: dataUrl,
+          previewUrl: URL.createObjectURL(webpFile),
           isDemo: false,
-          rawFile: file,
+          rawFile: webpFile,
+          maskUrl,
           name: `Mobile upload · ${new Date().toLocaleDateString()}`,
         };
         setSelectedRoomImage(mobileImageObj);
@@ -318,12 +363,13 @@ function App() {
 
         setShowQR(false);
         setIsModalOpen(true);
-        
+
         // FIX: Route the application to the visualizer context so the component renders
         navigate('/visualizer/upload', { replace: false });
       } catch (error) {
         console.error('Failed to process the mobile image:', error);
         alert('Received the image, but it was unable to be processed.');
+        setIsAnalyzingRoom(false);
       }
     };
 
@@ -374,19 +420,42 @@ function App() {
 
   // ── Handlers ──────────────────────────────────────────────────────────────
   const handleUploadClick = () => fileInputRef.current.click();
-
-  const handleFileChange = (e) => {
+  //Runpod attach on Upload Photo button click
+  const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
+    // 1. Original file ki details log karein
+    console.group("📸 Desktop Image Upload & Conversion");
+    console.log("Original File Name:", file.name);
+    console.log("Original File Type:", file.type);
+    console.log("Original File Size:", (file.size / 1024).toFixed(2), "KB");
+
+    setIsAnalyzingRoom(true);
+    const webpFile = await convertToWebP(file);
+    // 2. Converted WebP file ki details log karein
+    console.log("Converted File Type:", webpFile.type);
+    console.log("Converted File Size:", (webpFile.size / 1024).toFixed(2), "KB");
+    console.log("Size Reduction:", (((file.size - webpFile.size) / file.size) * 100).toFixed(2) + "%");
+    console.groupEnd();
+
+    let maskUrl = null;
+    try {
+      maskUrl = await generateFloorMask(webpFile);
+    } catch (err) {
+      console.error('Floor mask generation failed, falling back to 2D pipeline:', err);
+    }
+
     const imageObj = {
-      previewUrl: URL.createObjectURL(file),
+      previewUrl: URL.createObjectURL(webpFile),
       isDemo: false,
-      rawFile: file,
+      rawFile: webpFile,
+      maskUrl,
       name: `My upload · ${new Date().toLocaleDateString()}`,
     };
     setSelectedRoomImage(imageObj);
     addToHistory(imageObj);
+    setIsAnalyzingRoom(false);
     setIsModalOpen(true);
     localStorage.removeItem('activeDemoRoomId');
     navigate('/visualizer/upload', { replace: false });
@@ -578,20 +647,17 @@ function App() {
   return (
     <div className={`w-full min-h-screen font-sans transition-colors duration-300 overflow-x-hidden ${isDarkMode ? 'bg-slate-900 text-white' : 'bg-[#f8fafc] text-gray-900'}`}>
       {/* ── HEADER / NAVIGATION ── */}
-      {/* ── HEADER / NAVIGATION ── */}
-     {/* ── HEADER / NAVIGATION ── */}
       <header
-        className={`w-full border-b backdrop-blur-md fixed -top-1 left-0 z-50 transition-all duration-500 ${
-          isDarkMode ? 'bg-slate-900/90 border-slate-800' : 'border-slate-200'
-        }`}
+        className={`w-full border-b backdrop-blur-md fixed -top-1 left-0 z-50 transition-all duration-500 ${isDarkMode ? 'bg-slate-900/90 border-slate-800' : 'border-slate-200'
+          }`}
         style={!isDarkMode ? { backgroundColor: '#F8F8FB' } : {}}
       >
         <div className="max-w-[1300px] mx-auto px-4 sm:px-6 h-20 flex items-center justify-between">
-          <a 
-            href='https://www.wonderfloor.co.in/index.php' 
-            target="_blank" 
-            rel="noreferrer" 
-            className="flex items-center gap-2 cursor-pointer group" 
+          <a
+            href='https://www.wonderfloor.co.in/index.php'
+            target="_blank"
+            rel="noreferrer"
+            className="flex items-center gap-2 cursor-pointer group"
             onClick={() => navigate('/')}
           >
             <img src={Logo} alt="Wonderfloor Logo" className="h-10 sm:h-12 md:h-15 w-auto object-contain transition-transform duration-300 group-hover:scale-105" />
@@ -672,13 +738,13 @@ function App() {
             <a href="https://www.wonderfloor.co.in/about-us.php" className="text-gray-600 dark:text-slate-300 font-semibold text-sm">About Wonderfloor</a>
             <a href="https://www.wonderfloor.co.in/clients.php" className="text-gray-600 dark:text-slate-300 font-semibold text-sm">Our Clients</a>
             <a href="https://www.wonderfloor.co.in/gallery.php" className="text-gray-600 dark:text-slate-300 font-semibold text-sm">Projects</a>
-            
+
             <hr className="border-slate-100 dark:border-slate-800 my-1" />
-            
+
             {/* Mobile Social Row Block */}
             <div className="flex items-center gap-5 py-1 text-gray-600 dark:text-slate-400">
               <span className="text-xs uppercase tracking-wider font-bold text-gray-400">Follow Us:</span>
-              
+
               {/* Facebook Icon (Mobile) */}
               <a
                 href="https://www.facebook.com/wonderfloor"
@@ -692,10 +758,10 @@ function App() {
               </a>
 
               {/* Instagram Icon (Mobile) */}
-              <a 
-                href="https://www.instagram.com/wonderfloor" 
-                target="_blank" 
-                rel="noopener noreferrer" 
+              <a
+                href="https://www.instagram.com/wonderfloor"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-[#11192C] dark:text-slate-200 hover:text-[#E4405F] dark:hover:text-[#E4405F] transition-colors duration-200"
               >
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -846,7 +912,7 @@ function App() {
                 Floor detected ✓
               </div>
             </div>
-{/* Floating card 2 — Scenes Available */}
+            {/* Floating card 2 — Scenes Available */}
             <div className="absolute right-0 sm:right-1 top-[100px] sm:top-[120px] z-[40] rounded-xl bg-gradient-to-br from-[#F4500A] to-[#FF6B2B] p-1.5 shadow-[0_8px_28px_rgba(244,80,10,0.12)] animate-[floatY2_5s_ease-in-out_infinite]">
               <div className="mb-0.5 text-[7px] sm:text-[8px] font-semibold uppercase tracking-[0.6px] text-white/70">
                 Scenes Available
@@ -890,12 +956,12 @@ function App() {
                   />
 
                   {/* AI Processing status pill */}
-                <div className="absolute right-2 top-6 sm:right-3 sm:top-4 flex items-center gap-1 rounded-md bg-[#F4500A]/90 px-2 py-1 backdrop-blur-[10px]">
-                  <div className="h-1 w-1 animate-pulse rounded-full bg-white"></div>
-                  <div className="text-[7px] sm:text-[8px] font-bold uppercase tracking-[0.4px] text-white">
-                    AI Processing
+                  <div className="absolute right-2 top-6 sm:right-3 sm:top-4 flex items-center gap-1 rounded-md bg-[#F4500A]/90 px-2 py-1 backdrop-blur-[10px]">
+                    <div className="h-1 w-1 animate-pulse rounded-full bg-white"></div>
+                    <div className="text-[7px] sm:text-[8px] font-bold uppercase tracking-[0.4px] text-white">
+                      AI Processing
+                    </div>
                   </div>
-                </div>
                 </div>
 
                 {/* Swatches bar: Swatches scroll on small screens, Apply stays right */}
@@ -1022,15 +1088,15 @@ function App() {
 
             <div className="h-[1px] bg-slate-100 dark:bg-slate-800 w-full my-1" />
 
-          {/* Collection Row Filter Matrix */}
-            <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4 overflow-hidden">
+            {/* Collection Row Filter Matrix */}
+            <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4 relative z-30">
               <span className="text-[11px] font-extrabold tracking-wider text-gray-400 uppercase w-24 shrink-0 md:pt-0">
                 Collection:
               </span>
 
-              {/* UPDATED: Swapped flex-wrap for overflow-x-auto on mobile with hidden scrollbars */}
-              <div className="flex overflow-x-auto md:flex-wrap items-center gap-2 w-full pb-2 md:pb-0 scroll-smooth snap-x [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-                
+              {/* 👇 PADDING HACK CONTAINER: Mobile par 'pb-[290px] -mb-[290px]' lagane se 'More' line me scroll bhi hoga aur dropdown bhi nahi katega */}
+              <div className="flex overflow-x-auto md:overflow-visible md:flex-wrap items-center gap-2 w-full pb-[290px] -mb-[290px] md:pb-0 md:mb-0 scroll-smooth snap-x [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+
                 <button
                   onClick={() => setSelectedProduct('Product Collections')}
                   className={`px-3.5 py-1.5 rounded-full text-[11px] font-bold tracking-wide border cursor-pointer transition-all shrink-0 snap-start ${selectedProduct === 'Product Collections'
@@ -1058,9 +1124,9 @@ function App() {
                   );
                 })}
 
-                {/* Handled natively inside the layout container wrapper */}
+                {/* 👇 MORE DROPDOWN: Ab yeh line ke andar hi scroll hoga naturally */}
                 {flooringProducts.length > 10 && (
-                  <div className="relative inline-block" ref={productDropdownRef}>
+                  <div className="relative inline-block shrink-0 snap-start" ref={productDropdownRef}>
                     <button
                       onClick={() => setIsProductDropdownOpen(!isProductDropdownOpen)}
                       className="px-3.5 py-1.5 rounded-full text-[12px] font-bold tracking-wide border bg-slate-50 dark:bg-slate-800 text-gray-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-[#f05c3f] cursor-pointer transition-all flex items-center gap-1"
@@ -1077,7 +1143,11 @@ function App() {
                     </button>
 
                     {isProductDropdownOpen && (
-                      <div className="absolute left-0 md:left-auto md:right-0 top-full mt-2 w-52 bg-white dark:bg-slate-900 shadow-[0_10px_30px_rgba(0,0,0,0.15)] border border-slate-100 dark:border-slate-800 py-1.5 z-50 rounded-xl max-h-[280px] overflow-y-auto">
+                      <div
+                        onWheel={(e) => e.stopPropagation()}
+                        onTouchMove={(e) => e.stopPropagation()}
+                        className="absolute left-0 md:left-auto md:right-0 top-full mt-2 w-52 bg-white dark:bg-slate-900 shadow-[0_10px_30px_rgba(0,0,0,0.15)] border border-slate-100 dark:border-slate-800 py-1.5 z-50 rounded-xl max-h-[280px] overflow-y-auto overscroll-contain"
+                      >
                         {flooringProducts.slice(10).map((product, index) => (
                           <button
                             key={index}
@@ -1097,6 +1167,7 @@ function App() {
                     )}
                   </div>
                 )}
+
               </div>
             </div>
           </div>
@@ -1333,6 +1404,19 @@ function App() {
           </div>
         )
       }
+
+      {isAnalyzingRoom && (
+        <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/70 backdrop-blur-sm">
+          <div className="bg-white dark:bg-slate-900 px-8 py-6 rounded-2xl shadow-2xl flex flex-col items-center gap-3">
+            <svg className="w-8 h-8 text-[#f05c3f] animate-spin" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+            </svg>
+            <p className="text-sm font-bold text-slate-800 dark:text-white">Analyzing your room photo…</p>
+            <p className="text-xs text-gray-400">Detecting floor area for realistic preview</p>
+          </div>
+        </div>
+      )}
     </div >
   );
 }
