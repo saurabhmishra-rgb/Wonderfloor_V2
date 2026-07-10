@@ -5,6 +5,7 @@ import { createPortal } from 'react-dom';
 export function useTileHoverPreview(delayMs = 2000) {
   const [previewProduct, setPreviewProduct] = useState(null);
   const [showHint, setShowHint] = useState(false);
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 }); 
   
   const timerRef = useRef(null);
   const hintTimerRef = useRef(null);
@@ -17,6 +18,7 @@ export function useTileHoverPreview(delayMs = 2000) {
     hintTimerRef.current = null;
   };
 
+  // At the time of scrolling Preview link blocked
   useEffect(() => {
     let scrollTimeout;
     const handleScroll = () => {
@@ -40,9 +42,13 @@ export function useTileHoverPreview(delayMs = 2000) {
 
   useEffect(() => clearTimers, []);
 
-  const handleMouseEnter = useCallback((product, enabled = true) => {
+  const handleMouseEnter = useCallback((product, enabled = true, e) => {
     if (!enabled || isScrollingRef.current) return; 
     clearTimers();
+
+    if (e) {
+      setMousePos({ x: e.clientX, y: e.clientY });
+    }
 
     hintTimerRef.current = setTimeout(() => {
       if (!isScrollingRef.current) setShowHint(true);
@@ -56,6 +62,12 @@ export function useTileHoverPreview(delayMs = 2000) {
     }, delayMs);
   }, [delayMs]);
 
+
+  const handleMouseMove = useCallback((e) => {
+    if (isScrollingRef.current) return;
+    setMousePos({ x: e.clientX, y: e.clientY });
+  }, []);
+
   const handleMouseLeave = useCallback(() => {
     clearTimers();
     setPreviewProduct(null);
@@ -63,29 +75,38 @@ export function useTileHoverPreview(delayMs = 2000) {
   }, []);
 
   const getHoverHandlers = useCallback((product, enabled = true) => ({
-    onMouseEnter: () => handleMouseEnter(product, enabled),
+    onMouseEnter: (e) => handleMouseEnter(product, enabled, e), 
+    onMouseMove: handleMouseMove,                             
     onMouseLeave: handleMouseLeave,
-  }), [handleMouseEnter, handleMouseLeave]);
+  }), [handleMouseEnter, handleMouseMove, handleMouseLeave]);
 
-  return { previewProduct, showHint, getHoverHandlers, closePreview: handleMouseLeave };
+ 
+  return { previewProduct, showHint, mousePos, getHoverHandlers, closePreview: handleMouseLeave };
 }
 
 
-export function TileHoverHintOverlay({ showHint }) {
+
+export function TileHoverHintOverlay({ showHint, mousePos }) {
   if (!showHint) return null;
 
   return createPortal(
-    <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[210] pointer-events-none px-4 w-max max-w-[92vw] transition-all duration-300 ease-out animate-fade-in">
   
-      <div className="flex items-center gap-2.5 px-5 py-2 rounded-full bg-white/85 backdrop-blur-xl border border-orange-500/30 shadow-[0_15px_30px_rgba(0,0,0,0.4)]">
+    <div 
+      className="fixed z-[210] pointer-events-none px-4 w-max max-w-[92vw] transition-all duration-75 ease-out animate-fade-in"
+      style={{
+        top: `${mousePos.y + 18}px`,  
+        left: `${mousePos.x + 14}px`   
+      }}
+    >
+      <div className="flex items-center gap-2.5 px-5 py-2 rounded-full bg-white/85 backdrop-blur-xl border border-orange-500/30 shadow-[0_15px_30px_rgba(0,0,0,0.15)]">
         
-     
+      
         <span className="relative flex h-2 w-2 shrink-0">
           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
           <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-500 shadow-[0_0_8px_rgba(234,88,12,0.8)]"></span>
         </span>
 
-        <p className="text-orange-400 font-bold text-[11px] sm:text-xs tracking-wide select-none">
+        <p className="text-orange-500 font-bold text-[11px] sm:text-xs tracking-wide select-none drop-shadow-[0_0.5px_1px_rgba(0,0,0,0.05)]">
           Keep your cursor still for 2 seconds to preview actual product tile
         </p>
       </div>
@@ -94,8 +115,6 @@ export function TileHoverHintOverlay({ showHint }) {
   );
 }
 
-
- 
 export function TileHoverPreviewOverlay({ previewProduct }) {
   if (!previewProduct) return null;
 
