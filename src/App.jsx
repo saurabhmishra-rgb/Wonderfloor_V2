@@ -8,7 +8,7 @@ import ImageHistoryDrawer from './components/ImageHistoryDrawer';
 import { Upload, ScanLine, Play } from 'lucide-react';
 import { convertToWebP } from './utils/webpConverter';
 import { useLocation, useParams, useNavigate } from 'react-router-dom';
-import {matchIndustryCategory} from './utils/categoryMatcher';
+import { matchIndustryCategory } from './utils/categoryMatcher';
 // --- Import all local images ---
 // import Industrial from './assets/Industrial-Flooring_02.jpg';
 // import Hospital from './assets/Hospital_02.jpg';
@@ -132,9 +132,9 @@ const allDemoRooms = [
 ];
 
 // ── RunPod Segmentation Helper ──
-// const SEGMENT_SERVER_URL = 'http://localhost:5000';
+const SEGMENT_SERVER_URL = 'http://localhost:5000';
 // ── RunPod Segmentation Helper ──
-const SEGMENT_SERVER_URL = 'https://wonderfloor-runpod-backend.onrender.com';
+// const SEGMENT_SERVER_URL = 'https://wonderfloor-runpod-backend.onrender.com';
 
 async function segmentRoomImage(file) {
   const formData = new FormData();
@@ -438,76 +438,76 @@ function App() {
   // ── Handlers ──────────────────────────────────────────────────────────────
   const handleUploadClick = () => fileInputRef.current.click();
   //Runpod attach on Upload Photo button click
- const handleFileChange = async (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
 
-  // 1. Original file ki details log karein
-  console.group("📸 Desktop Image Upload & Conversion");
-  console.log("Original File Name:", file.name);
-  console.log("Original File Type:", file.type);
-  console.log("Original File Size:", (file.size / 1024).toFixed(2), "KB");
+    // 1. Original file ki details log karein
+    console.group("📸 Desktop Image Upload & Conversion");
+    console.log("Original File Name:", file.name);
+    console.log("Original File Type:", file.type);
+    console.log("Original File Size:", (file.size / 1024).toFixed(2), "KB");
 
-  setIsAnalyzingRoom(true);
-  const webpFile = await convertToWebP(file);
-  // 2. Converted WebP file ki details log karein
-  console.log("Converted File Type:", webpFile.type);
-  console.log("Converted File Size:", (webpFile.size / 1024).toFixed(2), "KB");
-  console.log("Size Reduction:", (((file.size - webpFile.size) / file.size) * 100).toFixed(2) + "%");
-  console.groupEnd();
-
-  let maskUrl = null;
-  let supportedCollections = [];
-
-  try {
-    const { maskUrl: generatedMask, scene } = await segmentRoomImage(webpFile);
-    maskUrl = generatedMask;
-
-    // 3. Scene detection debug log
-    console.group("🏷️ Scene Detection & Category Match");
-    console.log("RunPod Scene Output:", scene);
-
-   const matchedIndustry = matchIndustryCategory(scene);
-console.log("Matched Industry:", matchedIndustry || "❌ No match found");
-
-if (matchedIndustry) {
-  // 👇 PEHLE: admin ke existing curated demo rooms se try karo (screenshot wali list)
-  supportedCollections = getSupportedCollectionsForIndustry(matchedIndustry, dbRooms);
-
-  // 👇 FALLBACK: agar us industry ka koi demo room DB mein nahi mila, tab userIndustry se derive karo
-  if (supportedCollections.length === 0) {
-    supportedCollections = Array.from(new Set(
-      dbProducts
-        .filter(p => {
-          const industries = Array.isArray(p.userIndustry) ? p.userIndustry : [p.userIndustry];
-          return industries.some(ind => String(ind).trim() === matchedIndustry);
-        })
-        .map(p => p.accordionCategory)
-        .filter(Boolean)
-    ));
-  }
-}
-console.log("Derived supportedCollections:", supportedCollections);
+    setIsAnalyzingRoom(true);
+    const webpFile = await convertToWebP(file);
+    // 2. Converted WebP file ki details log karein
+    console.log("Converted File Type:", webpFile.type);
+    console.log("Converted File Size:", (webpFile.size / 1024).toFixed(2), "KB");
+    console.log("Size Reduction:", (((file.size - webpFile.size) / file.size) * 100).toFixed(2) + "%");
     console.groupEnd();
-  } catch (err) {
-    console.error('Floor mask generation failed, falling back to 2D pipeline:', err);
-  }
 
-  const imageObj = {
-    previewUrl: URL.createObjectURL(webpFile),
-    isDemo: false,
-    rawFile: webpFile,
-    maskUrl,
-    supportedCollections,
-    name: `My upload · ${new Date().toLocaleDateString()}`,
+    let maskUrl = null;
+    let supportedCollections = [];
+
+    try {
+      const { maskUrl: generatedMask, scene } = await segmentRoomImage(webpFile);
+      maskUrl = generatedMask;
+
+      // 3. Scene detection debug log
+      console.group("🏷️ Scene Detection & Category Match");
+      console.log("RunPod Scene Output:", scene);
+
+      const matchedIndustry = matchIndustryCategory(scene);
+      console.log("Matched Industry:", matchedIndustry || "❌ No match found");
+
+      if (matchedIndustry) {
+        // 👇 PEHLE: admin ke existing curated demo rooms se try karo (screenshot wali list)
+        supportedCollections = getSupportedCollectionsForIndustry(matchedIndustry, dbRooms);
+
+        // 👇 FALLBACK: agar us industry ka koi demo room DB mein nahi mila, tab userIndustry se derive karo
+        if (supportedCollections.length === 0) {
+          supportedCollections = Array.from(new Set(
+            dbProducts
+              .filter(p => {
+                const industries = Array.isArray(p.userIndustry) ? p.userIndustry : [p.userIndustry];
+                return industries.some(ind => String(ind).trim() === matchedIndustry);
+              })
+              .map(p => p.accordionCategory)
+              .filter(Boolean)
+          ));
+        }
+      }
+      console.log("Derived supportedCollections:", supportedCollections);
+      console.groupEnd();
+    } catch (err) {
+      console.error('Floor mask generation failed, falling back to 2D pipeline:', err);
+    }
+
+    const imageObj = {
+      previewUrl: URL.createObjectURL(webpFile),
+      isDemo: false,
+      rawFile: webpFile,
+      maskUrl,
+      supportedCollections,
+      name: `My upload · ${new Date().toLocaleDateString()}`,
+    };
+    setSelectedRoomImage(imageObj);
+    addToHistory(imageObj);
+    setIsAnalyzingRoom(false);
+    setIsModalOpen(true);
+    localStorage.removeItem('activeDemoRoomId');
+    navigate('/visualizer/upload', { replace: false });
   };
-  setSelectedRoomImage(imageObj);
-  addToHistory(imageObj);
-  setIsAnalyzingRoom(false);
-  setIsModalOpen(true);
-  localStorage.removeItem('activeDemoRoomId');
-  navigate('/visualizer/upload', { replace: false });
-};
 
   const handleDemoRoomClick = async (room, skipHistory = false) => {
     try {
@@ -1142,8 +1142,11 @@ console.log("Derived supportedCollections:", supportedCollections);
                 Collection:
               </span>
 
-              {/* 👇 PADDING HACK CONTAINER: Mobile par 'pb-[290px] -mb-[290px]' lagane se 'More' line me scroll bhi hoga aur dropdown bhi nahi katega */}
-              <div className="flex overflow-x-auto md:overflow-visible md:flex-wrap items-center gap-2 w-full pb-[290px] -mb-[290px] md:pb-0 md:mb-0 scroll-smooth snap-x [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+
+              <div
+                className={`flex overflow-x-auto md:overflow-visible md:flex-wrap items-center gap-2 w-full scroll-smooth snap-x [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] md:pb-0 md:mb-0 ${isProductDropdownOpen ? 'pb-[290px] -mb-[290px]' : 'pb-0 -mb-0'
+                  }`}
+              >
 
                 <button
                   onClick={() => setSelectedProduct('Product Collections')}
@@ -1172,7 +1175,7 @@ console.log("Derived supportedCollections:", supportedCollections);
                   );
                 })}
 
-                {/* 👇 MORE DROPDOWN: Ab yeh line ke andar hi scroll hoga naturally */}
+              
                 {flooringProducts.length > 10 && (
                   <div className="relative inline-block shrink-0 snap-start" ref={productDropdownRef}>
                     <button
