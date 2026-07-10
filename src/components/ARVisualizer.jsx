@@ -9,8 +9,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 
 import { NAV_CATEGORIES, ACCORDION_CATEGORIES, ALL_PRODUCTS } from '../data/productsConfig';
 import SidebarNavTabs from './SidebarNavTabs';
-
-
+import { useTileHoverPreview, TileHoverPreviewOverlay } from './TileHoverPreview.jsx';
 
 // const PYTHON_BACKEND_URL = 'http://127.0.0.1:8000';
 const NODE_BACKEND_URL = 'https://wonderfloor-dashboard.vercel.app'
@@ -372,7 +371,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
 
   const [initialPinchDist, setInitialPinchDist] = useState(null);
   const [uploadedRoom, setUploadedRoom] = useState(null);
-
+  const { previewProduct, getHoverHandlers, closePreview } = useTileHoverPreview(2000);
   const [activeNavCategory, setActiveNavCategory] = useState('flooring-products');
   // Dynamically extracts unique categories so newly created admin collections appear automatically!
   // const productCategories = Array.from(new Set(
@@ -1072,6 +1071,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
   };
 
   const handleTileSelection = async (product) => {
+      closePreview();
     if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
     setZoomScale(1);
     setPan({ x: 0, y: 0 });
@@ -1971,6 +1971,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
                                     <div
                                       key={prod.id}
                                       onClick={() => handleTileSelection(prod)}
+                                      {...getHoverHandlers(prod, prod.navCategory === 'luxury-vinyl-tile')}
                                       className={`relative flex gap-3 md:gap-4 p-2 md:p-3 border rounded-lg cursor-pointer transition-all duration-300
   ${isSelected ? dm.cardSelected : `${dm.card} hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:-translate-y-1`}`}
                                     >
@@ -2006,6 +2007,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
                                     <div
                                       key={prod.id}
                                       onClick={() => handleTileSelection(prod)}
+                                        {...getHoverHandlers(prod, prod.navCategory === 'luxury-vinyl-tile')}
                                       className={`relative aspect-square rounded overflow-hidden cursor-pointer border-2 transition-all duration-300 bg-white ${isSelected ? 'border-[#0b5e5e] shadow-lg transform scale-105 z-10' : 'border-transparent hover:border-gray-200 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:scale-105'}`}
                                     >
                                       <button onClick={(e) => toggleFavorite(e, prod.id)} className="absolute top-1.5 right-1.5 p-1 bg-white/70 backdrop-blur-sm rounded-full z-20 cursor-pointer shadow-sm">
@@ -2550,6 +2552,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
           </div>
         </div>
       )}
+      <TileHoverPreviewOverlay previewProduct={previewProduct} />
     </div>
   );
 };
