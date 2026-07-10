@@ -8,7 +8,7 @@ import ImageHistoryDrawer from './components/ImageHistoryDrawer';
 import { Upload, ScanLine, Play } from 'lucide-react';
 import { convertToWebP } from './utils/webpConverter';
 import { useLocation, useParams, useNavigate } from 'react-router-dom';
-
+import {matchIndustryCategory} from './utils/categoryMatcher';
 // --- Import all local images ---
 // import Industrial from './assets/Industrial-Flooring_02.jpg';
 // import Hospital from './assets/Hospital_02.jpg';
@@ -136,7 +136,7 @@ const allDemoRooms = [
 // ── RunPod Segmentation Helper ──
 const SEGMENT_SERVER_URL = 'https://wonderfloor-runpod-backend.onrender.com';
 
-async function generateFloorMask(file) {
+async function segmentRoomImage(file) {
   const formData = new FormData();
   formData.append('image', file);
 
@@ -147,12 +147,29 @@ async function generateFloorMask(file) {
   const data = await res.json();
 
   if (!res.ok || !data.success) {
-    throw new Error(data.error || 'Mask generation failed');
+    throw new Error(data.error || 'Segmentation failed');
   }
 
-  return data.image.startsWith('data:')
+  const maskUrl = data.image.startsWith('data:')
     ? data.image
     : `data:image/png;base64,${data.image}`;
+
+  return { maskUrl, scene: data.scene || [] }; //  dono return
+}
+
+// Matched industry ke liye existing demo rooms se curated collections nikaalta hai
+function getSupportedCollectionsForIndustry(industry, rooms) {
+  if (!industry) return [];
+
+  const normalize = (s) => String(s || '').trim().toLowerCase();
+  const matchingRooms = rooms.filter(r => normalize(r.category) === normalize(industry));
+
+  if (matchingRooms.length === 0) return [];
+
+  // Agar us industry ke multiple demo rooms hain, sabke collections merge kar do (unique)
+  const merged = new Set();
+  matchingRooms.forEach(r => (r.product || []).forEach(p => merged.add(p)));
+  return Array.from(merged);
 }
 
 function App() {
@@ -421,45 +438,76 @@ function App() {
   // ── Handlers ──────────────────────────────────────────────────────────────
   const handleUploadClick = () => fileInputRef.current.click();
   //Runpod attach on Upload Photo button click
-  const handleFileChange = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+ const handleFileChange = async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
 
-    // 1. Original file ki details log karein
-    console.group("📸 Desktop Image Upload & Conversion");
-    console.log("Original File Name:", file.name);
-    console.log("Original File Type:", file.type);
-    console.log("Original File Size:", (file.size / 1024).toFixed(2), "KB");
+  // 1. Original file ki details log karein
+  console.group("📸 Desktop Image Upload & Conversion");
+  console.log("Original File Name:", file.name);
+  console.log("Original File Type:", file.type);
+  console.log("Original File Size:", (file.size / 1024).toFixed(2), "KB");
 
-    setIsAnalyzingRoom(true);
-    const webpFile = await convertToWebP(file);
-    // 2. Converted WebP file ki details log karein
-    console.log("Converted File Type:", webpFile.type);
-    console.log("Converted File Size:", (webpFile.size / 1024).toFixed(2), "KB");
-    console.log("Size Reduction:", (((file.size - webpFile.size) / file.size) * 100).toFixed(2) + "%");
+  setIsAnalyzingRoom(true);
+  const webpFile = await convertToWebP(file);
+  // 2. Converted WebP file ki details log karein
+  console.log("Converted File Type:", webpFile.type);
+  console.log("Converted File Size:", (webpFile.size / 1024).toFixed(2), "KB");
+  console.log("Size Reduction:", (((file.size - webpFile.size) / file.size) * 100).toFixed(2) + "%");
+  console.groupEnd();
+
+  let maskUrl = null;
+  let supportedCollections = [];
+
+  try {
+    const { maskUrl: generatedMask, scene } = await segmentRoomImage(webpFile);
+    maskUrl = generatedMask;
+
+    // 3. Scene detection debug log
+    console.group("🏷️ Scene Detection & Category Match");
+    console.log("RunPod Scene Output:", scene);
+
+   const matchedIndustry = matchIndustryCategory(scene);
+console.log("Matched Industry:", matchedIndustry || "❌ No match found");
+
+if (matchedIndustry) {
+  // 👇 PEHLE: admin ke existing curated demo rooms se try karo (screenshot wali list)
+  supportedCollections = getSupportedCollectionsForIndustry(matchedIndustry, dbRooms);
+
+  // 👇 FALLBACK: agar us industry ka koi demo room DB mein nahi mila, tab userIndustry se derive karo
+  if (supportedCollections.length === 0) {
+    supportedCollections = Array.from(new Set(
+      dbProducts
+        .filter(p => {
+          const industries = Array.isArray(p.userIndustry) ? p.userIndustry : [p.userIndustry];
+          return industries.some(ind => String(ind).trim() === matchedIndustry);
+        })
+        .map(p => p.accordionCategory)
+        .filter(Boolean)
+    ));
+  }
+}
+console.log("Derived supportedCollections:", supportedCollections);
     console.groupEnd();
+  } catch (err) {
+    console.error('Floor mask generation failed, falling back to 2D pipeline:', err);
+  }
 
-    let maskUrl = null;
-    try {
-      maskUrl = await generateFloorMask(webpFile);
-    } catch (err) {
-      console.error('Floor mask generation failed, falling back to 2D pipeline:', err);
-    }
-
-    const imageObj = {
-      previewUrl: URL.createObjectURL(webpFile),
-      isDemo: false,
-      rawFile: webpFile,
-      maskUrl,
-      name: `My upload · ${new Date().toLocaleDateString()}`,
-    };
-    setSelectedRoomImage(imageObj);
-    addToHistory(imageObj);
-    setIsAnalyzingRoom(false);
-    setIsModalOpen(true);
-    localStorage.removeItem('activeDemoRoomId');
-    navigate('/visualizer/upload', { replace: false });
+  const imageObj = {
+    previewUrl: URL.createObjectURL(webpFile),
+    isDemo: false,
+    rawFile: webpFile,
+    maskUrl,
+    supportedCollections,
+    name: `My upload · ${new Date().toLocaleDateString()}`,
   };
+  setSelectedRoomImage(imageObj);
+  addToHistory(imageObj);
+  setIsAnalyzingRoom(false);
+  setIsModalOpen(true);
+  localStorage.removeItem('activeDemoRoomId');
+  navigate('/visualizer/upload', { replace: false });
+};
 
   const handleDemoRoomClick = async (room, skipHistory = false) => {
     try {
@@ -497,7 +545,7 @@ function App() {
     if (entry.type === 'demo' && entry.roomId) {
       const room = activeRooms.find(r => r.id === entry.roomId);
       if (room) {
-        setIsModalOpen(true); // ✅ NEW — pehle modal-flag set karo
+        setIsModalOpen(true); //  NEW — pehle modal-flag set karo
 
         handleDemoRoomClick({
           ...room,
@@ -506,11 +554,11 @@ function App() {
           product: room.product || [],
         });
 
-        // ✅ NEW — URL ko bhi /visualizer route pe le jao
+        //  NEW — URL ko bhi /visualizer route pe le jao
         navigate(`/visualizer/${room.id}`, { replace: false });
       }
     } else {
-      setIsModalOpen(true); // ✅ NEW
+      setIsModalOpen(true); //  NEW
 
       setSelectedRoomImage({
         previewUrl: entry.thumbnail,
@@ -522,7 +570,7 @@ function App() {
         supportedCollections: [],
       });
 
-      // ✅ NEW — user-uploaded photo ke liye bhi route change karo
+      //  NEW — user-uploaded photo ke liye bhi route change karo
       navigate(`/visualizer/upload/${entry.id}`, { replace: false });
     }
     setIsHistoryOpen(false);
