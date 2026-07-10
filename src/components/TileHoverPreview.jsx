@@ -77,7 +77,7 @@ export function TileHoverHintOverlay({ showHint }) {
   return createPortal(
     <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[210] pointer-events-none px-4 w-max max-w-[92vw] transition-all duration-300 ease-out animate-fade-in">
   
-      <div className="flex items-center gap-2.5 px-5 py-2 rounded-full bg-slate-950/85 backdrop-blur-xl border border-orange-500/30 shadow-[0_15px_30px_rgba(0,0,0,0.4)]">
+      <div className="flex items-center gap-2.5 px-5 py-2 rounded-full bg-white/85 backdrop-blur-xl border border-orange-500/30 shadow-[0_15px_30px_rgba(0,0,0,0.4)]">
         
      
         <span className="relative flex h-2 w-2 shrink-0">
