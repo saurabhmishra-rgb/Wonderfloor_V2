@@ -9,7 +9,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 
 import { NAV_CATEGORIES, ACCORDION_CATEGORIES, ALL_PRODUCTS } from '../data/productsConfig';
 import SidebarNavTabs from './SidebarNavTabs';
-import { useTileHoverPreview, TileHoverPreviewOverlay } from './TileHoverPreview.jsx';
+import { useTileHoverPreview, TileHoverPreviewOverlay,TileHoverHintOverlay } from './TileHoverPreview.jsx';
 
 // const PYTHON_BACKEND_URL = 'http://127.0.0.1:8000';
 const NODE_BACKEND_URL = 'https://wonderfloor-dashboard.vercel.app'
@@ -371,7 +371,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
 
   const [initialPinchDist, setInitialPinchDist] = useState(null);
   const [uploadedRoom, setUploadedRoom] = useState(null);
-  const { previewProduct, getHoverHandlers, closePreview } = useTileHoverPreview(2000);
+  const { previewProduct,showHint,mousePos, getHoverHandlers, closePreview } = useTileHoverPreview(2000);
   const [activeNavCategory, setActiveNavCategory] = useState('flooring-products');
   // Dynamically extracts unique categories so newly created admin collections appear automatically!
   // const productCategories = Array.from(new Set(
@@ -2553,6 +2553,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
         </div>
       )}
       <TileHoverPreviewOverlay previewProduct={previewProduct} />
+      <TileHoverHintOverlay showHint={showHint} mousePos={mousePos} />
     </div>
   );
 };
