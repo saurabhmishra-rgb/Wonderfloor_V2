@@ -10,6 +10,7 @@ export function useTileHoverPreview(delayMs = 2000) {
   const timerRef = useRef(null);
   const hintTimerRef = useRef(null);
   const isScrollingRef = useRef(false);
+  const isManualRef = useRef(false); 
 
   const clearTimers = () => {
     if (timerRef.current) clearTimeout(timerRef.current);
@@ -18,14 +19,14 @@ export function useTileHoverPreview(delayMs = 2000) {
     hintTimerRef.current = null;
   };
 
-  // At the time of scrolling Preview link blocked
+
   useEffect(() => {
     let scrollTimeout;
     const handleScroll = () => {
       isScrollingRef.current = true;
       clearTimers();
       setShowHint(false);
-      setPreviewProduct(null);
+      if (!isManualRef.current) setPreviewProduct(null); 
 
       clearTimeout(scrollTimeout);
       scrollTimeout = setTimeout(() => {
@@ -46,6 +47,7 @@ export function useTileHoverPreview(delayMs = 2000) {
     if (!enabled || isScrollingRef.current) return; 
     clearTimers();
 
+  
     if (e) {
       setMousePos({ x: e.clientX, y: e.clientY });
     }
@@ -56,19 +58,38 @@ export function useTileHoverPreview(delayMs = 2000) {
 
     timerRef.current = setTimeout(() => {
       if (!isScrollingRef.current) {
+        isManualRef.current = false; 
         setPreviewProduct(product);
         setShowHint(false); 
       }
     }, delayMs);
   }, [delayMs]);
 
-
+ 
   const handleMouseMove = useCallback((e) => {
     if (isScrollingRef.current) return;
     setMousePos({ x: e.clientX, y: e.clientY });
   }, []);
 
+
   const handleMouseLeave = useCallback(() => {
+    if (isManualRef.current) return; 
+    clearTimers();
+    setPreviewProduct(null);
+    setShowHint(false);
+  }, []);
+
+ 
+  const openPreview = useCallback((product) => {
+    isManualRef.current = true;
+    clearTimers();
+    setShowHint(false);
+    setPreviewProduct(product);
+  }, []);
+
+
+  const closePreview = useCallback(() => {
+    isManualRef.current = false;
     clearTimers();
     setPreviewProduct(null);
     setShowHint(false);
@@ -76,26 +97,25 @@ export function useTileHoverPreview(delayMs = 2000) {
 
   const getHoverHandlers = useCallback((product, enabled = true) => ({
     onMouseEnter: (e) => handleMouseEnter(product, enabled, e), 
-    onMouseMove: handleMouseMove,                             
+    onMouseMove: handleMouseMove,                              
     onMouseLeave: handleMouseLeave,
   }), [handleMouseEnter, handleMouseMove, handleMouseLeave]);
 
- 
-  return { previewProduct, showHint, mousePos, getHoverHandlers, closePreview: handleMouseLeave };
+  
+  return { previewProduct, showHint, mousePos, getHoverHandlers, closePreview, openPreview };
 }
-
 
 
 export function TileHoverHintOverlay({ showHint, mousePos }) {
   if (!showHint) return null;
 
   return createPortal(
-  
+    
     <div 
       className="fixed z-[210] pointer-events-none px-4 w-max max-w-[92vw] transition-all duration-75 ease-out animate-fade-in"
       style={{
         top: `${mousePos.y + 18}px`,  
-        left: `${mousePos.x + 14}px`   
+        left: `${mousePos.x + 14}px` 
       }}
     >
       <div className="flex items-center gap-2.5 px-5 py-2 rounded-full bg-white/85 backdrop-blur-xl border border-orange-500/30 shadow-[0_15px_30px_rgba(0,0,0,0.15)]">
@@ -115,14 +135,24 @@ export function TileHoverHintOverlay({ showHint, mousePos }) {
   );
 }
 
-export function TileHoverPreviewOverlay({ previewProduct }) {
+
+export function TileHoverPreviewOverlay({ previewProduct, onClose }) {
   if (!previewProduct) return null;
 
   return createPortal(
+    
     <div className="fixed inset-0 z-[200] flex items-center justify-center pointer-events-none animate-fade-in px-4">
       <div className="absolute inset-0 bg-slate-900/30 backdrop-blur-xl transition-all duration-500" />
 
-      <div className="relative z-10 flex flex-col items-center gap-5 p-6 sm:p-8 rounded-3xl bg-white/[0.04] backdrop-blur-md border border-white/10 shadow-[0_32px_64px_-15px_rgba(0,0,0,0.6)] max-w-[95vw] sm:max-w-[500px] md:max-w-[580px]">
+      <div
+        className="relative z-10 flex flex-col items-center gap-5 p-6 sm:p-8 rounded-3xl bg-white/[0.04] backdrop-blur-md border border-white/10 shadow-[0_32px_64px_-15px_rgba(0,0,0,0.6)] max-w-[95vw] sm:max-w-[500px] md:max-w-[580px]">
+       
+        <button
+          onClick={onClose}
+          className="absolute -top-3 -right-3 md:hidden w-9 h-9 rounded-full bg-white/90 text-gray-800 flex items-center justify-center shadow-lg z-20 pointer-events-auto"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
         <div className="relative rounded-2xl overflow-hidden shadow-2xl ring-1 ring-black/40 bg-black/10 flex items-center justify-center">
           <img
             src={previewProduct.img}
