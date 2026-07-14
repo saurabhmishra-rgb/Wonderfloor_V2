@@ -1195,7 +1195,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
   };
 
   const handleShare = (platform) => {
-    //  Build the clean URL
+    // ✅ Build the clean URL
     const baseUrl = window.location.origin;
     const safeSku = encodeURIComponent(selectedProduct.sku);
     const safeRoom = encodeURIComponent(initialImage?.id || 'default');
@@ -1220,7 +1220,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
         break;
 
       case 'whatsapp':
-        // Only sends the URL so WhatsApp automatically creates a clickable preview card
+        // ✅ Only sends the URL so WhatsApp automatically creates a clickable preview card
         window.open(
           `https://api.whatsapp.com/send?text=${shareUrl}`,
           '_blank'
@@ -1236,7 +1236,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
       //   break;
       // }
       case 'email':
-        //  Only puts the URL in the body of the email
+        // ✅ Only puts the URL in the body of the email
         window.open(
           `mailto:?subject=${encodeURIComponent('Wonderfloor Design — ' + selectedProduct.name)}&body=${shareUrl}`
         );
@@ -1250,7 +1250,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
   };
 
   //add filter option by dashboard when it is not available in ARVisualizer in filter if exist then it is not place inside filter option
-  //  DYNAMIC FILTER GENERATION WITH DE-DUPLICATION & CLEANING
+  // ✅ DYNAMIC FILTER GENERATION WITH DE-DUPLICATION & CLEANING
   const filterCategories = useMemo(() => {
     return BASE_FILTER_CATEGORIES.map(category => {
       const uniqueOptionsSet = new Set();
@@ -1303,7 +1303,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
       if (categoryId === 'accordionCategory' && !isRemoving) {
         setExpandedProductCategory(option);
         setActiveFooterCategory(option);
-        //  NEW: Filter se collection select karne par bhi first tile wrap karo
+        // ✅ NEW: Filter se collection select karne par bhi first tile wrap karo
         wrapFirstTileForCategory(option, currentTabFilteredProducts);
       }
 
@@ -1314,7 +1314,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
       }
     });
   };
-  //  NEW: Toggle "Select All" for a given filter category
+  // ✅ NEW: Toggle "Select All" for a given filter category
   const handleToggleSelectAll = (categoryId, allOptions) => {
     setActiveFilters(prev => {
       const currentSelected = prev[categoryId] || [];
@@ -1342,10 +1342,10 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
     const searchLower = searchQuery.trim().toLowerCase();
     const isSearching = searchLower !== '';
 
-    //  NEW: Check if any filter option has values selected
+    // 💡 NEW: Check if any filter option has values selected
     const isFiltering = Object.values(activeFilters).some(selectedValues => selectedValues.length > 0);
 
-    //  FIX: Bypass room restriction if searching OR filtering!
+    // 💡 FIX: Bypass room restriction if searching OR filtering!
     if (!isSearching && !isFiltering && hasRoomFilter && !roomSupportedCollections.some(
       cat => normalizeCompare(cat) === normalizeCompare(prod.accordionCategory)
     )) {
@@ -1622,7 +1622,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
                         <div className={`p-3 border-t flex flex-col gap-1
   ${isDarkMode ? 'bg-[#0d1825] border-[#1e3a5f]' : 'bg-gray-50 border-gray-100'}`}>
 
-                          {/*  NEW: Agar category 'Product Collection' ya 'User Industry' hai, to 'Select All' dikhao */}
+                          {/* 💡 NEW: Agar category 'Product Collection' ya 'User Industry' hai, to 'Select All' dikhao */}
                           {(category.id === 'accordionCategory' || category.id === 'userIndustry') && (
                             <label
                               className={`relative flex justify-between items-center px-3 py-2.5 rounded-lg cursor-pointer transition-all
@@ -1879,7 +1879,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
 
             {errorMsg && (
               <div className="mx-4 md:mx-5 mt-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm break-words font-medium">
-                 {errorMsg}
+                ⚠️ {errorMsg}
               </div>
             )}
 
@@ -1986,16 +1986,18 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
                                           <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
                                         </svg>
                                       </button>
-                                      {/*  NEW: Mobile-only eye icon to open tile preview */}
-                                      <button
-                                        onClick={(e) => { e.stopPropagation(); openPreview(prod); }}
-                                        className="md:hidden absolute bottom-2 right-2 p-1.5 z-10 cursor-pointer rounded-full bg-black/50 backdrop-blur-sm"
-                                      >
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
-                                          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                                          <circle cx="12" cy="12" r="2"></circle>
-                                        </svg>
-                                      </button>
+                                    {/* 💡 NEW: Mobile-only eye icon — sirf Luxury Vinyl Tile products ke liye */}
+                                      {prod.navCategory === 'luxury-vinyl-tile' && (
+                                        <button
+                                          onClick={(e) => { e.stopPropagation(); openPreview(prod); }}
+                                          className="md:hidden absolute bottom-2 right-2 p-1.5 z-10 cursor-pointer rounded-full bg-black/50 backdrop-blur-sm"
+                                        >
+                                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                            <circle cx="12" cy="12" r="3"></circle>
+                                          </svg>
+                                        </button>
+                                      )}
                                       <img src={prod.img} alt={prod.name} className="w-16 h-16 md:w-20 md:h-20 object-cover rounded shadow-sm bg-gray-100 shrink-0 border border-gray-200" />
                                       <div className="flex flex-col justify-center min-w-0 flex-1">
                                         <span className={`text-[10px] md:text-[11px] uppercase tracking-wide font-semibold ${dm.brandLabel}`}>Wonderfloor</span>
@@ -2031,16 +2033,18 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
                                           <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
                                         </svg>
                                       </button>
-                                      {/*  NEW: Mobile-only eye icon to open tile preview */}
-                                      <button
-                                        onClick={(e) => { e.stopPropagation(); openPreview(prod); }}
-                                        className="md:hidden absolute bottom-1.5 right-1.5 p-1.5 z-20 cursor-pointer rounded-full bg-black/50 backdrop-blur-sm"
-                                      >
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
-                                          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                                          <circle cx="12" cy="12" r="3"></circle>
-                                        </svg>
-                                      </button>
+                                      {/* 💡 NEW: Mobile-only eye icon — sirf Luxury Vinyl Tile products ke liye */}
+                                      {prod.navCategory === 'luxury-vinyl-tile' && (
+                                        <button
+                                          onClick={(e) => { e.stopPropagation(); openPreview(prod); }}
+                                          className="md:hidden absolute bottom-1.5 right-1.5 p-1.5 z-20 cursor-pointer rounded-full bg-black/50 backdrop-blur-sm"
+                                        >
+                                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                            <circle cx="12" cy="12" r="3"></circle>
+                                          </svg>
+                                        </button>
+                                      )}
                                       <img src={prod.img} alt={prod.name} className="w-full h-full object-cover bg-gray-100" />
                                     </div>
                                   );
@@ -2082,7 +2086,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
 
       <div className="flex-1 flex flex-col bg-[#e5e7eb] h-full overflow-hidden relative w-full">
 
-        {/*  CompareView as absolute overlay — keeps normal view in DOM */}
+        {/* ✅ CompareView as absolute overlay — keeps normal view in DOM */}
         {isCompareMode && (
           <>
             <CompareView
@@ -2099,7 +2103,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
           </>
         )}
 
-        {/*  Normal view ALWAYS rendered — threeContainerRef stays alive */}
+        {/* ✅ Normal view ALWAYS rendered — threeContainerRef stays alive */}
         {/* FIXED CODE */}
         <div className={`flex-1 flex flex-col h-full overflow-hidden ${isCompareMode ? 'pointer-events-none' : ''}`}>
 
@@ -2177,7 +2181,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
               </div>
 
               <div className={`flex items-center gap-1.5 md:gap-5 border-l pl-1.5 md:pl-5 h-full shrink-0 transition-colors ${isDarkMode ? 'border-[#334155]' : 'border-gray-200'}`}>
-                {/*  DARK MODE TOGGLE — Premium Animated Version */}
+                {/* 🌙 DARK MODE TOGGLE — Premium Animated Version */}
                 <button
                   onClick={() => setIsDarkMode(prev => !prev)}
                   title={isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
