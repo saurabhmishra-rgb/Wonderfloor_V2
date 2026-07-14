@@ -2495,7 +2495,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
               </button>
             </div>
             <div className="overflow-y-auto p-4 sm:p-6 flex flex-col flex-1">
-              <div className="flex flex-col sm:flex-row gap-6 mb-8">a
+              <div className="flex flex-col sm:flex-row gap-6 mb-8">
                 {/* //Image at product level */}
                 <div className="w-full sm:w-1/2 shrink-0 flex items-center justify-center max-h-[280px] sm:max-h-[320px]">
                   <img
