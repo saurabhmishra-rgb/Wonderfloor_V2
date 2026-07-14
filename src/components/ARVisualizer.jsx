@@ -2495,9 +2495,14 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
               </button>
             </div>
             <div className="overflow-y-auto p-4 sm:p-6 flex flex-col flex-1">
-              <div className="flex flex-col sm:flex-row gap-6 mb-8">
-                <div className="w-full sm:w-1/2 aspect-square rounded-xl overflow-hidden border border-gray-200 bg-gray-50 shadow-sm shrink-0">
-                  <img src={detailsProduct.img} alt={detailsProduct.name} className="w-full h-full object-cover" />
+              <div className="flex flex-col sm:flex-row gap-6 mb-8">a
+                //Image at product level
+                <div className="w-full sm:w-1/2 shrink-0 flex items-center justify-center max-h-[280px] sm:max-h-[320px]">
+                  <img
+                    src={detailsProduct.img}
+                    alt={detailsProduct.name}
+                    className="max-w-full max-h-[280px] sm:max-h-[320px] w-auto h-auto object-contain"
+                  />
                 </div>
                 <div className="w-full sm:w-1/2 flex flex-col justify-start pt-2">
                   <span className="text-xs text-gray-500 uppercase tracking-widest font-semibold">Wonderfloor</span>
