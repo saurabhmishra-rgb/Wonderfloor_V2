@@ -9,7 +9,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 
 import { NAV_CATEGORIES, ACCORDION_CATEGORIES, ALL_PRODUCTS } from '../data/productsConfig';
 import SidebarNavTabs from './SidebarNavTabs';
-import { useTileHoverPreview, TileHoverPreviewOverlay,TileHoverHintOverlay } from './TileHoverPreview.jsx';
+import { useTileHoverPreview, TileHoverPreviewOverlay, TileHoverHintOverlay } from './TileHoverPreview.jsx';
 
 // const PYTHON_BACKEND_URL = 'http://127.0.0.1:8000';
 const NODE_BACKEND_URL = 'https://wonderfloor-dashboard.vercel.app'
@@ -803,33 +803,33 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
   const handleTouchEnd = () => { setIsDragging(false); setInitialPinchDist(null); };
 
   const getRotatedTileBlob = async (imageSrc, angle) => {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    
-    // 💡 FIX: Yeh line lagane se browser image ko anonymously request karega aur canvas taint nahi hoga
-    img.crossOrigin = 'anonymous'; 
-    
-    img.onload = () => {
-      const canvas = document.createElement('canvas');
-      if (angle % 180 !== 0) {
-        canvas.width = img.height;
-        canvas.height = img.width;
-      } else {
-        canvas.width = img.width;
-        canvas.height = img.height;
-      }
-      const ctx = canvas.getContext('2d');
-      ctx.translate(canvas.width / 2, canvas.height / 2);
-      ctx.rotate((angle * Math.PI) / 180);
-      ctx.drawImage(img, -img.width / 2, -img.height / 2);
-      
-      // Ab ye line bina kisi crash ya error ke flawlessly chalegi!
-      canvas.toBlob(resolve, 'image/jpeg', 0.90); 
-    };
-    img.onerror = reject;
-    img.src = imageSrc;
-  });
-};
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+
+      // 💡 FIX: Yeh line lagane se browser image ko anonymously request karega aur canvas taint nahi hoga
+      img.crossOrigin = 'anonymous';
+
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        if (angle % 180 !== 0) {
+          canvas.width = img.height;
+          canvas.height = img.width;
+        } else {
+          canvas.width = img.width;
+          canvas.height = img.height;
+        }
+        const ctx = canvas.getContext('2d');
+        ctx.translate(canvas.width / 2, canvas.height / 2);
+        ctx.rotate((angle * Math.PI) / 180);
+        ctx.drawImage(img, -img.width / 2, -img.height / 2);
+
+        // Ab ye line bina kisi crash ya error ke flawlessly chalegi!
+        canvas.toBlob(resolve, 'image/jpeg', 0.90);
+      };
+      img.onerror = reject;
+      img.src = imageSrc;
+    });
+  };
 
   // ── FIX: HELPER FUNCTION TO PROMISIFY IMAGE LOADING ──
   const loadCanvasImage = (src) => {
@@ -1077,7 +1077,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
   };
 
   const handleTileSelection = async (product) => {
-      closePreview();
+    closePreview();
     if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
     setZoomScale(1);
     setPan({ x: 0, y: 0 });
@@ -1855,10 +1855,28 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
                 setActiveNavCategory(id);
                 setExpandedProductCategory(null);
 
+
+                if (id === 'luxury-vinyl-tile') {
+                  const newTabProducts = combinedProducts.filter(p => p.navCategory === id);
+                  let firstCategory = null;
+                  if (hasRoomFilter) {
+                    firstCategory = roomSupportedCollections.find(cat =>
+                      newTabProducts.some(p => p.accordionCategory === cat)
+                    );
+                  }
+                  if (!firstCategory) {
+                    firstCategory = newTabProducts[0]?.accordionCategory;
+                  }
+                  if (firstCategory) {
+                    setExpandedProductCategory(firstCategory);
+                  }
+                  return;
+                }
+
                 if (!isCompareMode) {
                   const newTabProducts = combinedProducts.filter(p => p.navCategory === id);
 
-                  // Room ke supported collections ko priority do, warna first available category
+
                   let firstCategory = null;
                   if (hasRoomFilter) {
                     firstCategory = roomSupportedCollections.find(cat =>
@@ -1879,7 +1897,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
 
             {errorMsg && (
               <div className="mx-4 md:mx-5 mt-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm break-words font-medium">
-                ⚠️ {errorMsg}
+                {errorMsg}
               </div>
             )}
 
@@ -1976,7 +1994,13 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
                                   return (
                                     <div
                                       key={prod.id}
-                                      onClick={() => handleTileSelection(prod)}
+                                      onClick={(e) => {
+                                        const cardEl = e.currentTarget;
+                                        handleTileSelection(prod);
+                                        setTimeout(() => {
+                                          cardEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                        }, 320);
+                                      }}
                                       {...getHoverHandlers(prod, prod.navCategory === 'luxury-vinyl-tile')}
                                       className={`relative flex gap-3 md:gap-4 p-2 md:p-3 border rounded-lg cursor-pointer transition-all duration-300
   ${isSelected ? dm.cardSelected : `${dm.card} hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:-translate-y-1`}`}
@@ -1986,7 +2010,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
                                           <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
                                         </svg>
                                       </button>
-                                    {/* 💡 NEW: Mobile-only eye icon — sirf Luxury Vinyl Tile products ke liye */}
+                                      {/* 💡 NEW: Mobile-only eye icon — sirf Luxury Vinyl Tile products ke liye */}
                                       {prod.navCategory === 'luxury-vinyl-tile' && (
                                         <button
                                           onClick={(e) => { e.stopPropagation(); openPreview(prod); }}
@@ -2022,9 +2046,15 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
                                     ? (activeCompareSide === 'left' ? compareLeftProduct?.id === prod.id : compareRightProduct?.id === prod.id)
                                     : selectedProduct.id === prod.id;
                                   return (
-                                    <div
+                                   <div
                                       key={prod.id}
-                                      onClick={() => handleTileSelection(prod)}
+                                    onClick={(e) => {
+                                        const cardEl = e.currentTarget;
+                                        handleTileSelection(prod);
+                                        setTimeout(() => {
+                                          cardEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                        }, 320);
+                                      }}
                                         {...getHoverHandlers(prod, prod.navCategory === 'luxury-vinyl-tile')}
                                       className={`relative aspect-square rounded overflow-hidden cursor-pointer border-2 transition-all duration-300 bg-white ${isSelected ? 'border-[#0b5e5e] shadow-lg transform scale-105 z-10' : 'border-transparent hover:border-gray-200 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:scale-105'}`}
                                     >
@@ -2496,8 +2526,19 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
             </div>
             <div className="overflow-y-auto p-4 sm:p-6 flex flex-col flex-1">
               <div className="flex flex-col sm:flex-row gap-6 mb-8">
-                {/* //Image at product level */}
-                <div className="w-full sm:w-1/2 shrink-0 flex items-center justify-center max-h-[280px] sm:max-h-[320px]">
+                {/* Image at product level */}
+                <div className="relative w-full sm:w-1/2 shrink-0 flex items-center justify-center max-h-[280px] sm:max-h-[320px]">
+                  <button
+                    onClick={(e) => toggleFavorite(e, detailsProduct.id)}
+                    className="absolute top-1 right-1 sm:top-2 sm:right-2 p-2 bg-white/80 backdrop-blur-sm rounded-full z-10 cursor-pointer shadow-sm hover:scale-110 transition-transform"
+                  >
+                    <svg width="20" height="20" viewBox="0 0 24 24"
+                      fill={favoriteProducts.includes(detailsProduct.id) ? "#ef4444" : "none"}
+                      stroke={favoriteProducts.includes(detailsProduct.id) ? "#ef4444" : "#6b7280"}
+                      strokeWidth="2">
+                      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                    </svg>
+                  </button>
                   <img
                     src={detailsProduct.img}
                     alt={detailsProduct.name}
@@ -2594,4 +2635,3 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
 };
 
 export default ARVisualizer;
-
