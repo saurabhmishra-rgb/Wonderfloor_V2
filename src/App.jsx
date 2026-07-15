@@ -132,9 +132,9 @@ const allDemoRooms = [
 ];
 
 // ── RunPod Segmentation Helper ──
-const SEGMENT_SERVER_URL = 'http://localhost:5000';
+// const SEGMENT_SERVER_URL = 'http://localhost:5000';
 // ── RunPod Segmentation Helper ──
-// const SEGMENT_SERVER_URL = 'https://wonderfloor-runpod-backend.onrender.com';
+const SEGMENT_SERVER_URL = 'https://wonderfloor-runpod-backend.onrender.com';
 
 async function segmentRoomImage(file) {
   const formData = new FormData();
