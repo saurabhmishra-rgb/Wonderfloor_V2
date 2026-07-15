@@ -1855,7 +1855,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
                 setActiveNavCategory(id);
                 setExpandedProductCategory(null);
 
-
+                // 1. Handling Luxury Vinyl Tile Tab
                 if (id === 'luxury-vinyl-tile') {
                   const newTabProducts = combinedProducts.filter(p => p.navCategory === id);
                   let firstCategory = null;
@@ -1869,13 +1869,14 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
                   }
                   if (firstCategory) {
                     setExpandedProductCategory(firstCategory);
+                    setActiveFooterCategory(firstCategory); // ✅ Fix 1: Sync LVT footer strip
                   }
                   return;
                 }
 
+                // 2. Handling Flooring Products & Other Tabs
                 if (!isCompareMode) {
                   const newTabProducts = combinedProducts.filter(p => p.navCategory === id);
-
 
                   let firstCategory = null;
                   if (hasRoomFilter) {
@@ -1889,6 +1890,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
 
                   if (firstCategory) {
                     setExpandedProductCategory(firstCategory);
+                    setActiveFooterCategory(firstCategory); // ✅ Fix 2: Sync Flooring footer strip even on early return
                     wrapFirstTileForCategory(firstCategory, newTabProducts);
                   }
                 }
@@ -2046,16 +2048,16 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
                                     ? (activeCompareSide === 'left' ? compareLeftProduct?.id === prod.id : compareRightProduct?.id === prod.id)
                                     : selectedProduct.id === prod.id;
                                   return (
-                                   <div
+                                    <div
                                       key={prod.id}
-                                    onClick={(e) => {
+                                      onClick={(e) => {
                                         const cardEl = e.currentTarget;
                                         handleTileSelection(prod);
                                         setTimeout(() => {
                                           cardEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
                                         }, 320);
                                       }}
-                                        {...getHoverHandlers(prod, prod.navCategory === 'luxury-vinyl-tile')}
+                                      {...getHoverHandlers(prod, prod.navCategory === 'luxury-vinyl-tile')}
                                       className={`relative aspect-square rounded overflow-hidden cursor-pointer border-2 transition-all duration-300 bg-white ${isSelected ? 'border-[#0b5e5e] shadow-lg transform scale-105 z-10' : 'border-transparent hover:border-gray-200 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:scale-105'}`}
                                     >
                                       <button onClick={(e) => toggleFavorite(e, prod.id)} className="absolute top-1.5 right-1.5 p-1 bg-white/70 backdrop-blur-sm rounded-full z-20 cursor-pointer shadow-sm">
