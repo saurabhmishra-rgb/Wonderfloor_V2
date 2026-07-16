@@ -58,6 +58,7 @@ const CompareView = ({
     };
   }, [isDragging]);
 
+  
   return (
     <div className="absolute inset-0 z-40 bg-[#e5e7eb] flex flex-col h-full w-full animate-fade-in">
       {/* Compare Toolbar */}
@@ -714,7 +715,21 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+// FOR filter Product in Mobile nav collection 
+useEffect(() => {
+  if (isLoadingDbProducts) return;
+  
+  if (currentTabFilteredProducts.length > 0) {
+    const isCategoryStillValid = currentTabFilteredProducts.some(
+      p => p.accordionCategory === activeFooterCategory
+    );
+    
+    if (!isCategoryStillValid) {
+      setActiveFooterCategory(currentTabFilteredProducts[0].accordionCategory);
+    }
+  }
 
+}, [activeNavCategory, activeFilters, searchQuery, isLoadingDbProducts]);
   // When exiting Compare Mode, reset the 3D texture to normal mode's selected product
   useEffect(() => {
     if (!isCompareMode && visualizerInstance.current && selectedProduct && activeBaseImage?.maskUrl) {
@@ -1890,7 +1905,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
 
                   if (firstCategory) {
                     setExpandedProductCategory(firstCategory);
-                    setActiveFooterCategory(firstCategory); // ✅ Fix 2: Sync Flooring footer strip even on early return
+                    setActiveFooterCategory(firstCategory); //  Fix 2: Sync Flooring footer strip even on early return
                     wrapFirstTileForCategory(firstCategory, newTabProducts);
                   }
                 }
@@ -2467,6 +2482,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
               </div>
 
               {/* Row 2: Quick Selector (mobile only) */}
+              {/* Row 2: Quick Selector (mobile only) */}
               <div className="flex md:hidden flex-col w-full border-t border-gray-100 px-3 md:px-6 py-2 bg-gray-50/50">
                 <div className="flex overflow-x-auto gap-2 pb-2 items-center [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                   <span className="text-[10px] md:text-xs font-bold text-gray-500 uppercase tracking-wider mr-1 shrink-0">Collections:</span>
@@ -2481,13 +2497,9 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
                   ))}
                 </div>
                 <div className="flex overflow-x-auto gap-3 py-1 items-center [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-                  {combinedProducts
-                    .filter(p =>
-                      p.navCategory === activeNavCategory &&
-                      p.accordionCategory === activeFooterCategory &&
-                      // Apply same room-level gate to mobile strip
-                      (!hasRoomFilter || roomSupportedCollections.includes(p.accordionCategory))
-                    )
+                 
+                  {currentTabFilteredProducts
+                    .filter(p => p.accordionCategory === activeFooterCategory)
                     .map(prod => {
                       const isSelected = selectedProduct.id === prod.id;
                       return (
