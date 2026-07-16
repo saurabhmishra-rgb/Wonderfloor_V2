@@ -1352,21 +1352,23 @@ useEffect(() => {
   console.log('navProducts count:', navProducts.length);
   console.log('ALL_PRODUCTS count:', ALL_PRODUCTS.length);
 
-  // ── FILTER LOGIC: APPLIES GLOBALLY ACROSS ALL PRODUCTS ──
-  const filteredProducts = combinedProducts.filter(prod => {
-    const searchLower = searchQuery.trim().toLowerCase();
-    const isSearching = searchLower !== '';
+ 
+  // ── FILTER LOGIC SECTION KO IS TARAH UPDATE KAREIN ──
+const filteredProducts = combinedProducts.filter(prod => {
+  const searchLower = searchQuery.trim().toLowerCase();
+  const isSearching = searchLower !== '';
 
-    // 💡 NEW: Check if any filter option has values selected
-    const isFiltering = Object.values(activeFilters).some(selectedValues => selectedValues.length > 0);
+  const isBypassActive = 
+    (activeFilters['accordionCategory']?.length > 0) || 
+    (activeFilters['userIndustry']?.length > 0);
 
-    // 💡 FIX: Bypass room restriction if searching OR filtering!
-    if (!isSearching && !isFiltering && hasRoomFilter && !roomSupportedCollections.some(
-      cat => normalizeCompare(cat) === normalizeCompare(prod.accordionCategory)
-    )) {
-      return false;
-    }
+  if (!isSearching && !isBypassActive && hasRoomFilter && !roomSupportedCollections.some(
+    cat => normalizeCompare(cat) === normalizeCompare(prod.accordionCategory)
+  )) {
+    return false;
+  }
 
+  // Baaki ka matchesSearch aur matchesFilters ka logic same rahega...
     const matchesSearch = searchLower === '' ||
       safeSearchMatch(prod.name, searchLower) ||
       safeSearchMatch(prod.accordionCategory, searchLower) ||
@@ -2486,7 +2488,9 @@ useEffect(() => {
               <div className="flex md:hidden flex-col w-full border-t border-gray-100 px-3 md:px-6 py-2 bg-gray-50/50">
                 <div className="flex overflow-x-auto gap-2 pb-2 items-center [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                   <span className="text-[10px] md:text-xs font-bold text-gray-500 uppercase tracking-wider mr-1 shrink-0">Collections:</span>
-                  {displayCategories.map(cat => (
+                  {displayCategories
+                  .filter(cat => currentTabFilteredProducts.some(p => p.accordionCategory === cat))
+                  .map(cat => (
                     <button
                       key={cat}
                       onClick={(e) => { e.stopPropagation(); setActiveFooterCategory(cat); }}
