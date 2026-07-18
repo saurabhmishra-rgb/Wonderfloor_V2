@@ -6,6 +6,7 @@ import DownloadView from './DownloadView';
 import { initVisualizer } from './script.jsx';
 import AttractiveLoader from './AttractiveLoader';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useHerringbonePattern } from './useHerringbonePattern';
 
 import { NAV_CATEGORIES, ACCORDION_CATEGORIES, ALL_PRODUCTS } from '../data/productsConfig';
 import SidebarNavTabs from './SidebarNavTabs';
@@ -58,7 +59,7 @@ const CompareView = ({
     };
   }, [isDragging]);
 
-  
+
   return (
     <div className="absolute inset-0 z-40 bg-[#e5e7eb] flex flex-col h-full w-full animate-fade-in">
       {/* Compare Toolbar */}
@@ -157,32 +158,32 @@ const BASE_FILTER_CATEGORIES = [
   {
     id: 'accordionCategory',
     label: 'Product Collections',
-    options: [], // 👈 Ye automatically database se aa jayega
+    options: [], //  Ye automatically database se aa jayega
   },
   {
     id: 'colour',
     label: 'Colour Family',
-    options: [], // 👈 Pura array khali kar dein, ab database ke colours aayenge
+    options: [], //  Pura array khali kar dein, ab database ke colours aayenge
   },
   {
     id: 'shade',
     label: 'Shade',
-    options: [], // 👈 Pura array khali kar dein
+    options: [], //  Pura array khali kar dein
   },
   {
     id: 'thickness',
     label: 'Thickness',
-    options: [], // 👈 Pura array khali kar dein
+    options: [], //  Pura array khali kar dein
   },
   {
     id: 'style',
     label: 'Style',
-    options: [], // 👈 Pura array khali kar dein
+    options: [], //  Pura array khali kar dein
   },
   {
     id: 'pattern',
     label: 'Pattern / Layout',
-    options: [], // 👈 Pura array khali kar dein
+    options: [], //  Pura array khali kar dein
   },
   {
     id: 'userIndustry',
@@ -476,7 +477,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [initialImage, combinedProducts, isLoadingDbProducts]); // ✅ NEW deps
+  }, [initialImage, combinedProducts, isLoadingDbProducts]); //  NEW deps
 
   const [processedImage, setProcessedImage] = useState(null);
   const [isProcessing, setIsProcessing] = useState(true);
@@ -536,7 +537,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
   const downloadRef = useRef(null);
   const menuRef = useRef(null);
   const mobileMenuRef = useRef(null);
-
+  const isRotatingRef = useRef(false);
   // Toolbar States
   const [viewMode, setViewMode] = useState('list');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -555,10 +556,36 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
   const imageContainerRef = useRef(null);
   const activeBaseImage = uploadedRoom || initialImage;
 
-  // ── Room-level collection gate ──
-  // DB rooms carry supportedCollections from UploadRoomModal admin selection
-  // Static demo rooms carry it from their hardcoded `product` array
-  // User-uploaded rooms have [] so no filter is applied
+  const {
+    herringboneMode,
+    isHerringbonePanelOpen,
+    herringboneTile1,
+    herringboneTile2,
+    activeHerringboneSlot,
+    setActiveHerringboneSlot,
+    handleToggleHerringbone,
+    handleHerringboneTileAssign,
+    rotateHerringbone,
+  } = useHerringbonePattern({
+    activeBaseImage,
+    visualizerInstance,
+    selectedProduct,
+    floorRotation,
+    setErrorMsg,
+    setIsProcessing: (val) => {
+      if (isRotatingRef.current && val === true) return;
+      setIsProcessing(val);
+    },
+  });
+
+  useEffect(() => {
+    if (expandedProductCategory === 'Timberland Herringbone') {
+      if (!herringboneMode) handleToggleHerringbone();
+    } else {
+      if (herringboneMode) handleToggleHerringbone();
+    }
+  }, [expandedProductCategory, herringboneMode, handleToggleHerringbone]);
+
   const roomSupportedCollections = activeBaseImage?.supportedCollections || [];
   const hasRoomFilter = roomSupportedCollections.length > 0;
 
@@ -569,10 +596,10 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
       .filter(p => {
         const isSearching = searchQuery.trim() !== '';
 
-        // 💡 NEW: Mirror the filter check here
+        //  NEW: Mirror the filter check here
         const isFiltering = Object.values(activeFilters).some(selectedValues => selectedValues.length > 0);
 
-        // 💡 FIX: Show the accordion block globally if searching OR filtering
+        //  FIX: Show the accordion block globally if searching OR filtering
         if (isSearching || isFiltering) return true;
 
         return !hasRoomFilter || roomSupportedCollections.some(
@@ -715,21 +742,21 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-// FOR filter Product in Mobile nav collection 
-useEffect(() => {
-  if (isLoadingDbProducts) return;
-  
-  if (currentTabFilteredProducts.length > 0) {
-    const isCategoryStillValid = currentTabFilteredProducts.some(
-      p => p.accordionCategory === activeFooterCategory
-    );
-    
-    if (!isCategoryStillValid) {
-      setActiveFooterCategory(currentTabFilteredProducts[0].accordionCategory);
-    }
-  }
+  // FOR filter Product in Mobile nav collection 
+  useEffect(() => {
+    if (isLoadingDbProducts) return;
 
-}, [activeNavCategory, activeFilters, searchQuery, isLoadingDbProducts]);
+    if (currentTabFilteredProducts.length > 0) {
+      const isCategoryStillValid = currentTabFilteredProducts.some(
+        p => p.accordionCategory === activeFooterCategory
+      );
+
+      if (!isCategoryStillValid) {
+        setActiveFooterCategory(currentTabFilteredProducts[0].accordionCategory);
+      }
+    }
+
+  }, [activeNavCategory, activeFilters, searchQuery, isLoadingDbProducts]);
   // When exiting Compare Mode, reset the 3D texture to normal mode's selected product
   useEffect(() => {
     if (!isCompareMode && visualizerInstance.current && selectedProduct && activeBaseImage?.maskUrl) {
@@ -1052,13 +1079,42 @@ useEffect(() => {
     if (showLoader) setIsProcessing(true);
 
     try {
-      if (activeBaseImage?.maskUrl) {
-        if (visualizerInstance.current && visualizerInstance.current.updateTexture) {
-          visualizerInstance.current.updateTexture(product.img, angle);
+   
+     if (activeBaseImage?.maskUrl) {
+        if (visualizerInstance.current) {
+          // Fallback to empty string if undefined, convert to lowercase
+          const categoryName = (product?.accordionCategory || "").toLowerCase();
+          const productName = (product?.name || "").toLowerCase();
+
+          // 1. Check for Herringbone
+          if (categoryName.includes('herringbone') || productName.includes('herringbone')) {
+            if (visualizerInstance.current.updateHerringboneTexture && herringboneTile1 && herringboneTile2) {
+              await visualizerInstance.current.updateHerringboneTexture(herringboneTile1.img, herringboneTile2.img, angle);
+            }
+          } 
+          // 2. Check for Stoneland / Monza (1/2 Brick Stagger)
+          else if (categoryName.includes('monja') || categoryName.includes('monza') || categoryName.includes('stoneland')) {
+            if (visualizerInstance.current.updateStaggeredTexture) {
+              await visualizerInstance.current.updateStaggeredTexture(product.img, 0.5, angle);
+            }
+          } 
+          // 👇 NEW: Check for Planks (Timberland, Timberworld, Grandeure) for 1/3 Stagger
+          else if (categoryName.includes('timber') || categoryName.includes('grandeure') || categoryName.includes('plank')) {
+            if (visualizerInstance.current.updateStaggeredTexture) {
+              await visualizerInstance.current.updateStaggeredTexture(product.img, 0.333, angle);
+            }
+          } 
+          // 4. Default Standard Grid
+          else {
+            if (visualizerInstance.current.updateTexture) {
+              await visualizerInstance.current.updateTexture(product.img, angle);
+            }
+          }
         }
         await new Promise(resolve => setTimeout(resolve, 4500));
         return;
       }
+    
 
       if (!activeBaseImage?.rawFile) return;
 
@@ -1202,7 +1258,17 @@ useEffect(() => {
     const nextAngle = (floorRotation + 30) % 360;
     setFloorRotation(nextAngle);
     setIsFloorVisible(true);
-    applyFloorOverlay(selectedProduct, -nextAngle, false);
+    if (herringboneMode) {
+      isRotatingRef.current = true; // 1. Raise flag to block incoming loader requests
+      rotateHerringbone(nextAngle); // 2. Perform the canvas/texture rotation
+      
+      // 3. Clear the flag after the immediate asynchronous state changes clear up
+      setTimeout(() => {
+        isRotatingRef.current = false;
+      }, 250);
+    } else {
+      applyFloorOverlay(selectedProduct, -nextAngle, false);
+    }
   };
 
   const getDistance = (touch1, touch2) => {
@@ -1210,7 +1276,7 @@ useEffect(() => {
   };
 
   const handleShare = (platform) => {
-    // ✅ Build the clean URL
+
     const baseUrl = window.location.origin;
     const safeSku = encodeURIComponent(selectedProduct.sku);
     const safeRoom = encodeURIComponent(initialImage?.id || 'default');
@@ -1235,7 +1301,6 @@ useEffect(() => {
         break;
 
       case 'whatsapp':
-        // ✅ Only sends the URL so WhatsApp automatically creates a clickable preview card
         window.open(
           `https://api.whatsapp.com/send?text=${shareUrl}`,
           '_blank'
@@ -1251,7 +1316,6 @@ useEffect(() => {
       //   break;
       // }
       case 'email':
-        // ✅ Only puts the URL in the body of the email
         window.open(
           `mailto:?subject=${encodeURIComponent('Wonderfloor Design — ' + selectedProduct.name)}&body=${shareUrl}`
         );
@@ -1265,7 +1329,6 @@ useEffect(() => {
   };
 
   //add filter option by dashboard when it is not available in ARVisualizer in filter if exist then it is not place inside filter option
-  // ✅ DYNAMIC FILTER GENERATION WITH DE-DUPLICATION & CLEANING
   const filterCategories = useMemo(() => {
     return BASE_FILTER_CATEGORIES.map(category => {
       const uniqueOptionsSet = new Set();
@@ -1318,7 +1381,6 @@ useEffect(() => {
       if (categoryId === 'accordionCategory' && !isRemoving) {
         setExpandedProductCategory(option);
         setActiveFooterCategory(option);
-        // ✅ NEW: Filter se collection select karne par bhi first tile wrap karo
         wrapFirstTileForCategory(option, currentTabFilteredProducts);
       }
 
@@ -1329,18 +1391,15 @@ useEffect(() => {
       }
     });
   };
-  // ✅ NEW: Toggle "Select All" for a given filter category
+
   const handleToggleSelectAll = (categoryId, allOptions) => {
     setActiveFilters(prev => {
       const currentSelected = prev[categoryId] || [];
-      // Check karo ki kya pehle se saare options selected hain
       const isAllSelected = currentSelected.length === allOptions.length;
 
       if (isAllSelected) {
-        // Agar sab selected the, to ab khali (uncheck) kar do
         return { ...prev, [categoryId]: [] };
       } else {
-        // Agar sab selected nahi the, to saare options ko array mein daal do
         return { ...prev, [categoryId]: [...allOptions] };
       }
     });
@@ -1352,23 +1411,23 @@ useEffect(() => {
   console.log('navProducts count:', navProducts.length);
   console.log('ALL_PRODUCTS count:', ALL_PRODUCTS.length);
 
- 
+
   // ── FILTER LOGIC SECTION KO IS TARAH UPDATE KAREIN ──
-const filteredProducts = combinedProducts.filter(prod => {
-  const searchLower = searchQuery.trim().toLowerCase();
-  const isSearching = searchLower !== '';
+  const filteredProducts = combinedProducts.filter(prod => {
+    const searchLower = searchQuery.trim().toLowerCase();
+    const isSearching = searchLower !== '';
 
-  const isBypassActive = 
-    (activeFilters['accordionCategory']?.length > 0) || 
-    (activeFilters['userIndustry']?.length > 0);
+    const isBypassActive =
+      (activeFilters['accordionCategory']?.length > 0) ||
+      (activeFilters['userIndustry']?.length > 0);
 
-  if (!isSearching && !isBypassActive && hasRoomFilter && !roomSupportedCollections.some(
-    cat => normalizeCompare(cat) === normalizeCompare(prod.accordionCategory)
-  )) {
-    return false;
-  }
+    if (!isSearching && !isBypassActive && hasRoomFilter && !roomSupportedCollections.some(
+      cat => normalizeCompare(cat) === normalizeCompare(prod.accordionCategory)
+    )) {
+      return false;
+    }
 
-  // Baaki ka matchesSearch aur matchesFilters ka logic same rahega...
+    // Baaki ka matchesSearch aur matchesFilters ka logic same rahega...
     const matchesSearch = searchLower === '' ||
       safeSearchMatch(prod.name, searchLower) ||
       safeSearchMatch(prod.accordionCategory, searchLower) ||
@@ -1410,19 +1469,18 @@ const filteredProducts = combinedProducts.filter(prod => {
     if (sortOrder === 'Cat-A-Z') return a.localeCompare(b);
     if (sortOrder === 'Cat-Z-A') return b.localeCompare(a);
 
-    // ── NEW: If the room has an ordered collection list, respect that order ──
+
     if (hasRoomFilter) {
       const idxA = roomSupportedCollections.indexOf(a);
       const idxB = roomSupportedCollections.indexOf(b);
-      // Both found → sort by selection order
+
       if (idxA !== -1 && idxB !== -1) return idxA - idxB;
-      // Only one found → put the found one first
+
       if (idxA !== -1) return -1;
       if (idxB !== -1) return 1;
-      // Neither found (e.g. explicit filter override) → fall through
     }
 
-    // Fallback: global collectionTierOrder from DB
+
     const prodA = combinedProducts.find(p => p.accordionCategory === a);
     const prodB = combinedProducts.find(p => p.accordionCategory === b);
     const tierA = prodA?.collectionTierOrder ?? 999;
@@ -1440,12 +1498,12 @@ const filteredProducts = combinedProducts.filter(prod => {
     footer: isDarkMode ? 'bg-[#1e293b] border-[#334155]' : 'bg-white border-gray-200',
 
     // ── VIBRANT TEXT COLORS ──
-    text: isDarkMode ? 'text-white' : 'text-gray-900',           // primary — full white
-    subtext: isDarkMode ? 'text-gray-300' : 'text-gray-500',        // secondary — lighter gray
-    brandLabel: isDarkMode ? 'text-teal-400' : 'text-gray-500',        // "WONDERFLOOR" label
-    sizeText: isDarkMode ? 'text-gray-300' : 'text-gray-500',        // size info
-    moreDetails: isDarkMode ? 'text-teal-400 hover:text-teal-300' : 'text-[#0b5e5e] hover:underline', // link
-    accent: isDarkMode ? 'text-teal-400' : 'text-[#0b5e5e]',       // general accent
+    text: isDarkMode ? 'text-white' : 'text-gray-900',
+    subtext: isDarkMode ? 'text-gray-300' : 'text-gray-500',
+    brandLabel: isDarkMode ? 'text-teal-400' : 'text-gray-500',
+    sizeText: isDarkMode ? 'text-gray-300' : 'text-gray-500',
+    moreDetails: isDarkMode ? 'text-teal-400 hover:text-teal-300' : 'text-[#0b5e5e] hover:underline',
+    accent: isDarkMode ? 'text-teal-400' : 'text-[#0b5e5e]',
 
     hover: isDarkMode ? 'hover:bg-[#2d4059]' : 'hover:bg-gray-100',
     divider: isDarkMode ? 'border-[#334155]' : 'border-gray-200',
@@ -1490,7 +1548,7 @@ const filteredProducts = combinedProducts.filter(prod => {
         {isFavoritesViewOpen ? (
           <FavoritesView
             favoriteIds={favoriteProducts}
-            allProducts={combinedProducts}  // <--- Updated to the Single Source of Truth
+            allProducts={combinedProducts}
             onBack={() => setIsFavoritesViewOpen(false)}
             onSelectProduct={handleTileSelection}
             onToggleFavorite={toggleFavorite}
@@ -1534,7 +1592,7 @@ const filteredProducts = combinedProducts.filter(prod => {
             {/* ── SCROLLABLE BODY ── */}
             <div className="flex-1 overflow-y-auto min-h-0 px-3 md:px-4 py-3 flex flex-col gap-1.5">
 
-              {/* Sort By Accordion */}
+
               {/* Sort By Accordion */}
               <div className={`shrink-0 rounded-xl overflow-hidden border transition-colors
   ${isDarkMode ? 'border-[#1e3a5f]' : 'border-gray-200'}`}>
@@ -1639,7 +1697,7 @@ const filteredProducts = combinedProducts.filter(prod => {
                         <div className={`p-3 border-t flex flex-col gap-1
   ${isDarkMode ? 'bg-[#0d1825] border-[#1e3a5f]' : 'bg-gray-50 border-gray-100'}`}>
 
-                          {/* 💡 NEW: Agar category 'Product Collection' ya 'User Industry' hai, to 'Select All' dikhao */}
+                          {/* NEW: Agar category 'Product Collection' ya 'User Industry' hai, to 'Select All' dikhao */}
                           {(category.id === 'accordionCategory' || category.id === 'userIndustry') && (
                             <label
                               className={`relative flex justify-between items-center px-3 py-2.5 rounded-lg cursor-pointer transition-all
@@ -1667,7 +1725,7 @@ const filteredProducts = combinedProducts.filter(prod => {
                             </label>
                           )}
 
-                          {/* Aapka purana dynamic options loop yahan se continue hoga */}
+
                           {category.options.map(option => {
                             const isChecked = activeFilters[category.id]?.includes(option) || false;
                             return (
@@ -1886,7 +1944,7 @@ const filteredProducts = combinedProducts.filter(prod => {
                   }
                   if (firstCategory) {
                     setExpandedProductCategory(firstCategory);
-                    setActiveFooterCategory(firstCategory); // ✅ Fix 1: Sync LVT footer strip
+                    setActiveFooterCategory(firstCategory);
                   }
                   return;
                 }
@@ -2015,7 +2073,11 @@ const filteredProducts = combinedProducts.filter(prod => {
                                       key={prod.id}
                                       onClick={(e) => {
                                         const cardEl = e.currentTarget;
-                                        handleTileSelection(prod);
+                                        if (herringboneMode && isHerringbonePanelOpen) {
+                                          handleHerringboneTileAssign(prod);
+                                        } else {
+                                          handleTileSelection(prod);
+                                        }
                                         setTimeout(() => {
                                           cardEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
                                         }, 320);
@@ -2459,6 +2521,33 @@ const filteredProducts = combinedProducts.filter(prod => {
                         </span>
                       )}
                     </button>
+
+                    {herringboneMode && (
+                      <div className="flex items-center gap-2 md:gap-3 border-l border-gray-200 pl-3 md:pl-6 h-full animate-fade-in">
+                        <span className={`text-[11px] font-bold uppercase tracking-wide hidden lg:inline ${dm.subtext}`}>Herringbone:</span>
+
+                        {/* Tile 1 Slot Selector */}
+                        <button
+                          onClick={(e) => { e.stopPropagation(); setActiveHerringboneSlot(1); }}
+                          className={`flex items-center gap-1.5 p-1 border rounded-md transition-all cursor-pointer ${activeHerringboneSlot === 1 ? 'border-[#0b5e5e] bg-[#0b5e5e]/5' : 'border-gray-200 hover:bg-gray-50'}`}
+                        >
+                          <img src={herringboneTile1?.img} className="w-6 h-6 rounded object-cover border border-gray-100 shrink-0" alt="T1" />
+                          <span className="text-xs font-bold truncate max-w-[70px] hidden sm:inline">{herringboneTile1?.name || 'Select'}</span>
+                        </button>
+
+                        {/* Tile 2 Slot Selector */}
+                        <button
+                          onClick={(e) => { e.stopPropagation(); setActiveHerringboneSlot(2); }}
+                          className={`flex items-center gap-1.5 p-1 border rounded-md transition-all cursor-pointer ${activeHerringboneSlot === 2 ? 'border-[#0b5e5e] bg-[#0b5e5e]/5' : 'border-gray-200 hover:bg-gray-50'}`}
+                        >
+                          <img src={herringboneTile2?.img} className="w-6 h-6 rounded object-cover border border-gray-100 shrink-0" alt="T2" />
+                          <span className="text-xs font-bold truncate max-w-[70px] hidden sm:inline">{herringboneTile2?.name || 'Select'}</span>
+                        </button>
+
+                     
+                       
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
@@ -2482,26 +2571,24 @@ const filteredProducts = combinedProducts.filter(prod => {
                   </button>
                 </div>
               </div>
-
-              {/* Row 2: Quick Selector (mobile only) */}
               {/* Row 2: Quick Selector (mobile only) */}
               <div className="flex md:hidden flex-col w-full border-t border-gray-100 px-3 md:px-6 py-2 bg-gray-50/50">
                 <div className="flex overflow-x-auto gap-2 pb-2 items-center [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                   <span className="text-[10px] md:text-xs font-bold text-gray-500 uppercase tracking-wider mr-1 shrink-0">Collections:</span>
                   {displayCategories
-                  .filter(cat => currentTabFilteredProducts.some(p => p.accordionCategory === cat))
-                  .map(cat => (
-                    <button
-                      key={cat}
-                      onClick={(e) => { e.stopPropagation(); setActiveFooterCategory(cat); }}
-                      className={`shrink-0 text-[11px] md:text-xs px-3 py-1 rounded-full font-medium transition-colors cursor-pointer border ${activeFooterCategory === cat ? 'bg-[#0b5e5e] text-white border-[#0b5e5e] shadow-sm' : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-100'}`}
-                    >
-                      {cat}
-                    </button>
-                  ))}
+                    .filter(cat => currentTabFilteredProducts.some(p => p.accordionCategory === cat))
+                    .map(cat => (
+                      <button
+                        key={cat}
+                        onClick={(e) => { e.stopPropagation(); setActiveFooterCategory(cat); }}
+                        className={`shrink-0 text-[11px] md:text-xs px-3 py-1 rounded-full font-medium transition-colors cursor-pointer border ${activeFooterCategory === cat ? 'bg-[#0b5e5e] text-white border-[#0b5e5e] shadow-sm' : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-100'}`}
+                      >
+                        {cat}
+                      </button>
+                    ))}
                 </div>
                 <div className="flex overflow-x-auto gap-3 py-1 items-center [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-                 
+
                   {currentTabFilteredProducts
                     .filter(p => p.accordionCategory === activeFooterCategory)
                     .map(prod => {
