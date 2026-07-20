@@ -1025,12 +1025,15 @@ function App() {
                     <div className="flex-shrink-0 h-[24px] w-[24px] sm:h-[26px] sm:w-[26px] cursor-pointer rounded-md border-2 border-transparent bg-gradient-to-br from-[#2A3A5A] to-[#3A4A7A]"></div>
                   </div>
 
+
                   {/* Apply Button */}
                   <button
-                    onClick={() => navigate(`/visualizer/${activeRooms[1].id}`)}
-                    className="flex-shrink-0 rounded-md bg-[#F4500A] px-3 py-1.5 sm:px-4 sm:py-2 text-[10px] sm:text-[11px] font-bold tracking-[0.2px] text-white shadow-sm hover:bg-[#d64307] transition-colors"
+                    onClick={() => activeRooms[1] && navigate(`/visualizer/${activeRooms[1]?.id}`)}
+                    disabled={!dbRoomsLoaded}
+                    className={`flex-shrink-0 rounded-md px-3 py-1.5 sm:px-4 sm:py-2 text-[10px] sm:text-[11px] font-bold tracking-[0.2px] text-white shadow-sm transition-colors ${dbRoomsLoaded ? 'bg-[#F4500A] hover:bg-[#d64307]' : 'bg-gray-400 cursor-not-allowed'
+                      }`}
                   >
-                    Apply
+                    {dbRoomsLoaded ? 'Apply' : 'Loading...'}
                   </button>
                 </div>
               </div>
@@ -1175,7 +1178,7 @@ function App() {
                   );
                 })}
 
-              
+
                 {flooringProducts.length > 10 && (
                   <div className="relative inline-block shrink-0 snap-start" ref={productDropdownRef}>
                     <button
@@ -1224,8 +1227,33 @@ function App() {
           </div>
 
           {/* ── Demo Rooms Grid Core Presentation (YOUR EXACT LOGIC `isDefaultView`) ── */}
-          {isDefaultView ? (
-            /* ── STEP 1: HIGH-LEVEL INDUSTRY DIRECTORY (EXACT SCENE CARD STYLE) ── */
+          {/* ── Demo Rooms Grid Core Presentation ── */}
+          {!dbRoomsLoaded ? (
+            /* ── SKELETON LOADING STATE (Shows while database images are fetching) ── */
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 relative z-10">
+              {[...Array(4)].map((_, index) => (
+                <div
+                  key={`skeleton-${index}`}
+                  className="bg-white dark:bg-slate-900 rounded-xl overflow-hidden shadow-sm border border-slate-200/60 dark:border-slate-800 flex flex-col animate-pulse"
+                >
+                  {/* Placeholder for the Image */}
+                  <div className="h-[230px] w-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center">
+                    <svg className="w-8 h-8 text-slate-300 dark:text-slate-700 animate-spin" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                    </svg>
+                  </div>
+                  {/* Placeholder for the Metadata Text */}
+                  <div className="p-5 flex flex-col gap-3 flex-grow">
+                    <div className="h-3 w-1/4 bg-slate-200 dark:bg-slate-800 rounded"></div>
+                    <div className="h-5 w-3/4 bg-slate-200 dark:bg-slate-800 rounded"></div>
+                    <div className="h-3 w-1/2 bg-slate-200 dark:bg-slate-800 rounded mt-auto"></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : isDefaultView ? (
+            /* ── STEP 1: HIGH-LEVEL INDUSTRY DIRECTORY ── */
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 relative z-10 animate-fade-in">
               {uniqueCategories.map((cat) => (
                 <div
@@ -1236,15 +1264,12 @@ function App() {
                     setSelectedProduct('Product Collections');
                   }}
                 >
-                  {/* Image Frame Wrapper - Exact 230px Proportion */}
                   <div className="h-[230px] w-full overflow-hidden bg-slate-100 dark:bg-slate-800 relative">
                     <img
                       src={cat.img}
                       alt={cat.category}
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
-
-                    {/* Hover Action Sheet Template Plate */}
                     <div className="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center backdrop-blur-[2px]">
                       <span className="bg-[#f05c3f] text-white text-[13px] font-bold tracking-wide px-5 py-2.5 rounded shadow-lg flex items-center gap-1.5 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-200">
                         View {cat.displayName} Scenes
@@ -1255,7 +1280,6 @@ function App() {
                     </div>
                   </div>
 
-                  {/* Description metadata section matching image_48a2f9.png verbatim */}
                   <div className="p-5 flex flex-col gap-1.5 flex-grow">
                     <span className="text-[#f05c3f] text-[10px] font-extrabold uppercase tracking-widest">
                       {cat.category.trim().split(/\s+/).length > 1
@@ -1283,12 +1307,7 @@ function App() {
                   }}
                   className="group flex items-center gap-1.5 text-[11px] font-bold text-gray-500 dark:text-slate-400 hover:text-[#f05c3f] dark:hover:text-[#f05c3f] transition-all duration-200 cursor-pointer bg-white dark:bg-slate-900 px-3 py-1.5 rounded-full border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow hover:border-orange-200 dark:hover:border-orange-900/50 uppercase tracking-wide w-max"
                 >
-                  <svg
-                    className="w-3.5 h-3.5 stroke-[2.5] transition-transform duration-200 group-hover:-translate-x-0.5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
+                  <svg className="w-3.5 h-3.5 stroke-[2.5] transition-transform duration-200 group-hover:-translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
                   </svg>
                   Go Back
@@ -1301,7 +1320,6 @@ function App() {
                     <div
                       key={`${room.id}-${index}`}
                       className="bg-white dark:bg-slate-900 rounded-xl overflow-hidden shadow-sm hover:shadow-xl border border-slate-200/60 dark:border-slate-800 group transition-all duration-300 flex flex-col cursor-pointer"
-                      // YOUR EXACT NAVIGATION LOGIC PRESERVED HERE
                       onClick={() => navigate(`/visualizer/${room.id}`)}
                     >
                       <div className="h-[230px] w-full overflow-hidden bg-slate-100 dark:bg-slate-800 relative">
@@ -1473,4 +1491,3 @@ function App() {
 }
 
 export default App;
-
