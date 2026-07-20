@@ -110,6 +110,8 @@
 //   }
 // };
 
+
+
 import * as THREE from 'three';
 
 // ── Image URL ko base64 mein convert karta hai (SVG <image> tag ke andar embed karne ke liye) ──
@@ -262,6 +264,55 @@ async function generateStaggeredDataURL(texUrl, staggerRatio) {
     };
     img.onerror = reject;
     img.src = base64;
+  });
+}
+
+// ── NEW: Advanced SVG-Based Square Checkerboard Generator (100% HD Quality) ──
+async function generateCheckerboardDataURL(tex1Url, tex2Url) {
+  const [base64_1, base64_2] = await Promise.all([fetchBase64(tex1Url), fetchBase64(tex2Url)]);
+  const size = 1024; 
+  const tileSize = size / 4; // 4x4 alternating tiles inside a square sheet
+  const groutColor = "#020202";
+
+  let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}">
+    <defs>
+      <pattern id="ctex1" patternUnits="userSpaceOnUse" width="${tileSize}" height="${tileSize}">
+        <image href="${base64_1}" x="0" y="0" width="${tileSize}" height="${tileSize}" preserveAspectRatio="none"/>
+      </pattern>
+      <pattern id="ctex2" patternUnits="userSpaceOnUse" width="${tileSize}" height="${tileSize}">
+        <image href="${base64_2}" x="0" y="0" width="${tileSize}" height="${tileSize}" preserveAspectRatio="none"/>
+      </pattern>
+    </defs>
+    <rect width="${size}" height="${size}" fill="${groutColor}"/>`;
+
+  for (let i = 0; i < 4; i++) {
+    for (let j = 0; j < 4; j++) {
+      const x = i * tileSize;
+      const y = j * tileSize;
+      // Checkerboard math: alternates patterns on odd/even positions
+      const fillPattern = ((i + j) % 2 === 0) ? 'url(#ctex1)' : 'url(#ctex2)';
+      svg += `<rect x="${x}" y="${y}" width="${tileSize}" height="${tileSize}" fill="${fillPattern}"/>`;
+    }
+  }
+  svg += `</svg>`;
+
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const svgBlob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' });
+    const url = URL.createObjectURL(svgBlob);
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext('2d');
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
+      ctx.drawImage(img, 0, 0);
+      URL.revokeObjectURL(url);
+      resolve(canvas.toDataURL('image/jpeg', 1.0));
+    };
+    img.onerror = reject;
+    img.src = url;
   });
 }
 
@@ -424,7 +475,56 @@ export const initVisualizer = (container) => {
           return false;
         });
     };
+// `updateStaggeredTexture` method ke bilkul niche ise paste karein:
+const updateCheckerboardTexture = (tex1Url, tex2Url, angleInDegrees = 0) => {
+  return generateCheckerboardDataURL(tex1Url, tex2Url)
+    .then((dataUrl) => new Promise((resolve) => {
+      loader.load(
+        dataUrl,
+        (tex) => {
+          tex.colorSpace = THREE.SRGBColorSpace;
+          tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+          tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+          tex.repeat.set(80, 80); // Perfect tile size mapping for 457mm square tiles
+          tex.center.set(0.5, 0.5);
+          tex.rotation = (angleInDegrees * Math.PI) / 180;
+          floorMaterial.map = tex;
+          floorMaterial.needsUpdate = true;
+          renderer.render(scene, camera);
+          resolve(true);
+        },
+        undefined,
+        (err) => { resolve(false); }
+      );
+    }))
+    .catch((err) => { return false; });
+};
 
+// ── NEW: Three.js Monza Solid Texture Mapper (Perfect Scale Match) ──
+const updateMonzaSolidTexture = (textureUrl, angleInDegrees = 0) => {
+  return new Promise((resolve) => {
+    loader.load(
+      textureUrl,
+      (tex) => {
+        tex.colorSpace = THREE.SRGBColorSpace;
+        tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+        tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+        
+        // ✨ FIX: 320 scale set kiya hai taaki Checkerboard (80 * 4) aur Solid mode ka tile size 100% same rahe
+        tex.repeat.set(320, 320); 
+        
+        tex.center.set(0.5, 0.5);
+        tex.rotation = (angleInDegrees * Math.PI) / 180;
+        floorMaterial.map = tex;
+        floorMaterial.needsUpdate = true;
+        renderer.render(scene, camera);
+        resolve(true);
+      },
+      undefined,
+      (err) => { resolve(false); }
+    );
+  });
+};
     return {
       cleanup: () => {
         cancelAnimationFrame(animationFrameId);
@@ -439,7 +539,9 @@ export const initVisualizer = (container) => {
       },
       updateTexture,
       updateHerringboneTexture,
-      updateStaggeredTexture
+      updateStaggeredTexture,
+      updateCheckerboardTexture,
+      updateMonzaSolidTexture
     };
   } catch (error) {
     console.error("Three.js Init Error:", error);
