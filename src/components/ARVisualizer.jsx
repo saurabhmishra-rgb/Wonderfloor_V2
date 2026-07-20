@@ -214,6 +214,7 @@ const normalizeThickness = (val) => {
   return `${num.toFixed(1)} mm`;
 };
 
+
 // ✅ NEW HELPER: Safely parses stringified DB arrays like '["Grey", "White"]' into real arrays
 const parseFieldToArray = (val) => {
   if (Array.isArray(val)) return val;
@@ -261,7 +262,10 @@ const safeSearchMatch = (fieldValue, searchPattern) => {
 const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCount = 0, onProductChange, }) => {
   // Browser detector: True if Safari (Mac/iOS), False if Chrome/Edge/Windows
   const isSafari = typeof window !== 'undefined' && /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-
+  // ── NEW: MONZA CHECKERBOARD STATES 
+  const [monzaDualMode, setMonzaDualMode] = useState(false);
+  const [monzaTile2, setMonzaTile2] = useState(null);
+  const [activeMonzaSlot, setActiveMonzaSlot] = useState(1);
   // for download images
   const [downloadImageUrl, setDownloadImageUrl] = useState(null);
   const [isGeneratingDownload, setIsGeneratingDownload] = useState(false); // <-- NEW SEPARATE STATE
@@ -1074,13 +1078,13 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
       setCompareRightImage(currentSrc);
     }
   };
-  const applyFloorOverlay = async (product, angle, showLoader = true) => {
+  const applyFloorOverlay = async (product, angle, showLoader = true, overrideTile2 = null) => {
     if (!activeBaseImage) return;
     if (showLoader) setIsProcessing(true);
 
     try {
-   
-     if (activeBaseImage?.maskUrl) {
+
+      if (activeBaseImage?.maskUrl) {
         if (visualizerInstance.current) {
           // Fallback to empty string if undefined, convert to lowercase
           const categoryName = (product?.accordionCategory || "").toLowerCase();
@@ -1091,19 +1095,29 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
             if (visualizerInstance.current.updateHerringboneTexture && herringboneTile1 && herringboneTile2) {
               await visualizerInstance.current.updateHerringboneTexture(herringboneTile1.img, herringboneTile2.img, angle);
             }
-          } 
-          // 2. Check for Stoneland / Monza (1/2 Brick Stagger)
+          }
+
+          // 2. Check for Stoneland / Monza
           else if (categoryName.includes('monja') || categoryName.includes('monza') || categoryName.includes('stoneland')) {
-            if (visualizerInstance.current.updateStaggeredTexture) {
-              await visualizerInstance.current.updateStaggeredTexture(product.img, 0.5, angle);
+            //  FIX: override diya hai to usko use karo, warna current state
+            const tile2ToUse = overrideTile2 || monzaTile2;
+            if (monzaDualMode && tile2ToUse) {
+              if (visualizerInstance.current.updateCheckerboardTexture) {
+                await visualizerInstance.current.updateCheckerboardTexture(product.img, tile2ToUse.img, angle);
+              }
+            } else {
+              //  FIX: updateTexture ko badal kar updateMonzaSolidTexture kiya taaki Solid Mode me scale bada na ho
+              if (visualizerInstance.current.updateMonzaSolidTexture) {
+                await visualizerInstance.current.updateMonzaSolidTexture(product.img, angle);
+              }
             }
-          } 
-          // 👇 NEW: Check for Planks (Timberland, Timberworld, Grandeure) for 1/3 Stagger
+          }
+          // NEW: Check for Planks (Timberland, Timberworld, Grandeure) for 1/3 Stagger
           else if (categoryName.includes('timber') || categoryName.includes('grandeure') || categoryName.includes('plank')) {
             if (visualizerInstance.current.updateStaggeredTexture) {
               await visualizerInstance.current.updateStaggeredTexture(product.img, 0.333, angle);
             }
-          } 
+          }
           // 4. Default Standard Grid
           else {
             if (visualizerInstance.current.updateTexture) {
@@ -1111,10 +1125,11 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
             }
           }
         }
-        await new Promise(resolve => setTimeout(resolve, 4500));
+        // ✨ FIX: 4.5 seconds ka freeze lag khatam kiya, ab updates instantly trigger hongi
+        setIsProcessing(false);
         return;
       }
-    
+
 
       if (!activeBaseImage?.rawFile) return;
 
@@ -1147,12 +1162,26 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
     }
   };
 
-  const handleTileSelection = async (product) => {
+ const handleTileSelection = async (product) => {
     closePreview();
     if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
     setZoomScale(1);
     setPan({ x: 0, y: 0 });
     setErrorMsg(null);
+
+    if (monzaDualMode && (product.accordionCategory.toLowerCase().includes('monza') || product.accordionCategory.toLowerCase().includes('stoneland'))) {
+      if (activeMonzaSlot === 2) {
+        setMonzaTile2(product);
+        // ✅ FIX: naya tile2 seedha pass kiya, stale state pe depend nahi karte
+        applyFloorOverlay(selectedProduct, floorRotation, true, product);
+        return;
+      } else if (activeMonzaSlot === 1) {
+        setSelectedProduct(product);
+        // ✅ FIX: current monzaTile2 explicitly pass kiya
+        applyFloorOverlay(product, floorRotation, true, monzaTile2);
+        return;
+      }
+    }
 
     // Update the browser URL cleanly without reloading the page
     const safeSku = encodeURIComponent(product.sku);
@@ -1261,7 +1290,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
     if (herringboneMode) {
       isRotatingRef.current = true; // 1. Raise flag to block incoming loader requests
       rotateHerringbone(nextAngle); // 2. Perform the canvas/texture rotation
-      
+
       // 3. Clear the flag after the immediate asynchronous state changes clear up
       setTimeout(() => {
         isRotatingRef.current = false;
@@ -2061,13 +2090,39 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
                       >
                         <div className="overflow-hidden">
                           <div className="pt-3 pb-1">
+                            {/* ── MONZA DUAL MODE TOGGLE BUTTONS INJECTED ── */}
+                            {(categoryName.toLowerCase().includes('monza') || categoryName.toLowerCase().includes('stoneland')) && (
+                              <div className="flex gap-2 p-2 mb-3 bg-gray-100 dark:bg-slate-800 rounded-xl">
+                                <button
+                                  onClick={() => { setMonzaDualMode(false); applyFloorOverlay(selectedProduct, floorRotation); }}
+                                  className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all ${!monzaDualMode ? 'bg-white dark:bg-slate-700 shadow shadow-black/5 text-gray-900 dark:text-white' : 'text-gray-500'}`}
+                                >
+                                  Solid Layout
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    setMonzaDualMode(true);
+                                    if (!monzaTile2) setMonzaTile2(categoryProducts[0] || selectedProduct);
+                                    setActiveMonzaSlot(2);
+                                    setTimeout(() => applyFloorOverlay(selectedProduct, floorRotation), 50);
+                                  }}
+                                  className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all ${monzaDualMode ? 'bg-white dark:bg-slate-700 shadow shadow-black/5 text-gray-900 dark:text-white' : 'text-gray-500'}`}
+                                >
+                                  Checkerboard Mix
+                                </button>
+                              </div>
+                            )}
                             {viewMode === 'list' ? (
                               <div className="flex flex-col gap-3">
+
                                 {categoryProducts.map((prod) => {
                                   const isFavorite = favoriteProducts.includes(prod.id);
+                                  const isMonzaCat = prod.accordionCategory.toLowerCase().includes('monza') || prod.accordionCategory.toLowerCase().includes('stoneland');
                                   const isSelected = isCompareMode
                                     ? (activeCompareSide === 'left' ? compareLeftProduct?.id === prod.id : compareRightProduct?.id === prod.id)
-                                    : selectedProduct.id === prod.id;
+                                    : (monzaDualMode && isMonzaCat)
+                                      ? (activeMonzaSlot === 2 ? monzaTile2?.id === prod.id : selectedProduct.id === prod.id)
+                                      : selectedProduct.id === prod.id;
                                   return (
                                     <div
                                       key={prod.id}
@@ -2522,6 +2577,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
                       )}
                     </button>
 
+                    {/* Monza Checkerboard Dynamic Footer Slots */}
                     {herringboneMode && (
                       <div className="flex items-center gap-2 md:gap-3 border-l border-gray-200 pl-3 md:pl-6 h-full animate-fade-in">
                         <span className={`text-[11px] font-bold uppercase tracking-wide hidden lg:inline ${dm.subtext}`}>Herringbone:</span>
@@ -2543,9 +2599,30 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
                           <img src={herringboneTile2?.img} className="w-6 h-6 rounded object-cover border border-gray-100 shrink-0" alt="T2" />
                           <span className="text-xs font-bold truncate max-w-[70px] hidden sm:inline">{herringboneTile2?.name || 'Select'}</span>
                         </button>
+                      </div>
+                    )}
+                    {/* ── 2. MONZA CHECKERBOARD SELECTORS ── */}
+                    {!herringboneMode && monzaDualMode && (selectedProduct.accordionCategory.toLowerCase().includes('monza') || selectedProduct.accordionCategory.toLowerCase().includes('stoneland')) && (
+                      <div className="flex items-center gap-2 md:gap-3 border-l border-gray-200 pl-3 md:pl-6 h-full animate-fade-in">
+                        <span className={`text-[11px] font-bold uppercase tracking-wide hidden lg:inline ${dm.subtext}`}>Mix Slots:</span>
 
-                     
-                       
+                        {/* Monza Slot 1 */}
+                        <button
+                          onClick={(e) => { e.stopPropagation(); setActiveMonzaSlot(1); }}
+                          className={`flex items-center gap-1.5 p-1 border rounded-md transition-all cursor-pointer ${activeMonzaSlot === 1 ? 'border-[#0b5e5e] bg-[#0b5e5e]/5' : 'border-gray-200 hover:bg-gray-50'}`}
+                        >
+                          <img src={selectedProduct?.img} className="w-6 h-6 rounded object-cover border" alt="Tile1" />
+                          <span className="text-xs font-bold truncate max-w-[70px] hidden sm:inline">{selectedProduct?.name}</span>
+                        </button>
+
+                        {/* Monza Slot 2 */}
+                        <button
+                          onClick={(e) => { e.stopPropagation(); setActiveMonzaSlot(2); }}
+                          className={`flex items-center gap-1.5 p-1 border rounded-md transition-all cursor-pointer ${activeMonzaSlot === 2 ? 'border-[#0b5e5e] bg-[#0b5e5e]/5' : 'border-gray-200 hover:bg-gray-50'}`}
+                        >
+                          <img src={monzaTile2?.img || selectedProduct?.img} className="w-6 h-6 rounded object-cover border" alt="Tile2" />
+                          <span className="text-xs font-bold truncate max-w-[70px] hidden sm:inline">{monzaTile2?.name || 'Select Decor'}</span>
+                        </button>
                       </div>
                     )}
                   </div>
