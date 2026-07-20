@@ -266,6 +266,11 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
   const [monzaDualMode, setMonzaDualMode] = useState(false);
   const [monzaTile2, setMonzaTile2] = useState(null);
   const [activeMonzaSlot, setActiveMonzaSlot] = useState(1);
+  const monzaDualModeRef = useRef(false);
+  const monzaTile2Ref = useRef(null);
+  useEffect(() => { monzaDualModeRef.current = monzaDualMode; }, [monzaDualMode]);
+  useEffect(() => { monzaTile2Ref.current = monzaTile2; }, [monzaTile2]);
+
   // for download images
   const [downloadImageUrl, setDownloadImageUrl] = useState(null);
   const [isGeneratingDownload, setIsGeneratingDownload] = useState(false); // <-- NEW SEPARATE STATE
@@ -1078,7 +1083,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
       setCompareRightImage(currentSrc);
     }
   };
-  const applyFloorOverlay = async (product, angle, showLoader = true, overrideTile2 = null) => {
+const applyFloorOverlay = async (product, angle, showLoader = true, overrideTile2 = null, overrideDualMode = null) => {
     if (!activeBaseImage) return;
     if (showLoader) setIsProcessing(true);
 
@@ -1098,15 +1103,17 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
           }
 
           // 2. Check for Stoneland / Monza
+        // 2. Check for Stoneland / Monza
           else if (categoryName.includes('monja') || categoryName.includes('monza') || categoryName.includes('stoneland')) {
-            //  FIX: override diya hai to usko use karo, warna current state
-            const tile2ToUse = overrideTile2 || monzaTile2;
-            if (monzaDualMode && tile2ToUse) {
+            //  FIX: kabhi bhi stale state pe depend nahi karte — override > ref > state
+            const isDualMode = overrideDualMode !== null ? overrideDualMode : monzaDualModeRef.current;
+            const tile2ToUse = overrideTile2 || monzaTile2Ref.current;
+
+            if (isDualMode && tile2ToUse) {
               if (visualizerInstance.current.updateCheckerboardTexture) {
                 await visualizerInstance.current.updateCheckerboardTexture(product.img, tile2ToUse.img, angle);
               }
             } else {
-              //  FIX: updateTexture ko badal kar updateMonzaSolidTexture kiya taaki Solid Mode me scale bada na ho
               if (visualizerInstance.current.updateMonzaSolidTexture) {
                 await visualizerInstance.current.updateMonzaSolidTexture(product.img, angle);
               }
@@ -1162,7 +1169,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
     }
   };
 
-const handleTileSelection = async (product) => {
+ const handleTileSelection = async (product) => {
     closePreview();
     if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
     setZoomScale(1);
@@ -1177,6 +1184,7 @@ const handleTileSelection = async (product) => {
       } else if (activeMonzaSlot === 1) {
         setSelectedProduct(product);
         applyFloorOverlay(product, floorRotation, true, monzaTile2Ref.current, true);
+        
         const safeSku = encodeURIComponent(product.sku);
         const safeRoom = encodeURIComponent(initialImage?.id || 'default');
         navigate(`/visualizer/${safeSku}/${safeRoom}`, { replace: true });
@@ -1185,7 +1193,8 @@ const handleTileSelection = async (product) => {
         if (onProductChange && targetHistoryId) {
           onProductChange(targetHistoryId, product);
         }
-        return;
+        
+        return; 
       }
     }
 
@@ -1302,7 +1311,8 @@ const handleTileSelection = async (product) => {
         isRotatingRef.current = false;
       }, 250);
     } else {
-      applyFloorOverlay(selectedProduct, -nextAngle, false);
+      // ✅ FIX: ref se current dualMode/tile2 explicitly pass, rotate pe checkerboard break na ho
+      applyFloorOverlay(selectedProduct, -nextAngle, false, monzaTile2Ref.current, monzaDualModeRef.current);
     }
   };
 
@@ -2100,17 +2110,24 @@ const handleTileSelection = async (product) => {
                             {(categoryName.toLowerCase().includes('monza') || categoryName.toLowerCase().includes('stoneland')) && (
                               <div className="flex gap-2 p-2 mb-3 bg-gray-100 dark:bg-slate-800 rounded-xl">
                                 <button
-                                  onClick={() => { setMonzaDualMode(false); applyFloorOverlay(selectedProduct, floorRotation); }}
+                                  onClick={() => {
+                                    setMonzaDualMode(false);
+                                    // ✅ FIX: dualMode explicitly false pass kiya, stale wait nahi karna
+                                    applyFloorOverlay(selectedProduct, floorRotation, true, null, false);
+                                  }}
                                   className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all ${!monzaDualMode ? 'bg-white dark:bg-slate-700 shadow shadow-black/5 text-gray-900 dark:text-white' : 'text-gray-500'}`}
                                 >
                                   Solid Layout
                                 </button>
                                 <button
                                   onClick={() => {
+                                    // ✅ FIX: naya tile2 pehle nikalo, phir sab jagah wahi explicit value use karo
+                                    const newTile2 = monzaTile2 || categoryProducts[0] || selectedProduct;
                                     setMonzaDualMode(true);
-                                    if (!monzaTile2) setMonzaTile2(categoryProducts[0] || selectedProduct);
+                                    setMonzaTile2(newTile2);
                                     setActiveMonzaSlot(2);
-                                    setTimeout(() => applyFloorOverlay(selectedProduct, floorRotation), 50);
+                                    // setTimeout hata diya — ab koi stale-wait ki zaroorat nahi
+                                    applyFloorOverlay(selectedProduct, floorRotation, true, newTile2, true);
                                   }}
                                   className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all ${monzaDualMode ? 'bg-white dark:bg-slate-700 shadow shadow-black/5 text-gray-900 dark:text-white' : 'text-gray-500'}`}
                                 >
@@ -2184,9 +2201,12 @@ const handleTileSelection = async (product) => {
                               <div className="grid grid-cols-3 gap-2">
                                 {categoryProducts.map((prod) => {
                                   const isFavorite = favoriteProducts.includes(prod.id);
+                                  const isMonzaCat = prod.accordionCategory.toLowerCase().includes('monza') || prod.accordionCategory.toLowerCase().includes('stoneland');
                                   const isSelected = isCompareMode
                                     ? (activeCompareSide === 'left' ? compareLeftProduct?.id === prod.id : compareRightProduct?.id === prod.id)
-                                    : selectedProduct.id === prod.id;
+                                    : (monzaDualMode && isMonzaCat)
+                                      ? (activeMonzaSlot === 2 ? monzaTile2?.id === prod.id : selectedProduct.id === prod.id)
+                                      : selectedProduct.id === prod.id;
                                   return (
                                     <div
                                       key={prod.id}
