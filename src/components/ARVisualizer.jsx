@@ -1162,7 +1162,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
     }
   };
 
- const handleTileSelection = async (product) => {
+const handleTileSelection = async (product) => {
     closePreview();
     if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
     setZoomScale(1);
@@ -1172,13 +1172,19 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
     if (monzaDualMode && (product.accordionCategory.toLowerCase().includes('monza') || product.accordionCategory.toLowerCase().includes('stoneland'))) {
       if (activeMonzaSlot === 2) {
         setMonzaTile2(product);
-        // ✅ FIX: naya tile2 seedha pass kiya, stale state pe depend nahi karte
-        applyFloorOverlay(selectedProduct, floorRotation, true, product);
+        applyFloorOverlay(selectedProduct, floorRotation, true, product, true);
         return;
       } else if (activeMonzaSlot === 1) {
         setSelectedProduct(product);
-        // ✅ FIX: current monzaTile2 explicitly pass kiya
-        applyFloorOverlay(product, floorRotation, true, monzaTile2);
+        applyFloorOverlay(product, floorRotation, true, monzaTile2Ref.current, true);
+        const safeSku = encodeURIComponent(product.sku);
+        const safeRoom = encodeURIComponent(initialImage?.id || 'default');
+        navigate(`/visualizer/${safeSku}/${safeRoom}`, { replace: true });
+        
+        const targetHistoryId = initialImage?.historyEntryId || initialImage?.id;
+        if (onProductChange && targetHistoryId) {
+          onProductChange(targetHistoryId, product);
+        }
         return;
       }
     }
