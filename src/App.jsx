@@ -524,8 +524,8 @@ function App() {
         rawFile: file,
         maskUrl: room.mask || null,
         name: room.name,
+        historyEntryId: room.historyEntryId || null,
         lastProduct: room.lastProduct || null,
-        // ── Forward the room's product collections to ARVisualizer ──
         supportedCollections: Array.isArray(room.product) ? room.product : [],
       };
 
