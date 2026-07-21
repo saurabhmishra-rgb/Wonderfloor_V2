@@ -192,12 +192,12 @@ const BASE_FILTER_CATEGORIES = [
   },
 ];
 
-// ✅ Standardize thickness variations uniformly (e.g., "2.0 mm")
+
 // Helper to clean up structural brackets, quotes, and format decimals evenly
 const normalizeThickness = (val) => {
   if (val === undefined || val === null) return '';
 
-  // ✅ Bulletproof fix: Removes [, ], ", and ' safely without character class escaping bugs
+
   let cleaned = String(val)
     .replace(/\[/g, '')
     .replace(/\]/g, '')
@@ -944,11 +944,11 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
 
       if (!bgImg || !maskImg) return null;
 
-      // 2.  FIX: applyFloorOverlay jaisa hi pattern-detection logic —
-      const categoryName = (product?.accordionCategory || "").toLowerCase();
-      const productName = (product?.name || "").toLowerCase();
 
-      if (categoryName.includes('herringbone') || productName.includes('herringbone')) {
+      const categoryName = (product?.accordionCategory || "").toLowerCase();
+
+
+      if (herringboneMode) {
         if (visualizerInstance.current.updateHerringboneTexture && herringboneTile1 && herringboneTile2) {
           await visualizerInstance.current.updateHerringboneTexture(herringboneTile1.img, herringboneTile2.img, angle);
         }
