@@ -288,7 +288,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
       } catch (e) {
         console.error('Composite failed for download:', e);
       } finally {
-        setIsGeneratingDownload(false); 
+        setIsGeneratingDownload(false);
       }
     }
     setDownloadImageUrl(imgUrl);
@@ -310,12 +310,12 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
         if (response.ok) {
           const data = await response.json();
 
-   
 
-         
+
+
           const savedProductOrder = JSON.parse(localStorage.getItem('pm_productOrder')) || [];
 
-         
+
           const formattedProducts = data
             .filter(prod => prod.isVisible !== false)
             .sort((a, b) => {
@@ -364,13 +364,13 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
               };
             });
 
-     
+
           setCombinedProducts([...ALL_PRODUCTS, ...formattedProducts]);
-          setIsLoadingDbProducts(false); 
+          setIsLoadingDbProducts(false);
         }
       } catch (error) {
         console.error("Failed to fetch dynamic products:", error);
-        setIsLoadingDbProducts(false); 
+        setIsLoadingDbProducts(false);
       }
     }
     fetchDatabaseProducts();
@@ -443,7 +443,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
   useEffect(() => {
     latestProductRef.current = selectedProduct;
   }, [selectedProduct]);
-    //For load original Product first when we click first 
+  //For load original Product first when we click first 
   const isLoadingDbProductsRef = useRef(true);
   useEffect(() => {
     isLoadingDbProductsRef.current = isLoadingDbProducts;
@@ -467,7 +467,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
 
   //  History item click hone par uska exact tile restore karo
   useEffect(() => {
-    if (isLoadingDbProducts) return; 
+    if (isLoadingDbProducts) return;
     if (!(initialImage?.historyEntryId && initialImage?.lastProduct)) return;
 
     const historyProduct = combinedProducts.find(p => p.id === initialImage.lastProduct.id);
@@ -893,7 +893,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
     return new Promise((resolve, reject) => {
       const img = new Image();
 
-      // 💡 FIX: Yeh line lagane se browser image ko anonymously request karega aur canvas taint nahi hoga
+      // FIX: Yeh line lagane se browser image ko anonymously request karega aur canvas taint nahi hoga
       img.crossOrigin = 'anonymous';
 
       img.onload = () => {
@@ -1095,8 +1095,8 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
     let initialComposite = null;
     if (activeBaseImage?.maskUrl && visualizerInstance.current) {
       setIsProcessing(true);
-    initialComposite = await generateCompositeImage(selectedProduct, floorRotation);
-    setIsProcessing(false);
+      initialComposite = await generateCompositeImage(selectedProduct, floorRotation);
+      setIsProcessing(false);
     }
 
     //  Step 2: NOW enter compare mode (visualizer gets cleaned up here)
@@ -1161,7 +1161,6 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
             }
           }
 
-          // 2. Check for Stoneland / Monza
           // 2. Check for Stoneland / Monza
           else if (categoryName.includes('monja') || categoryName.includes('monza') || categoryName.includes('stoneland')) {
             //  FIX: kabhi bhi stale state pe depend nahi karte — override > ref > state
@@ -1372,7 +1371,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
         isRotatingRef.current = false;
       }, 250);
     } else {
-      // ✅ FIX: ref se current dualMode/tile2 explicitly pass, rotate pe checkerboard break na ho
+      //  FIX: ref se current dualMode/tile2 explicitly pass, rotate pe checkerboard break na ho
       applyFloorOverlay(selectedProduct, -nextAngle, false, monzaTile2Ref.current, monzaDualModeRef.current);
     }
   };
@@ -2145,7 +2144,18 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
                         isExpanded ? [...prev, categoryName] : prev.filter(c => c !== categoryName)
                       );
                     } else {
-                      setExpandedProductCategory(isExpanded ? null : categoryName);
+                      const willExpand = !isExpanded;
+                      setExpandedProductCategory(willExpand ? categoryName : null);
+
+                      // Sirf Stoneland Monza ke liye auto first-tile apply
+                      const isMonzaCategory =
+                        categoryName.toLowerCase().includes('monza') ||
+                        categoryName.toLowerCase().includes('stoneland');
+
+                      if (willExpand && isMonzaCategory) {
+                        setActiveFooterCategory(categoryName);
+                        wrapFirstTileForCategory(categoryName, currentTabFilteredProducts);
+                      }
                     }
                   };
                   return (
