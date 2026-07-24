@@ -9,6 +9,7 @@ import { Upload, ScanLine, Play } from 'lucide-react';
 import { convertToWebP } from './utils/webpConverter';
 import { useLocation, useParams, useNavigate } from 'react-router-dom';
 import { matchIndustryCategory } from './utils/categoryMatcher';
+import { demoPredictions } from './data/demoPredictions';
 // --- Import all local images ---
 // import Industrial from './assets/Industrial-Flooring_02.jpg';
 // import Hospital from './assets/Hospital_02.jpg';
@@ -53,7 +54,6 @@ const flooringProducts_static = [
   'Braavo',
   'Durofloor',
   'Duratek',
-
   'Galaxxy',
   'GDP',
   'Hi-Tech',
@@ -136,6 +136,7 @@ const allDemoRooms = [
 // ── RunPod Segmentation Helper ──
 const SEGMENT_SERVER_URL = 'https://wonderfloor-runpod-backend.onrender.com';
 
+// ── Updated RunPod Segmentation Helper ──
 async function segmentRoomImage(file) {
   const formData = new FormData();
   formData.append('image', file);
@@ -145,16 +146,22 @@ async function segmentRoomImage(file) {
     body: formData,
   });
   const data = await res.json();
-
   if (!res.ok || !data.success) {
     throw new Error(data.error || 'Segmentation failed');
   }
 
-  const maskUrl = data.image.startsWith('data:')
-    ? data.image
-    : `data:image/png;base64,${data.image}`;
+  const prediction = data?.runpod?.output?.prediction || data?.output?.prediction || data;
+  const rawImage = prediction?.images?.room_without_floor_png || data?.image;
 
-  return { maskUrl, scene: data.scene || [] }; //  dono return
+  const maskUrl = rawImage?.startsWith('data:')
+    ? rawImage
+    : `data:image/png;base64,${rawImage}`;
+
+  return {
+    maskUrl,
+    scene: prediction?.scene || data?.scene || [],
+    rawApiData: data // 👈 Add this line to return the complete API response
+  };
 }
 
 // Matched industry ke liye existing demo rooms se curated collections nikaalta hai
@@ -439,107 +446,117 @@ function App() {
   const handleUploadClick = () => fileInputRef.current.click();
   //Runpod attach on Upload Photo button click
   const handleFileChange = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+  const file = e.target.files[0];
+  if (!file) return;
 
-    // 1. Original file ki details log karein
-    console.group("📸 Desktop Image Upload & Conversion");
-    console.log("Original File Name:", file.name);
-    console.log("Original File Type:", file.type);
-    console.log("Original File Size:", (file.size / 1024).toFixed(2), "KB");
+  // 1. Original file ki details log karein
+  console.group("📸 Desktop Image Upload & Conversion");
+  console.log("Original File Name:", file.name);
+  console.log("Original File Type:", file.type);
+  console.log("Original File Size:", (file.size / 1024).toFixed(2), "KB");
 
-    setIsAnalyzingRoom(true);
-    const webpFile = await convertToWebP(file);
-    // 2. Converted WebP file ki details log karein
-    console.log("Converted File Type:", webpFile.type);
-    console.log("Converted File Size:", (webpFile.size / 1024).toFixed(2), "KB");
-    console.log("Size Reduction:", (((file.size - webpFile.size) / file.size) * 100).toFixed(2) + "%");
-    console.groupEnd();
+  setIsAnalyzingRoom(true);
+  const webpFile = await convertToWebP(file);
+  // 2. Converted WebP file ki details log karein
+  console.log("Converted File Type:", webpFile.type);
+  console.log("Converted File Size:", (webpFile.size / 1024).toFixed(2), "KB");
+  console.log("Size Reduction:", (((file.size - webpFile.size) / file.size) * 100).toFixed(2) + "%");
+  console.groupEnd();
 
-    let maskUrl = null;
-    let supportedCollections = [];
+  let maskUrl = null;
+  let supportedCollections = [];
+  let rawPredictionData = null; // 👈 1. Variable to hold RunPod prediction response
 
-    try {
-      const { maskUrl: generatedMask, scene } = await segmentRoomImage(webpFile);
-      maskUrl = generatedMask;
+  try {
+    // 👈 2. Destructure rawApiData from segmentRoomImage
+    const { maskUrl: generatedMask, scene, rawApiData } = await segmentRoomImage(webpFile);
+    maskUrl = generatedMask;
+    rawPredictionData = rawApiData; // 👈 Save response here
 
-      // 3. Scene detection debug log
-      console.group("🏷️ Scene Detection & Category Match");
-      console.log("RunPod Scene Output:", scene);
+    // 3. Scene detection debug log
+    console.group("🏷️ Scene Detection & Category Match");
+    console.log("RunPod Scene Output:", scene);
 
-      const matchedIndustry = matchIndustryCategory(scene);
-      console.log("Matched Industry:", matchedIndustry || "❌ No match found");
+    const matchedIndustry = matchIndustryCategory(scene);
+    console.log("Matched Industry:", matchedIndustry || "❌ No match found");
 
-      if (matchedIndustry) {
-        // 👇 PEHLE: admin ke existing curated demo rooms se try karo (screenshot wali list)
-        supportedCollections = getSupportedCollectionsForIndustry(matchedIndustry, dbRooms);
+    if (matchedIndustry) {
+      // 👇 PEHLE: admin ke existing curated demo rooms se try karo
+      supportedCollections = getSupportedCollectionsForIndustry(matchedIndustry, dbRooms);
 
-        // 👇 FALLBACK: agar us industry ka koi demo room DB mein nahi mila, tab userIndustry se derive karo
-        if (supportedCollections.length === 0) {
-          supportedCollections = Array.from(new Set(
-            dbProducts
-              .filter(p => {
-                const industries = Array.isArray(p.userIndustry) ? p.userIndustry : [p.userIndustry];
-                return industries.some(ind => String(ind).trim() === matchedIndustry);
-              })
-              .map(p => p.accordionCategory)
-              .filter(Boolean)
-          ));
-        }
+      // 👇 FALLBACK: agar us industry ka koi demo room DB mein nahi mila
+      if (supportedCollections.length === 0) {
+        supportedCollections = Array.from(new Set(
+          dbProducts
+            .filter(p => {
+              const industries = Array.isArray(p.userIndustry) ? p.userIndustry : [p.userIndustry];
+              return industries.some(ind => String(ind).trim() === matchedIndustry);
+            })
+            .map(p => p.accordionCategory)
+            .filter(Boolean)
+        ));
       }
-      console.log("Derived supportedCollections:", supportedCollections);
-      console.groupEnd();
-    } catch (err) {
-      console.error('Floor mask generation failed, falling back to 2D pipeline:', err);
     }
+    console.log("Derived supportedCollections:", supportedCollections);
+    console.groupEnd();
+  } catch (err) {
+    console.error('Floor mask generation failed, falling back to 2D pipeline:', err);
+  }
 
+  const imageObj = {
+    previewUrl: URL.createObjectURL(webpFile),
+    isDemo: false,
+    rawFile: webpFile,
+    maskUrl,
+    prediction: rawPredictionData, // 👈 3. Replaced 'data' with 'rawPredictionData'
+    supportedCollections,
+    name: `My upload · ${new Date().toLocaleDateString()}`,
+  };
+
+  setSelectedRoomImage(imageObj);
+  addToHistory(imageObj);
+  setIsAnalyzingRoom(false);
+  setIsModalOpen(true);
+  localStorage.removeItem('activeDemoRoomId');
+  navigate('/visualizer/upload', { replace: false });
+};
+
+// Location: App.jsx (Inside handleDemoRoomClick)
+
+const handleDemoRoomClick = (room, skipHistory = false) => {
+  try {
+    // 🎯 1. Instant Lookup: demoPredictions.js se direct pre-computed 3D data lein
+    const rawPredictionData = demoPredictions[room.id] || room.prediction || null;
+
+    // 🎯 2. Image Object banayein (Zero Network/WebP/API overhead)
     const imageObj = {
-      previewUrl: URL.createObjectURL(webpFile),
-      isDemo: false,
-      rawFile: webpFile,
-      maskUrl,
-      supportedCollections,
-      name: `My upload · ${new Date().toLocaleDateString()}`,
+      id: room.id,
+      previewUrl: room.img,
+      isDemo: true,
+      rawFile: null, // Demo rooms ke liye rawFile processing ki zaroorat nahi hai
+      
+      // Original High-Quality Mask
+      maskUrl: room.mask || null, 
+      
+      name: room.name,
+      historyEntryId: room.historyEntryId || null,
+      lastProduct: room.lastProduct || null,
+      supportedCollections: Array.isArray(room.product) ? room.product : [],
+      
+      // Fast 3D Camera & Perspective Data
+      prediction: rawPredictionData, 
     };
+
     setSelectedRoomImage(imageObj);
-    addToHistory(imageObj);
-    setIsAnalyzingRoom(false);
+    if (!skipHistory) addToHistory(imageObj);
+
     setIsModalOpen(true);
-    localStorage.removeItem('activeDemoRoomId');
-    navigate('/visualizer/upload', { replace: false });
-  };
-
-  const handleDemoRoomClick = async (room, skipHistory = false) => {
-    try {
-      const response = await fetch(room.img);
-      if (!response.ok) throw new Error("Image asset could not be loaded");
-
-      const blob = await response.blob();
-      const file = new File([blob], 'demo_room.jpg', { type: 'image/jpeg' });
-
-      const imageObj = {
-        id: room.id,
-        previewUrl: room.img,
-        isDemo: true,
-        rawFile: file,
-        maskUrl: room.mask || null,
-        name: room.name,
-        historyEntryId: room.historyEntryId || null,
-        lastProduct: room.lastProduct || null,
-        supportedCollections: Array.isArray(room.product) ? room.product : [],
-      };
-
-      setSelectedRoomImage(imageObj);
-      if (!skipHistory) addToHistory(imageObj);
-
-      setIsModalOpen(true);
-      localStorage.setItem('activeDemoRoomId', room.id);
-    } catch (error) {
-      console.error('Failed to load demo image:', error);
-      alert('Failed to load this room image. Please try another one.');
-      if (location.pathname.startsWith('/visualizer')) navigate('/');
-    }
-  };
+    localStorage.setItem('activeDemoRoomId', room.id);
+  } catch (error) {
+    console.error('Failed to load demo image:', error);
+    alert('Failed to load this room image.');
+  }
+};
 
   const handleHistorySelect = (entry) => {
     if (entry.type === 'demo' && entry.roomId) {
