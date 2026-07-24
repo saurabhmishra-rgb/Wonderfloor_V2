@@ -1,30 +1,31 @@
 export const demoPredictions = {
   // Industrial Flooring - Office
-  "6a4606084ca404204c794cae": {
-    output: {
-      prediction: {
-        camera: {
-          cx: 800,
-          cy: 599.9999389648438,
-          fx: 783.1760864257812,
-          fy: 783.1761474609375,
-          height_meters: 1.5129698645074483,
-          pitch_degrees: -0.9376220089980224,
-          roll_degrees: 0.1845383444800954
-        },
-        floor: {
-          plane: {
-            distance: 1.5129698645074483,
-            normal: [0.004065696236456458, -0.9988972012104483, -0.046774475176596615]
-          }
-        },
-        input: {
-          height: 1200,
-          width: 1600
-        }
+  
+  "6a4606084ca404204c794cae":  {
+    camera: {
+      cx: 800,
+      cy: 599.9999389648438,
+      fx: 3364.81103515625,
+      fy: 3364.810791015625,
+      height_meters: 1.9345139799407232,
+      pitch_degrees: -9.123054646082059,
+      roll_degrees: 2.1500398172219946
+    },
+    floor: {
+      plane: {
+        distance: 1.9345139799407232,
+        normal: [-0.015559538536334691, -0.9850955249388406, -0.17130296992757144]
+      }
+    },
+    images: {
+      input: {
+        height: 1200,
+        width: 1600
       }
     }
   },
+
+
 
   // Industrial Flooring - 2
   "6a4603c2b7a9facb9cc3fee1": {
