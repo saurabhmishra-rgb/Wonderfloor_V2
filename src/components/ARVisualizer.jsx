@@ -7,6 +7,7 @@ import { initVisualizer } from './script.jsx';
 import AttractiveLoader from './AttractiveLoader';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useHerringbonePattern } from './useHerringbonePattern';
+import DownloadLeadModal from './DownloadLeadModal.jsx';
 
 import { NAV_CATEGORIES, ACCORDION_CATEGORIES, ALL_PRODUCTS } from '../data/productsConfig';
 import SidebarNavTabs from './SidebarNavTabs';
@@ -273,15 +274,19 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
 
   // for download images
   const [downloadImageUrl, setDownloadImageUrl] = useState(null);
-  const [isGeneratingDownload, setIsGeneratingDownload] = useState(false); // <-- NEW SEPARATE STATE
+  const [isGeneratingDownload, setIsGeneratingDownload] = useState(false);
+  // State for the Download Lead Modal
+  const [isLeadModalOpen, setIsLeadModalOpen] = useState(false);
 
+
+  
+  //Open Menu Inside the Download then open then pop up
   const handleDownloadButtonClick = async () => {
     if (isDownloadMenuOpen) { setIsDownloadMenuOpen(false); return; }
 
-    // Pre-generate the 3D composite BEFORE opening the menu
     let imgUrl = currentSrc;
     if (activeBaseImage?.maskUrl && visualizerInstance.current) {
-      setIsGeneratingDownload(true); // <-- CHANGED from setIsProcessing
+      setIsGeneratingDownload(true);
       try {
         const composite = await generateCompositeImage(selectedProduct, floorRotation);
         if (composite) imgUrl = composite;
@@ -294,6 +299,43 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
     setDownloadImageUrl(imgUrl);
     setIsDownloadMenuOpen(true);
   };
+
+const handleRequestDownload = (downloadFn) => {
+  setIsDownloadMenuOpen(false);
+  setPendingDownloadFn(() => downloadFn);
+  setIsLeadModalOpen(true);
+};
+
+  const proceedToDownload = async () => {
+    setIsLeadModalOpen(false);
+
+    let imgUrl = currentSrc;
+    if (activeBaseImage?.maskUrl && visualizerInstance.current) {
+      setIsGeneratingDownload(true);
+      try {
+        const composite = await generateCompositeImage(selectedProduct, floorRotation);
+        if (composite) imgUrl = composite;
+      } catch (e) {
+        console.error('Composite failed for download:', e);
+      } finally {
+        setIsGeneratingDownload(false);
+      }
+    }
+    setDownloadImageUrl(imgUrl);
+    setIsDownloadMenuOpen(true);
+  };
+
+ const handleLeadFormSubmit = async (formData) => {
+  console.log('Lead captured:', formData, 'Product:', selectedProduct?.name);
+  setIsLeadModalOpen(false);
+  if (pendingDownloadFn) {
+    await pendingDownloadFn(); 
+    setPendingDownloadFn(null);
+  } else {
+    await proceedToDownload();  // fallback, agar kabhi pendingDownloadFn set na ho
+  }
+};
+
 
   const { productId } = useParams();
   const navigate = useNavigate();
@@ -541,6 +583,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
   const [isShareMenuOpen, setIsShareMenuOpen] = useState(false);
   const [isDownloadMenuOpen, setIsDownloadMenuOpen] = useState(false);
   const [isMenuDropdownOpen, setIsMenuDropdownOpen] = useState(false);
+  const [pendingDownloadFn, setPendingDownloadFn] = useState(null);
 
   // FullScreen Mode
 
@@ -810,12 +853,13 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
   }, [isCompareMode]);
 
   // Separate the compare-mode guard from the visualizer lifecycle
-  useEffect(() => {
+ useEffect(() => {
     if (!activeBaseImage?.maskUrl || !threeContainerRef.current) return;
 
     const timer = setTimeout(() => {
       if (threeContainerRef.current) {
-        const instance = initVisualizer(threeContainerRef.current);
+        const instance = initVisualizer(threeContainerRef.current, activeBaseImage?.prediction); 
+        
         if (instance) {
           visualizerInstance.current = instance;
           if (!isLoadingDbProductsRef.current && latestProductRef.current && instance.updateTexture) {
@@ -2437,7 +2481,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
                         currentSrc={downloadImageUrl || currentSrc}
                         compositeRef={!isSafari && activeBaseImage?.maskUrl ? compositeRef : null}
                         onClose={() => setIsDownloadMenuOpen(false)}
-
+                        onRequestDownload={handleRequestDownload}
                       />
                     </div>
                   )}
@@ -2910,6 +2954,13 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
       )}
       <TileHoverPreviewOverlay previewProduct={previewProduct} onClose={closePreview} />
       <TileHoverHintOverlay showHint={showHint} mousePos={mousePos} />
+      <DownloadLeadModal
+        isOpen={isLeadModalOpen}
+        onClose={() => setIsLeadModalOpen(false)}
+        onSubmit={handleLeadFormSubmit}
+        productName={selectedProduct?.name}
+        isDarkMode={isDarkMode}
+      />
     </div>
   );
 };
