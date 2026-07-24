@@ -247,5 +247,32 @@ export const demoPredictions = {
         width: 1600
       }
     }
+  },
+  "6a4622fad0ce9cfc46e4093b":{
+    camera: {
+      cx: 800,
+      cy: 599.9999389648438,
+      fx: 782.8927612304688,
+      fy: 782.8927001953125,
+      height_meters: 1.5130481542925371,
+      pitch_degrees: -0.934124418534447,
+      roll_degrees: 0.17171737237668067
+    },
+    floor: {
+      plane: {
+        distance: 1.5130481542925371,
+        normal: [
+          0.004043106510082151,
+          -0.9988950670652053,
+          -0.04682198503424773
+        ]
+      }
+    },
+    images: {
+      input: {
+        height: 1200,
+        width: 1600
+      }
+    }
   }
 };
