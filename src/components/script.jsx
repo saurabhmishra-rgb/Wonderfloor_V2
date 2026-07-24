@@ -109,11 +109,14 @@
 //     return null;
 //   }
 // };
+
+
+
 import * as THREE from 'three';
 
 // ── CONSTANTS & METRIC CONVERSIONS ──
 const NEAR = 0.01;
-const FAR = 350; 
+const FAR = 350;
 
 // ── 1. BASE64 & SVG PATTERN GENERATORS (ASPECT-RATIO PRESERVED) ──
 
@@ -128,14 +131,13 @@ async function fetchBase64(url) {
   });
 }
 
-async function generateHerringboneDataURL(tex1Url, tex2Url) {
+async function generateHerringboneDataURL(tex1Url, tex2Url, plankW_mm = 101.6, plankL_mm = 457.2) {
   const [base64_1, base64_2] = await Promise.all([fetchBase64(tex1Url), fetchBase64(tex2Url)]);
   const size = 1024;
   const nx = 4;
   const l = size / (nx * Math.SQRT2);
-  const PLANK_WIDTH_MM = 101.6;
-  const PLANK_LENGTH_MM = 457.2;
-  const w = l / (PLANK_LENGTH_MM / PLANK_WIDTH_MM);
+  // Hardcoded values replaced with dynamic function parameters
+  const w = l / (plankL_mm / plankW_mm);
   const groutWidth = 0;
   const groutColor = '#020202';
   const g = groutWidth / 2;
@@ -143,7 +145,6 @@ async function generateHerringboneDataURL(tex1Url, tex2Url) {
   const boundI = Math.ceil((size / w) * 2);
   const boundJ = Math.ceil((size / l) * 2);
 
-  // FIXED: preserveAspectRatio="xMidYMid slice" stops squishing textures
   let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}">
     <defs>
       <pattern id="tex1" patternUnits="userSpaceOnUse" width="${w}" height="${l}">
@@ -183,29 +184,35 @@ async function generateHerringboneDataURL(tex1Url, tex2Url) {
       ctx.imageSmoothingQuality = 'high';
       ctx.drawImage(img, 0, 0);
       URL.revokeObjectURL(url);
-      resolve(canvas.toDataURL('image/jpeg', 1.0));
+
+      // ✅ FIX: Resolve an Object matching what the .then() block expects
+      resolve({
+        dataUrl: canvas.toDataURL('image/jpeg', 1.0),
+        blockWidthMeters: 1.0,
+        blockHeightMeters: 1.0
+      });
     };
     img.onerror = reject;
     img.src = url;
   });
 }
 
-async function generateStaggeredDataURL(texUrl, staggerRatio) {
+async function generateStaggeredDataURL(texUrl, staggerRatio, plankW_mm = 152.4, plankL_mm = 914.4) {
   const base64 = await fetchBase64(texUrl);
   const size = 1024;
 
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.onload = () => {
-      const plankW = 152.4;
-      const plankL = 914.4;
+      // Use dynamic parameters mapped from update method
+      const plankW = plankW_mm;
+      const plankL = plankL_mm;
       const cols = Math.ceil(size / plankW) + 1;
       const rows = Math.ceil(size / plankL) + 2;
       const groutWidth = 0;
       const g = groutWidth / 2;
       const groutColor = "#020202";
 
-      // FIXED: preserveAspectRatio="xMidYMid slice"
       let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}">
         <defs>
           <pattern id="tex" patternUnits="userSpaceOnUse" width="${plankW}" height="${plankL}">
@@ -239,7 +246,13 @@ async function generateStaggeredDataURL(texUrl, staggerRatio) {
         ctx.imageSmoothingQuality = 'high';
         ctx.drawImage(outImg, 0, 0);
         URL.revokeObjectURL(url);
-        resolve(canvas.toDataURL('image/jpeg', 1.0));
+
+        // ✅ FIX: Resolve Object
+        resolve({
+          dataUrl: canvas.toDataURL('image/jpeg', 1.0),
+          blockWidthMeters: 1.0,
+          blockHeightMeters: 1.0
+        });
       };
       outImg.onerror = reject;
       outImg.src = url;
@@ -249,13 +262,12 @@ async function generateStaggeredDataURL(texUrl, staggerRatio) {
   });
 }
 
-async function generateCheckerboardDataURL(tex1Url, tex2Url) {
+async function generateCheckerboardDataURL(tex1Url, tex2Url, singleTileMeters = 0.4572) {
   const [base64_1, base64_2] = await Promise.all([fetchBase64(tex1Url), fetchBase64(tex2Url)]);
   const size = 1024;
   const tileSize = size / 4;
   const groutColor = "#020202";
 
-  // FIXED: preserveAspectRatio="xMidYMid slice" stops squishing
   let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}">
     <defs>
       <pattern id="ctex1" patternUnits="userSpaceOnUse" width="${tileSize}" height="${tileSize}">
@@ -281,6 +293,7 @@ async function generateCheckerboardDataURL(tex1Url, tex2Url) {
     const img = new Image();
     const svgBlob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' });
     const url = URL.createObjectURL(svgBlob);
+
     img.onload = () => {
       const canvas = document.createElement('canvas');
       canvas.width = size;
@@ -290,13 +303,18 @@ async function generateCheckerboardDataURL(tex1Url, tex2Url) {
       ctx.imageSmoothingQuality = 'high';
       ctx.drawImage(img, 0, 0);
       URL.revokeObjectURL(url);
-      resolve(canvas.toDataURL('image/jpeg', 1.0));
+
+      // ✅ FIX: Resolve Object & pass accurate block dimensions based on 4x4 grid
+      resolve({
+        dataUrl: canvas.toDataURL('image/jpeg', 1.0),
+        blockWidthMeters: singleTileMeters * 4,
+        blockHeightMeters: singleTileMeters * 4
+      });
     };
     img.onerror = reject;
     img.src = url;
   });
 }
-
 // ── 2. CAMERA CALIBRATION & 3D RAY-PLANE INTERSECTION HELPERS ──
 
 function configureCameraFromIntrinsics(camera, cameraData, inputData, containerWidth, containerHeight) {
@@ -375,10 +393,10 @@ function buildCalibratedFloorGeometry(prediction) {
     planeOrigin = threePlaneNormal.clone().multiplyScalar(-planeDistance);
   }
 
-  const minWidth = -200; 
-  const maxWidth = 200;  
-  const minDepth = -50;  
-  const maxDepth = 250;  
+  const minWidth = -200;
+  const maxWidth = 200;
+  const minDepth = -50;
+  const maxDepth = 250;
 
   const floorWidthMeters = maxWidth - minWidth;
   const floorDepthMeters = maxDepth - minDepth;
@@ -394,7 +412,7 @@ function buildCalibratedFloorGeometry(prediction) {
 
   const positions = geometryVertices.flatMap(p => [p.x, p.y, p.z]);
   const normals = geometryVertices.flatMap(() => [threePlaneNormal.x, threePlaneNormal.y, threePlaneNormal.z]);
-  
+
   const uvs = [
     minWidth, minDepth,
     maxWidth, minDepth,
@@ -501,10 +519,10 @@ export const initVisualizer = (container, predictionData = null) => {
     const resizeObserver = new ResizeObserver(() => handleResize());
     resizeObserver.observe(container);
 
-    // ── TEXTURE MAPPER METHODS ──
+    // ── TEXTURE MAPPER METHODS (WITH REAL-WORLD PERSPECTIVE MULTIPLIERS) ──
 
-    // 🎯 Aspect-Ratio Aware Single Texture Mapper
-    const updateTexture = (textureUrl, angleInDegrees = 0, tileSizeMeters = 0.6) => {
+    // 🎯 1. Solid / Standard Single Texture Mapper (Fixed Plank & Tile Scaling)
+    const updateTexture = (textureUrl, angleInDegrees = 0, tileSizeMeters = 0.4572) => {
       return new Promise((resolve) => {
         loader.load(
           textureUrl,
@@ -512,19 +530,31 @@ export const initVisualizer = (container, predictionData = null) => {
             tex.colorSpace = THREE.SRGBColorSpace;
             tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
             tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
-            
-            // Calculate natural aspect ratio of the image to prevent vertical squeezing
-            const imgAspect = (tex.image && tex.image.width && tex.image.height) 
-              ? (tex.image.width / tex.image.height) 
+
+            const imgAspect = (tex.image && tex.image.width && tex.image.height)
+              ? (tex.image.width / tex.image.height)
               : 1.0;
 
-            const repeatX = prediction?.camera ? (1 / tileSizeMeters) : 240;
-            const repeatY = prediction?.camera ? (1 / (tileSizeMeters / imgAspect)) : (240 / imgAspect);
+            let realWidthMeters = tileSizeMeters;
+            let realHeightMeters = tileSizeMeters;
+
+            if (imgAspect > 1.0) {
+              realWidthMeters = tileSizeMeters * imgAspect;
+              realHeightMeters = tileSizeMeters;
+            } else if (imgAspect < 1.0) {
+              realWidthMeters = tileSizeMeters;
+              realHeightMeters = tileSizeMeters / imgAspect;
+            }
+
+            // Visual multiplier (2.5x expansion) for realistic room depth scaling
+            const visualScale = 2.5;
+            const repeatX = prediction?.camera ? (1 / (realWidthMeters * visualScale)) : 12;
+            const repeatY = prediction?.camera ? (1 / (realHeightMeters * visualScale)) : 12;
 
             tex.repeat.set(repeatX, repeatY);
             tex.center.set(0.5, 0.5);
             tex.rotation = (angleInDegrees * Math.PI) / 180;
-            
+
             floorMaterial.map = tex;
             floorMaterial.needsUpdate = true;
             renderer.render(scene, camera);
@@ -536,21 +566,26 @@ export const initVisualizer = (container, predictionData = null) => {
       });
     };
 
-    const updateHerringboneTexture = (tex1Url, tex2Url, angleInDegrees = 0) => {
-      return generateHerringboneDataURL(tex1Url, tex2Url)
-        .then((dataUrl) => new Promise((resolve) => {
+    // 🎯 2. Accurate Herringbone Mapper (101.6mm x 457.2mm)
+    const updateHerringboneTexture = (tex1Url, tex2Url, angleInDegrees = 0, plankW_mm = 101.6, plankL_mm = 457.2) => {
+      return generateHerringboneDataURL(tex1Url, tex2Url, plankW_mm, plankL_mm)
+        .then(({ dataUrl, blockWidthMeters, blockHeightMeters }) => new Promise((resolve) => {
           loader.load(
             dataUrl,
             (tex) => {
               tex.colorSpace = THREE.SRGBColorSpace;
               tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
               tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
-              
-              const repeatVal = prediction?.camera ? (1 / 1.024) : 80;
-              tex.repeat.set(repeatVal, repeatVal);
+
+              // Visual multiplier (3.2x expansion) fixes tiny chevron bug
+              const visualScale = 3.2;
+              const repeatX = prediction?.camera ? (1 / (blockWidthMeters * visualScale)) : 10;
+              const repeatY = prediction?.camera ? (1 / (blockHeightMeters * visualScale)) : 10;
+
+              tex.repeat.set(repeatX, repeatY);
               tex.center.set(0.5, 0.5);
               tex.rotation = (angleInDegrees * Math.PI) / 180;
-              
+
               floorMaterial.map = tex;
               floorMaterial.needsUpdate = true;
               renderer.render(scene, camera);
@@ -563,21 +598,26 @@ export const initVisualizer = (container, predictionData = null) => {
         .catch(() => false);
     };
 
-    const updateStaggeredTexture = (texUrl, staggerRatio, angleInDegrees = 0) => {
-      return generateStaggeredDataURL(texUrl, staggerRatio)
-        .then((dataUrl) => new Promise((resolve) => {
+    // 🎯 3. Accurate Staggered Planks Mapper (152.4mm x 914.4mm)
+    const updateStaggeredTexture = (texUrl, staggerRatio = 0.333, angleInDegrees = 0, plankW_mm = 152.4, plankL_mm = 914.4) => {
+      return generateStaggeredDataURL(texUrl, staggerRatio, plankW_mm, plankL_mm)
+        .then(({ dataUrl, blockWidthMeters, blockHeightMeters }) => new Promise((resolve) => {
           loader.load(
             dataUrl,
             (tex) => {
               tex.colorSpace = THREE.SRGBColorSpace;
               tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
               tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
-              
-              const repeatVal = prediction?.camera ? (1 / 1.024) : 120;
-              tex.repeat.set(repeatVal, repeatVal);
+
+              // Visual multiplier (2.8x expansion) prevents vertical plank squeezing
+              const visualScale = 2.8;
+              const repeatX = prediction?.camera ? (1 / (blockWidthMeters * visualScale)) : 12;
+              const repeatY = prediction?.camera ? (1 / (blockHeightMeters * visualScale)) : 12;
+
+              tex.repeat.set(repeatX, repeatY);
               tex.center.set(0.5, 0.5);
               tex.rotation = (angleInDegrees * Math.PI) / 180;
-              
+
               floorMaterial.map = tex;
               floorMaterial.needsUpdate = true;
               renderer.render(scene, camera);
@@ -590,24 +630,26 @@ export const initVisualizer = (container, predictionData = null) => {
         .catch(() => false);
     };
 
-    // 🎯 ACCURATE CHECKERBOARD (457.2mm / 18" Tiles)
+    // 🎯 4. Monza Checkerboard (457.2mm / 18" Tiles)
     const updateCheckerboardTexture = (tex1Url, tex2Url, angleInDegrees = 0, singleTileMeters = 0.4572) => {
-      return generateCheckerboardDataURL(tex1Url, tex2Url)
-        .then((dataUrl) => new Promise((resolve) => {
+      return generateCheckerboardDataURL(tex1Url, tex2Url, singleTileMeters)
+        .then(({ dataUrl, blockWidthMeters, blockHeightMeters }) => new Promise((resolve) => {
           loader.load(
             dataUrl,
             (tex) => {
               tex.colorSpace = THREE.SRGBColorSpace;
               tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
               tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
-              
-              const blockMeters = 4 * singleTileMeters; 
-              const repeatVal = prediction?.camera ? (1 / blockMeters) : 80;
 
-              tex.repeat.set(repeatVal, repeatVal);
+              // Visual multiplier (2.5x expansion) for 18" tiles
+              const visualScale = 2.5;
+              const repeatX = prediction?.camera ? (1 / (blockWidthMeters * visualScale)) : 8;
+              const repeatY = prediction?.camera ? (1 / (blockHeightMeters * visualScale)) : 8;
+
+              tex.repeat.set(repeatX, repeatY);
               tex.center.set(0.5, 0.5);
               tex.rotation = (angleInDegrees * Math.PI) / 180;
-              
+
               floorMaterial.map = tex;
               floorMaterial.needsUpdate = true;
               renderer.render(scene, camera);
@@ -620,7 +662,7 @@ export const initVisualizer = (container, predictionData = null) => {
         .catch(() => false);
     };
 
-    //  ACCURATE SOLID MONZA (457.2mm / 18" Single Tile)
+    // 🎯 5. Monza Solid Tile (457.2mm Single Tile)
     const updateMonzaSolidTexture = (textureUrl, angleInDegrees = 0, tileSizeMeters = 0.4572) => {
       return updateTexture(textureUrl, angleInDegrees, tileSizeMeters);
     };
