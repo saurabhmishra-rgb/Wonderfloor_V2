@@ -197,19 +197,31 @@ svg += `<rect x="0" y="0" width="${w}" height="${l}" fill="${fillH}" transform="
   });
 }
 
-async function generateStaggeredDataURL(texUrl, staggerRatio, plankW_mm = 152.4, plankL_mm = 914.4) {
+// Apni Three.js (script.jsx) me is function ko replace karein:
+async function generateStaggeredDataURL(texUrl, staggerRatio, plankW_mm = 152.4, plankL_mm_Ignored = 914.4) {
   const base64 = await fetchBase64(texUrl);
   const size = 1024;
 
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.onload = () => {
-      const plankW = plankW_mm;
-      const plankL = plankL_mm;
+      // ✅ MAGIC FIX: Dynamic Aspect Ratio Calculation
+      // Image ka asli size check karke length decide hogi, taaki stretch na ho!
+      let plankW = plankW_mm;
+      let plankL;
+
+      if (img.width > img.height) {
+        // Agar image chaudi (horizontal) hai
+        plankL = plankW_mm;
+        plankW = plankL * (img.width / img.height);
+      } else {
+        // Agar image lambi (vertical normal plank) hai
+        plankL = plankW * (img.height / img.width);
+      }
+
       const cols = Math.ceil(size / plankW) + 1;
       const rows = Math.ceil(size / plankL) + 2;
 
-      // Background grout removed entirely. preserveAspectRatio="none" applied.
       let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}">
         <defs>
           <pattern id="tex" patternUnits="userSpaceOnUse" width="${plankW}" height="${plankL}">
@@ -224,7 +236,7 @@ async function generateStaggeredDataURL(texUrl, staggerRatio, plankW_mm = 152.4,
 
         for (let j = -1; j <= rows; j++) {
           let y = (j * plankL) + yOffset;
-          // + 0.5 added for micro-overlap to hide sub-pixel hairline gaps
+          // + 0.5 for micro-overlap (Grout lines hatane ke liye)
           svg += `<rect x="${x}" y="${y}" width="${plankW + 0.5}" height="${plankL + 0.5}" fill="url(#tex)"/>`;
         }
       }
