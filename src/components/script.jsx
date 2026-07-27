@@ -164,8 +164,8 @@ async function generateHerringboneDataURL(tex1Url, tex2Url, plankW_mm = 101.6, p
       const fillV = (Math.abs(i + j) % 2 === 0) ? 'url(#tex1)' : 'url(#tex2)';
       const fillH = (Math.abs(i - j) % 2 === 0) ? 'url(#tex2)' : 'url(#tex1)';
 
-      svg += `<rect x="${x + g}" y="${y + g}" width="${w - groutWidth}" height="${l - groutWidth}" fill="${fillV}"/>`;
-      svg += `<rect x="${g}" y="${g}" width="${w - groutWidth}" height="${l - groutWidth}" fill="${fillH}" transform="translate(${x + w}, ${y + w}) rotate(-90)"/>`;
+     svg += `<rect x="${x}" y="${y}" width="${w}" height="${l}" fill="${fillV}"/>`;
+svg += `<rect x="0" y="0" width="${w}" height="${l}" fill="${fillH}" transform="translate(${x + w}, ${y + w}) rotate(-90)"/>`;
     }
   }
   svg += `</g></svg>`;
@@ -204,22 +204,18 @@ async function generateStaggeredDataURL(texUrl, staggerRatio, plankW_mm = 152.4,
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.onload = () => {
-      // Use dynamic parameters mapped from update method
       const plankW = plankW_mm;
       const plankL = plankL_mm;
       const cols = Math.ceil(size / plankW) + 1;
       const rows = Math.ceil(size / plankL) + 2;
-      const groutWidth = 0;
-      const g = groutWidth / 2;
-      const groutColor = "#020202";
 
+      // Background grout removed entirely. preserveAspectRatio="none" applied.
       let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}">
         <defs>
           <pattern id="tex" patternUnits="userSpaceOnUse" width="${plankW}" height="${plankL}">
-            <image href="${base64}" x="0" y="0" width="${plankW}" height="${plankL}" preserveAspectRatio="xMidYMid slice"/>
+            <image href="${base64}" x="0" y="0" width="${plankW}" height="${plankL}" preserveAspectRatio="none"/>
           </pattern>
-        </defs>
-        <rect width="${size}" height="${size}" fill="${groutColor}"/>`;
+        </defs>`;
 
       for (let i = 0; i < cols; i++) {
         let x = i * plankW;
@@ -228,7 +224,8 @@ async function generateStaggeredDataURL(texUrl, staggerRatio, plankW_mm = 152.4,
 
         for (let j = -1; j <= rows; j++) {
           let y = (j * plankL) + yOffset;
-          svg += `<rect x="${x + g}" y="${y + g}" width="${plankW - groutWidth}" height="${plankL - groutWidth}" fill="url(#tex)"/>`;
+          // + 0.5 added for micro-overlap to hide sub-pixel hairline gaps
+          svg += `<rect x="${x}" y="${y}" width="${plankW + 0.5}" height="${plankL + 0.5}" fill="url(#tex)"/>`;
         }
       }
       svg += `</svg>`;
@@ -247,7 +244,6 @@ async function generateStaggeredDataURL(texUrl, staggerRatio, plankW_mm = 152.4,
         ctx.drawImage(outImg, 0, 0);
         URL.revokeObjectURL(url);
 
-        // ✅ FIX: Resolve Object
         resolve({
           dataUrl: canvas.toDataURL('image/jpeg', 1.0),
           blockWidthMeters: 1.0,
