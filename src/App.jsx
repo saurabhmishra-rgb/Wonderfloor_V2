@@ -360,7 +360,6 @@ function App() {
         console.group("📱 Mobile Image Sync & Conversion");
         console.log("Original Mobile File Type:", file.type);
         console.log("Original Mobile File Size:", (file.size / 1024).toFixed(2), "KB");
-
         setIsAnalyzingRoom(true);
         const webpFile = await convertToWebP(file);
         console.log("Converted Mobile File Type:", webpFile.type);
@@ -368,8 +367,29 @@ function App() {
         console.groupEnd();
 
         let maskUrl = null;
+        let supportedCollections = [];
+        let rawPredictionData = null;
+
         try {
-          maskUrl = await generateFloorMask(webpFile);
+          const { maskUrl: generatedMask, scene, rawApiData } = await segmentRoomImage(webpFile);
+          maskUrl = generatedMask;
+          rawPredictionData = rawApiData;
+
+          const matchedIndustry = matchIndustryCategory(scene);
+          if (matchedIndustry) {
+            supportedCollections = getSupportedCollectionsForIndustry(matchedIndustry, dbRooms);
+            if (supportedCollections.length === 0) {
+              supportedCollections = Array.from(new Set(
+                dbProducts
+                  .filter(p => {
+                    const inds = Array.isArray(p.userIndustry) ? p.userIndustry : [p.userIndustry];
+                    return inds.some(ind => String(ind).trim() === matchedIndustry);
+                  })
+                  .map(p => p.accordionCategory)
+                  .filter(Boolean)
+              ));
+            }
+          }
         } catch (err) {
           console.error('Floor mask generation failed, falling back to 2D pipeline:', err);
         }
@@ -380,6 +400,8 @@ function App() {
           isDemo: false,
           rawFile: webpFile,
           maskUrl,
+          prediction: rawPredictionData,
+          supportedCollections,
           name: `Mobile upload · ${new Date().toLocaleDateString()}`,
         };
         setSelectedRoomImage(mobileImageObj);
@@ -446,117 +468,117 @@ function App() {
   const handleUploadClick = () => fileInputRef.current.click();
   //Runpod attach on Upload Photo button click
   const handleFileChange = async (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
+    const file = e.target.files[0];
+    if (!file) return;
 
-  // 1. Original file ki details log karein
-  console.group("📸 Desktop Image Upload & Conversion");
-  console.log("Original File Name:", file.name);
-  console.log("Original File Type:", file.type);
-  console.log("Original File Size:", (file.size / 1024).toFixed(2), "KB");
+    // 1. Original file ki details log karein
+    console.group("📸 Desktop Image Upload & Conversion");
+    console.log("Original File Name:", file.name);
+    console.log("Original File Type:", file.type);
+    console.log("Original File Size:", (file.size / 1024).toFixed(2), "KB");
 
-  setIsAnalyzingRoom(true);
-  const webpFile = await convertToWebP(file);
-  // 2. Converted WebP file ki details log karein
-  console.log("Converted File Type:", webpFile.type);
-  console.log("Converted File Size:", (webpFile.size / 1024).toFixed(2), "KB");
-  console.log("Size Reduction:", (((file.size - webpFile.size) / file.size) * 100).toFixed(2) + "%");
-  console.groupEnd();
-
-  let maskUrl = null;
-  let supportedCollections = [];
-  let rawPredictionData = null; // 👈 1. Variable to hold RunPod prediction response
-
-  try {
-    // 👈 2. Destructure rawApiData from segmentRoomImage
-    const { maskUrl: generatedMask, scene, rawApiData } = await segmentRoomImage(webpFile);
-    maskUrl = generatedMask;
-    rawPredictionData = rawApiData; // 👈 Save response here
-
-    // 3. Scene detection debug log
-    console.group("🏷️ Scene Detection & Category Match");
-    console.log("RunPod Scene Output:", scene);
-
-    const matchedIndustry = matchIndustryCategory(scene);
-    console.log("Matched Industry:", matchedIndustry || "❌ No match found");
-
-    if (matchedIndustry) {
-      // 👇 PEHLE: admin ke existing curated demo rooms se try karo
-      supportedCollections = getSupportedCollectionsForIndustry(matchedIndustry, dbRooms);
-
-      // 👇 FALLBACK: agar us industry ka koi demo room DB mein nahi mila
-      if (supportedCollections.length === 0) {
-        supportedCollections = Array.from(new Set(
-          dbProducts
-            .filter(p => {
-              const industries = Array.isArray(p.userIndustry) ? p.userIndustry : [p.userIndustry];
-              return industries.some(ind => String(ind).trim() === matchedIndustry);
-            })
-            .map(p => p.accordionCategory)
-            .filter(Boolean)
-        ));
-      }
-    }
-    console.log("Derived supportedCollections:", supportedCollections);
+    setIsAnalyzingRoom(true);
+    const webpFile = await convertToWebP(file);
+    // 2. Converted WebP file ki details log karein
+    console.log("Converted File Type:", webpFile.type);
+    console.log("Converted File Size:", (webpFile.size / 1024).toFixed(2), "KB");
+    console.log("Size Reduction:", (((file.size - webpFile.size) / file.size) * 100).toFixed(2) + "%");
     console.groupEnd();
-  } catch (err) {
-    console.error('Floor mask generation failed, falling back to 2D pipeline:', err);
-  }
 
-  const imageObj = {
-    previewUrl: URL.createObjectURL(webpFile),
-    isDemo: false,
-    rawFile: webpFile,
-    maskUrl,
-    prediction: rawPredictionData, // 👈 3. Replaced 'data' with 'rawPredictionData'
-    supportedCollections,
-    name: `My upload · ${new Date().toLocaleDateString()}`,
-  };
+    let maskUrl = null;
+    let supportedCollections = [];
+    let rawPredictionData = null; // 👈 1. Variable to hold RunPod prediction response
 
-  setSelectedRoomImage(imageObj);
-  addToHistory(imageObj);
-  setIsAnalyzingRoom(false);
-  setIsModalOpen(true);
-  localStorage.removeItem('activeDemoRoomId');
-  navigate('/visualizer/upload', { replace: false });
-};
+    try {
+      // 👈 2. Destructure rawApiData from segmentRoomImage
+      const { maskUrl: generatedMask, scene, rawApiData } = await segmentRoomImage(webpFile);
+      maskUrl = generatedMask;
+      rawPredictionData = rawApiData; // 👈 Save response here
 
-// Location: App.jsx (Inside handleDemoRoomClick)
+      // 3. Scene detection debug log
+      console.group("🏷️ Scene Detection & Category Match");
+      console.log("RunPod Scene Output:", scene);
 
-const handleDemoRoomClick = (room, skipHistory = false) => {
-  try {
-    // 🎯 1. Instant Lookup: demoPredictions.js se direct pre-computed 3D data lein
-    const rawPredictionData = demoPredictions[room.id] || room.prediction || null;
+      const matchedIndustry = matchIndustryCategory(scene);
+      console.log("Matched Industry:", matchedIndustry || "❌ No match found");
 
-    // 🎯 2. Image Object banayein (Zero Network/WebP/API overhead)
+      if (matchedIndustry) {
+        // 👇 PEHLE: admin ke existing curated demo rooms se try karo
+        supportedCollections = getSupportedCollectionsForIndustry(matchedIndustry, dbRooms);
+
+        // 👇 FALLBACK: agar us industry ka koi demo room DB mein nahi mila
+        if (supportedCollections.length === 0) {
+          supportedCollections = Array.from(new Set(
+            dbProducts
+              .filter(p => {
+                const industries = Array.isArray(p.userIndustry) ? p.userIndustry : [p.userIndustry];
+                return industries.some(ind => String(ind).trim() === matchedIndustry);
+              })
+              .map(p => p.accordionCategory)
+              .filter(Boolean)
+          ));
+        }
+      }
+      console.log("Derived supportedCollections:", supportedCollections);
+      console.groupEnd();
+    } catch (err) {
+      console.error('Floor mask generation failed, falling back to 2D pipeline:', err);
+    }
+
     const imageObj = {
-      id: room.id,
-      previewUrl: room.img,
-      isDemo: true,
-      rawFile: null, // Demo rooms ke liye rawFile processing ki zaroorat nahi hai
-      
-      // Original High-Quality Mask
-      maskUrl: room.mask || null, 
-      
-      name: room.name,
-      historyEntryId: room.historyEntryId || null,
-      lastProduct: room.lastProduct || null,
-      supportedCollections: Array.isArray(room.product) ? room.product : [],
-      
-      // Fast 3D Camera & Perspective Data
-      prediction: rawPredictionData, 
+      previewUrl: URL.createObjectURL(webpFile),
+      isDemo: false,
+      rawFile: webpFile,
+      maskUrl,
+      prediction: rawPredictionData, // 👈 3. Replaced 'data' with 'rawPredictionData'
+      supportedCollections,
+      name: `My upload · ${new Date().toLocaleDateString()}`,
     };
 
     setSelectedRoomImage(imageObj);
-    if (!skipHistory) addToHistory(imageObj);
-
+    addToHistory(imageObj);
+    setIsAnalyzingRoom(false);
     setIsModalOpen(true);
-    localStorage.setItem('activeDemoRoomId', room.id);
-  } catch (error) {
-    console.error('Failed to load demo image:', error);
-    alert('Failed to load this room image.');
-  }
-};
+    localStorage.removeItem('activeDemoRoomId');
+    navigate('/visualizer/upload', { replace: false });
+  };
+
+  // Location: App.jsx (Inside handleDemoRoomClick)
+
+  const handleDemoRoomClick = (room, skipHistory = false) => {
+    try {
+      // 🎯 1. Instant Lookup: demoPredictions.js se direct pre-computed 3D data lein
+      const rawPredictionData = demoPredictions[room.id] || room.prediction || null;
+
+      // 🎯 2. Image Object banayein (Zero Network/WebP/API overhead)
+      const imageObj = {
+        id: room.id,
+        previewUrl: room.img,
+        isDemo: true,
+        rawFile: null, // Demo rooms ke liye rawFile processing ki zaroorat nahi hai
+
+        // Original High-Quality Mask
+        maskUrl: room.mask || null,
+
+        name: room.name,
+        historyEntryId: room.historyEntryId || null,
+        lastProduct: room.lastProduct || null,
+        supportedCollections: Array.isArray(room.product) ? room.product : [],
+
+        // Fast 3D Camera & Perspective Data
+        prediction: rawPredictionData,
+      };
+
+      setSelectedRoomImage(imageObj);
+      if (!skipHistory) addToHistory(imageObj);
+
+      setIsModalOpen(true);
+      localStorage.setItem('activeDemoRoomId', room.id);
+    } catch (error) {
+      console.error('Failed to load demo image:', error);
+      alert('Failed to load this room image.');
+    }
+  };
 
   const handleHistorySelect = (entry) => {
     if (entry.type === 'demo' && entry.roomId) {
