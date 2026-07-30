@@ -1373,7 +1373,7 @@ function App() {
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
                           </span>
                         </div>
-                        {room.img?.includes('cloudinary') && (
+                        {room.img?.includes('cloudinary') && room.createdAt && (Date.now() - new Date(room.createdAt).getTime()) < 2 * 24 * 60 * 60 * 1000 && (
                           <div className="absolute top-3 right-3 bg-[#f05c3f] text-white text-[9px] font-black tracking-widest px-2 py-1 rounded shadow uppercase">
                             New
                           </div>
@@ -1460,17 +1460,17 @@ function App() {
         <div className="max-w-[1300px] mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-[13px]">
           <div className="flex items-center gap-2">
             <span className="font-bold text-white tracking-wide">WonderVision AI</span>
-            <span className="text-slate-600">by Wonderfloor</span>
+            <span className="text-slate-600 text-white">by Wonderfloor</span>
           </div>
 
           <div className="flex items-center gap-6 font-medium text-slate-400">
-            <a href="https://www.wonderfloor.co.in/news.php" target="_blank" className="hover:text-white transition-colors">News</a>
-            <a href="https://www.wonderfloor.co.in/" target="_blank" className="hover:text-white transition-colors">Wonderfloor.com</a>
-            <a href='https://www.wonderfloor.co.in/contact-us.php' target="_blank" className="hover:text-white transition-colors">Contact</a>
-            <a href="https://www.wonderfloor.co.in/downloads.php" target="_blank" className="hover:text-white transition-colors">Downloads</a>
+            <a href="https://www.wonderfloor.co.in/news.php" target="_blank" className="hover:text-white text-white transition-colors">News</a>
+            <a href="https://www.wonderfloor.co.in/" target="_blank" className="hover:text-white transition-colors text-white">Wonderfloor.com</a>
+            <a href='https://www.wonderfloor.co.in/contact-us.php' target="_blank" className="hover:text-white transition-colors text-white">Contact</a>
+            <a href="https://www.wonderfloor.co.in/downloads.php" target="_blank" className="hover:text-white transition-colors text-white">Downloads</a>
           </div>
 
-          <p>© 2026 Wonderfloor. All rights reserved.</p>
+          <p className='text-white'>© 2026 Wonderfloor. All rights reserved.</p>
         </div>
       </footer >
 
