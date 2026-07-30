@@ -13,7 +13,19 @@ import { demoPredictions } from './data/demoPredictions';
 // --- Import all local images ---
 // import Industrial from './assets/Industrial-Flooring_02.jpg';
 // import Hospital from './assets/Hospital_02.jpg';
-// import office02 from './assets/Office-Flooring_02.jpg';
+// import office02 from './assets/Office-Flooring_02.jpg';const formattedDbRooms = data
+            .filter(room => room.isLive)   // ← ONLY show live rooms
+            .map(room => ({
+              id: room._id,
+              name: room.name,
+              img: room.previewUrl,
+              mask: room.maskUrl || null,
+              category: room.category,
+              product: room.supportedCollections || [],
+              position: room.position || 0,
+              categoryOrder: room.categoryOrder || 0,
+               createdAt: room.createdAt, 
+            }));
 // import residential03 from './assets/Residential-Flooring_02.jpg';
 // import school03 from './assets/School-Flooring_02.jpg';
 // import superMarket01 from './assets/Super-Market-Flooring_01.jpg';
