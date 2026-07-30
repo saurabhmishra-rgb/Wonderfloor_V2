@@ -1403,7 +1403,7 @@ const handleRequestDownload = (downloadFn) => {
 
   const handleRotate = () => {
     if (!isFloorVisible) return;
-    const nextAngle = (floorRotation + 30) % 360;
+    const nextAngle = (floorRotation + 15) % 180;
     setFloorRotation(nextAngle);
     setIsFloorVisible(true);
     if (herringboneMode) {
@@ -2060,7 +2060,7 @@ const handleRequestDownload = (downloadFn) => {
                 <div className="mt-3 animate-fade-in">
                   <input
                     type="text"
-                    placeholder="Search any..."
+                    placeholder="Search by name, industry, application area, colour, collection, shade, pattern, thickness..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className={`w-full h-10 border rounded px-3 text-[16px] md:text-sm focus:outline-none focus:border-[#0b5e5e] focus:ring-1 focus:ring-[#0b5e5e] transition-colors ${dm.input}`}
@@ -2230,7 +2230,7 @@ const handleRequestDownload = (downloadFn) => {
                                     // ✅ FIX: dualMode explicitly false pass kiya, stale wait nahi karna
                                     applyFloorOverlay(selectedProduct, floorRotation, true, null, false);
                                   }}
-                                  className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all ${!monzaDualMode ? 'bg-white dark:bg-slate-700 shadow shadow-black/5 text-gray-900 dark:text-white' : 'text-gray-500'}`}
+                                  className={`cursor-pointer flex-1 py-1.5 text-xs font-bold rounded-lg transition-all ${!monzaDualMode ? 'bg-white dark:bg-slate-700 shadow shadow-black/5 text-gray-900 dark:text-white' : 'text-gray-500'}`}
                                 >
                                   Solid Layout
                                 </button>
@@ -2244,7 +2244,7 @@ const handleRequestDownload = (downloadFn) => {
                                     // setTimeout hata diya — ab koi stale-wait ki zaroorat nahi
                                     applyFloorOverlay(selectedProduct, floorRotation, true, newTile2, true);
                                   }}
-                                  className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all ${monzaDualMode ? 'bg-white dark:bg-slate-700 shadow shadow-black/5 text-gray-900 dark:text-white' : 'text-gray-500'}`}
+                                  className={`cursor-pointer flex-1 py-1.5 text-xs font-bold rounded-lg transition-all ${monzaDualMode ? 'bg-white dark:bg-slate-700 shadow shadow-black/5 text-gray-900 dark:text-white' : 'text-gray-500'}`}
                                 >
                                   Checkerboard Mix
                                 </button>
@@ -2285,7 +2285,7 @@ const handleRequestDownload = (downloadFn) => {
                                           <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
                                         </svg>
                                       </button>
-                                      {/* 💡 NEW: Mobile-only eye icon — sirf Luxury Vinyl Tile products ke liye */}
+                                      {/*  NEW: Mobile-only eye icon — sirf Luxury Vinyl Tile products ke liye */}
                                       {prod.navCategory === 'luxury-vinyl-tile' && (
                                         <button
                                           onClick={(e) => { e.stopPropagation(); openPreview(prod); }}
@@ -2341,7 +2341,7 @@ const handleRequestDownload = (downloadFn) => {
                                           <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
                                         </svg>
                                       </button>
-                                      {/* 💡 NEW: Mobile-only eye icon — sirf Luxury Vinyl Tile products ke liye */}
+                                      {/* NEW: Mobile-only eye icon — sirf Luxury Vinyl Tile products ke liye */}
                                       {prod.navCategory === 'luxury-vinyl-tile' && (
                                         <button
                                           onClick={(e) => { e.stopPropagation(); openPreview(prod); }}
@@ -2564,7 +2564,7 @@ const handleRequestDownload = (downloadFn) => {
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={`shrink-0 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                           <path d="M2 3h20v14H2z" /><path d="M8 21h8" /><path d="M12 17v4" />
                         </svg>
-                        Immersive View
+                        Fullscreen
                       </button>
                     </div>
                   )}
