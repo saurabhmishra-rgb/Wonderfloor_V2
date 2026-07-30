@@ -13,19 +13,7 @@ import { demoPredictions } from './data/demoPredictions';
 // --- Import all local images ---
 // import Industrial from './assets/Industrial-Flooring_02.jpg';
 // import Hospital from './assets/Hospital_02.jpg';
-// import office02 from './assets/Office-Flooring_02.jpg';const formattedDbRooms = data
-            .filter(room => room.isLive)   // ← ONLY show live rooms
-            .map(room => ({
-              id: room._id,
-              name: room.name,
-              img: room.previewUrl,
-              mask: room.maskUrl || null,
-              category: room.category,
-              product: room.supportedCollections || [],
-              position: room.position || 0,
-              categoryOrder: room.categoryOrder || 0,
-               createdAt: room.createdAt, 
-            }));
+// import office02 from './assets/Office-Flooring_02.jpg';
 // import residential03 from './assets/Residential-Flooring_02.jpg';
 // import school03 from './assets/School-Flooring_02.jpg';
 // import superMarket01 from './assets/Super-Market-Flooring_01.jpg';
@@ -292,6 +280,7 @@ function App() {
               product: room.supportedCollections || [],
               position: room.position || 0,
               categoryOrder: room.categoryOrder || 0,
+              createdAt: room.createdAt, 
             }));
           setDbRooms(formattedDbRooms);
           setDbRoomsLoaded(true); // ← mark DB as ready
@@ -1385,6 +1374,7 @@ function App() {
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
                           </span>
                         </div>
+                        {console.log('DEBUG New Tag:', room.name, '| createdAt:', room.createdAt, '| hasCloudinary:', room.img?.includes('cloudinary'), '| diffHours:', room.createdAt ? (Date.now() - new Date(room.createdAt).getTime())/3600000 : 'N/A')}
                         {room.img?.includes('cloudinary') && room.createdAt && (Date.now() - new Date(room.createdAt).getTime()) < 2 * 24 * 60 * 60 * 1000 && (
                           <div className="absolute top-3 right-3 bg-[#f05c3f] text-white text-[9px] font-black tracking-widest px-2 py-1 rounded shadow uppercase">
                             New
