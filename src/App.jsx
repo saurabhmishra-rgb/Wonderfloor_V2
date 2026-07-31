@@ -227,13 +227,9 @@ function App() {
     return ['Product Collections', ...unique];
   }, [dbProducts]);
 
-  // ── Saved filter preferences ───────────────────────────────────────────────
-  const [selectedIndustry, setSelectedIndustry] = useState(
-    localStorage.getItem('savedIndustry') || 'ALL INDUSTRY'
-  );
-  const [selectedProduct, setSelectedProduct] = useState(
-    localStorage.getItem('savedProduct') || 'Product Collections'
-  );
+  // ── when we refresh it comes to reset ───────────────────────────────────────────────
+const [selectedIndustry, setSelectedIndustry] = useState('ALL INDUSTRY');
+const [selectedProduct, setSelectedProduct] = useState('Product Collections');
 
   // ── THEME CONTROL STATE ──
   const [isDarkMode, setIsDarkMode] = useState(() =>
@@ -1298,7 +1294,7 @@ function App() {
               {uniqueCategories.map((cat) => (
                 <div
                   key={`cat-${cat.id}`}
-                  className="bg-white dark:bg-slate-900 rounded-xl overflow-hidden shadow-sm hover:shadow-xl border border-slate-200/60 dark:border-slate-800 group transition-all duration-300 flex flex-col cursor-pointer"
+                  className="bg-white dark:bg-slate-900 rounded-xl overflow-hidden shadow-sm hover:shadow-xl border border-slate-200/60 dark:border-slate-800 hover:border-[#f05c3f] group transition-all duration-300 flex flex-col cursor-pointer"
                   onClick={() => {
                     setSelectedIndustry(cat.category);
                     setSelectedProduct('Product Collections');
@@ -1359,7 +1355,7 @@ function App() {
                   {displayedRooms.map((room, index) => (
                     <div
                       key={`${room.id}-${index}`}
-                      className="bg-white dark:bg-slate-900 rounded-xl overflow-hidden shadow-sm hover:shadow-xl border border-slate-200/60 dark:border-slate-800 group transition-all duration-300 flex flex-col cursor-pointer"
+                     className="bg-white dark:bg-slate-900 rounded-xl overflow-hidden shadow-sm hover:shadow-xl border border-slate-200/60 dark:border-slate-800 hover:border-[#f05c3f] group transition-all duration-300 flex flex-col cursor-pointer"
                       onClick={() => navigate(`/visualizer/${room.id}`)}
                     >
                       <div className="h-[230px] w-full overflow-hidden bg-slate-100 dark:bg-slate-800 relative">
