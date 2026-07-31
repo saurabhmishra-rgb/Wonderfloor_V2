@@ -59,7 +59,23 @@ const clampText = (ctx, text, maxW) => {
   while (ctx.measureText(t + '…').width > maxW && t.length > 0) t = t.slice(0, -1);
   return t + '…';
 };
-
+// ── Wraps text into multiple lines that fit within maxWidth ────────────────
+const wrapText = (ctx, text, maxWidth) => {
+  const words = String(text || '-').split(' ');
+  const lines = [];
+  let current = '';
+  words.forEach(word => {
+    const testLine = current ? `${current} ${word}` : word;
+    if (ctx.measureText(testLine).width > maxWidth && current) {
+      lines.push(current);
+      current = word;
+    } else {
+      current = testLine;
+    }
+  });
+  if (current) lines.push(current);
+  return lines.length ? lines : ['-'];
+};
 // ── Build "Image only + watermark" on canvas ───────────────────────────────
 const buildImageOnly = async (baseDataUrl) => {
   const [bg, logo] = await Promise.all([loadImg(baseDataUrl), loadImg(logoSrc)]);
@@ -79,21 +95,59 @@ const buildImageOnly = async (baseDataUrl) => {
   return c.toDataURL('image/jpeg', 0.92);
 };
 
+// ── Safely parses stringified DB arrays like '["Grey", "White"]' into real arrays ──
+const parseFieldToArray = (val) => {
+  if (Array.isArray(val)) return val;
+  if (!val) return [];
+  if (typeof val === 'string') {
+    const trimmed = val.trim();
+    if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
+      try {
+        const parsed = JSON.parse(trimmed.replace(/'/g, '"'));
+        if (Array.isArray(parsed)) return parsed.map(String);
+      } catch (e) {
+        return trimmed
+          .replace(/^\[|\]$/g, '')
+          .split(',')
+          .map(s => s.replace(/["']/g, '').trim())
+          .filter(Boolean);
+      }
+    }
+    return [trimmed];
+  }
+  return [String(val)];
+};
+
+// ── Cleans up structural brackets/quotes and formats thickness evenly (e.g. "2.0 mm") ──
+const normalizeThickness = (val) => {
+  if (val === undefined || val === null) return '';
+  let cleaned = String(val).replace(/[[\]"']/g, '').trim();
+  const numericMatch = cleaned.match(/[\d.]+/);
+  if (!numericMatch) return cleaned;
+  return `${parseFloat(numericMatch[0]).toFixed(1)} mm`;
+};
+
+const formatDisplayValue = (val, isThickness = false) => {
+  const arr = parseFieldToArray(val);
+  if (isThickness) return arr.map(normalizeThickness).join(', ');
+  return arr.join(', ') || '-';
+};
+
+// ── Build "Image + Product Details" on canvas ──────────────────────────────
 // ── Build "Image + Product Details" on canvas ──────────────────────────────
 const buildDetailsImage = async (baseDataUrl, product) => {
-  const displayIndustry = Array.isArray(product.userIndustry)
-    ? product.userIndustry.join(', ')
-    : (product.userIndustry || '-');
-
   const specs = [
-    { label: 'SKU',           value: product.sku || product.name },
-    { label: 'Collection',    value: product.collection },
-    { label: 'Category',      value: product.category },
-    { label: 'Colour Family', value: product.colour },
-    { label: 'Shade',         value: product.shade },
-    { label: 'User Industry', value: displayIndustry },
-    { label: 'Size',          value: product.size },
-  ];
+    { label: 'SKU',              value: product.sku || product.name },
+    { label: 'Collection',       value: product.collection || product.accordionCategory },
+    { label: 'Colour',           value: formatDisplayValue(product.colour) },
+    { label: 'Shade',            value: formatDisplayValue(product.shade) },
+    { label: 'Thickness',        value: formatDisplayValue(product.thickness, true) },
+    { label: 'Style',            value: formatDisplayValue(product.style) },
+    { label: 'Pattern / Layout', value: formatDisplayValue(product.pattern) },
+    { label: 'User Industry',    value: formatDisplayValue(product.userIndustry) },
+    { label: 'Application Area', value: formatDisplayValue(product.applicationArea) },
+    { label: 'Size',             value: product.size },
+  ].filter(row => row.value && row.value !== '-');
 
   const [bg, logo, tile] = await Promise.all([
     loadImg(baseDataUrl),
@@ -101,11 +155,33 @@ const buildDetailsImage = async (baseDataUrl, product) => {
     loadImg(product.img),
   ]);
 
-  const W       = 1200;
-  const PAD     = 56;
-  const IMG_H   = Math.round(W * 0.48);
-  const ROW_H   = 52;
-  const SECT_H  = Math.max(180, specs.length * ROW_H + 80);
+  const W    = 1200;
+  const PAD  = 56;
+  const IMG_H = Math.round(W * 0.48);
+  const FONT = '-apple-system, BlinkMacSystemFont, Arial, sans-serif';
+
+  // Column layout (computed early so we can measure wrap widths)
+  const C1W = Math.round((W - PAD * 2) * 0.33);
+  const C2X = PAD + C1W + 48;
+  const C2W = W - PAD - C2X;
+  const VALUE_X_OFFSET = Math.round(C2W * 0.42);
+  const VALUE_MAX_W    = C2W - VALUE_X_OFFSET - 8;
+
+  const LINE_H  = 20;  // height per wrapped line
+  const ROW_PAD = 32;  // vertical padding per spec row
+
+  // ── Pre-measure: wrap each value + compute dynamic row heights ──
+  const measureCanvas = document.createElement('canvas');
+  const mctx = measureCanvas.getContext('2d');
+  mctx.font = `bold 15px ${FONT}`;
+
+  const wrappedSpecs = specs.map(spec => {
+    const lines = wrapText(mctx, spec.value, VALUE_MAX_W);
+    const rowH  = Math.max(52, lines.length * LINE_H + ROW_PAD);
+    return { ...spec, lines, rowH };
+  });
+
+  const SECT_H  = Math.max(180, wrappedSpecs.reduce((sum, s) => sum + s.rowH, 0) + 80);
   const TOTAL_H = PAD + 80 + IMG_H + 50 + SECT_H + PAD;
 
   const c   = document.createElement('canvas');
@@ -113,7 +189,6 @@ const buildDetailsImage = async (baseDataUrl, product) => {
   c.height  = TOTAL_H;
   const ctx = c.getContext('2d');
 
-  // White background
   ctx.fillStyle = '#ffffff';
   ctx.fillRect(0, 0, W, TOTAL_H);
 
@@ -133,14 +208,12 @@ const buildDetailsImage = async (baseDataUrl, product) => {
   ctx.drawImage(bg, PAD, y, imgW, IMG_H);
   ctx.restore();
 
-  // Watermark over the room image
   const wmH = 36;
   const wmW = Math.round((logo.naturalWidth / logo.naturalHeight) * wmH);
   ctx.drawImage(logo, W - PAD - wmW - 8, y + IMG_H - wmH - 16, wmW, wmH);
 
   y += IMG_H + 40;
 
-  // ── Divider ──
   ctx.strokeStyle = '#e5e7eb';
   ctx.lineWidth   = 2;
   ctx.beginPath();
@@ -149,12 +222,7 @@ const buildDetailsImage = async (baseDataUrl, product) => {
   ctx.stroke();
   y += 32;
 
-  // Column layout
-  const C1W = Math.round((W - PAD * 2) * 0.33);
   const C1X = PAD;
-  const C2X = C1X + C1W + 48;
-  const C2W = W - PAD - C2X;
-  const FONT = '-apple-system, BlinkMacSystemFont, Arial, sans-serif';
 
   // ── Left: Floors ──
   ctx.fillStyle = '#111827';
@@ -179,7 +247,6 @@ const buildDetailsImage = async (baseDataUrl, product) => {
 
   let sY = y + 50;
 
-  // Header rule
   ctx.strokeStyle = '#e5e7eb';
   ctx.lineWidth   = 1;
   ctx.beginPath();
@@ -187,17 +254,19 @@ const buildDetailsImage = async (baseDataUrl, product) => {
   ctx.lineTo(C2X + C2W, sY - 10);
   ctx.stroke();
 
-  specs.forEach(({ label, value }) => {
+  wrappedSpecs.forEach(({ label, lines, rowH }) => {
     ctx.fillStyle = '#6b7280';
     ctx.font      = `500 15px ${FONT}`;
     ctx.fillText(label, C2X, sY + 18);
 
     ctx.fillStyle = '#111827';
     ctx.font      = `bold 15px ${FONT}`;
-    const valX = C2X + Math.round(C2W * 0.42);
-    ctx.fillText(clampText(ctx, value, C2W * 0.58 - 8), valX, sY + 18);
+    const valX = C2X + VALUE_X_OFFSET;
+    lines.forEach((line, i) => {
+      ctx.fillText(line, valX, sY + 18 + i * LINE_H);
+    });
 
-    sY += ROW_H;
+    sY += rowH;
     ctx.strokeStyle = '#f3f4f6';
     ctx.lineWidth   = 1;
     ctx.beginPath();
@@ -208,10 +277,9 @@ const buildDetailsImage = async (baseDataUrl, product) => {
 
   return c.toDataURL('image/jpeg', 0.92);
 };
-
 // ── Component ─────────────────────────────────────────────────────────────
 
-const DownloadView = ({ selectedProduct, currentSrc, onClose }) => {
+const DownloadView = ({ selectedProduct, currentSrc, onClose, onRequestDownload }) => {
 
   const handleDownload = async (option) => {
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
@@ -281,7 +349,13 @@ const DownloadView = ({ selectedProduct, currentSrc, onClose }) => {
   return (
     <>
       <button
-        onClick={() => handleDownload('image')}
+        onClick={() => {
+          if (onRequestDownload) {
+            onRequestDownload(() => handleDownload('image'));
+          } else {
+            handleDownload('image');
+          }
+        }}
         className="flex items-center gap-3 px-4 py-3 text-sm hover:bg-gray-50 text-left transition-colors cursor-pointer border-b border-gray-100 w-full"
       >
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500">
@@ -291,7 +365,13 @@ const DownloadView = ({ selectedProduct, currentSrc, onClose }) => {
       </button>
 
       <button
-        onClick={() => handleDownload('details')}
+        onClick={() => {
+          if (onRequestDownload) {
+            onRequestDownload(() => handleDownload('details'));
+          } else {
+            handleDownload('details');
+          }
+        }}
         className="flex items-center gap-3 px-4 py-3 text-sm hover:bg-gray-50 text-left transition-colors cursor-pointer w-full"
       >
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500">
