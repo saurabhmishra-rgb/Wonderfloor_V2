@@ -279,7 +279,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
   const [isLeadModalOpen, setIsLeadModalOpen] = useState(false);
 
 
-  
+
   //Open Menu Inside the Download then open then pop up
   const handleDownloadButtonClick = async () => {
     if (isDownloadMenuOpen) { setIsDownloadMenuOpen(false); return; }
@@ -300,11 +300,11 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
     setIsDownloadMenuOpen(true);
   };
 
-const handleRequestDownload = (downloadFn) => {
-  setIsDownloadMenuOpen(false);
-  setPendingDownloadFn(() => downloadFn);
-  setIsLeadModalOpen(true);
-};
+  const handleRequestDownload = (downloadFn) => {
+    setIsDownloadMenuOpen(false);
+    setPendingDownloadFn(() => downloadFn);
+    setIsLeadModalOpen(true);
+  };
 
   const proceedToDownload = async () => {
     setIsLeadModalOpen(false);
@@ -325,16 +325,16 @@ const handleRequestDownload = (downloadFn) => {
     setIsDownloadMenuOpen(true);
   };
 
- const handleLeadFormSubmit = async (formData) => {
-  console.log('Lead captured:', formData, 'Product:', selectedProduct?.name);
-  setIsLeadModalOpen(false);
-  if (pendingDownloadFn) {
-    await pendingDownloadFn(); 
-    setPendingDownloadFn(null);
-  } else {
-    await proceedToDownload();  // fallback, agar kabhi pendingDownloadFn set na ho
-  }
-};
+  const handleLeadFormSubmit = async (formData) => {
+    console.log('Lead captured:', formData, 'Product:', selectedProduct?.name);
+    setIsLeadModalOpen(false);
+    if (pendingDownloadFn) {
+      await pendingDownloadFn();
+      setPendingDownloadFn(null);
+    } else {
+      await proceedToDownload();  // fallback, agar kabhi pendingDownloadFn set na ho
+    }
+  };
 
 
   const { productId } = useParams();
@@ -639,40 +639,11 @@ const handleRequestDownload = (downloadFn) => {
   useEffect(() => {
     if (expandedProductCategory === 'Timberland Herringbone') {
       if (!herringboneMode) handleToggleHerringbone();
-    } else {
-      if (herringboneMode) handleToggleHerringbone();
     }
   }, [expandedProductCategory, herringboneMode, handleToggleHerringbone]);
-  // ── NEW: Herringbone category open hote hi first tile(s) auto-apply karo ──
-  const hasAppliedHerringboneDefaultRef = useRef(null);
 
-  useEffect(() => {
-    if (!herringboneMode) {
-      hasAppliedHerringboneDefaultRef.current = null;
-      return;
-    }
 
-    if (hasAppliedHerringboneDefaultRef.current === expandedProductCategory) return;
 
-    const herringboneProducts = combinedProducts.filter(
-      p => p.accordionCategory === expandedProductCategory
-    );
-    if (herringboneProducts.length === 0) return;
-
-    hasAppliedHerringboneDefaultRef.current = expandedProductCategory;
-
-    const firstTile = herringboneProducts[0];
-    const secondTile = herringboneProducts[1] || herringboneProducts[0];
-
-    // Slot 1 assign
-    setActiveHerringboneSlot(1);
-    handleHerringboneTileAssign(firstTile);
-    setTimeout(() => {
-      setActiveHerringboneSlot(2);
-      handleHerringboneTileAssign(secondTile);
-      setActiveHerringboneSlot(1);
-    }, 50);
-  }, [herringboneMode, expandedProductCategory, combinedProducts]);
 
   const roomSupportedCollections = activeBaseImage?.supportedCollections || [];
   const hasRoomFilter = roomSupportedCollections.length > 0;
@@ -853,13 +824,13 @@ const handleRequestDownload = (downloadFn) => {
   }, [isCompareMode]);
 
   // Separate the compare-mode guard from the visualizer lifecycle
- useEffect(() => {
+  useEffect(() => {
     if (!activeBaseImage?.maskUrl || !threeContainerRef.current) return;
 
     const timer = setTimeout(() => {
       if (threeContainerRef.current) {
-        const instance = initVisualizer(threeContainerRef.current, activeBaseImage?.prediction); 
-        
+        const instance = initVisualizer(threeContainerRef.current, activeBaseImage?.prediction);
+
         if (instance) {
           visualizerInstance.current = instance;
           if (!isLoadingDbProductsRef.current && latestProductRef.current && instance.updateTexture) {
@@ -1279,6 +1250,12 @@ const handleRequestDownload = (downloadFn) => {
     setPan({ x: 0, y: 0 });
     setErrorMsg(null);
 
+    const isHerringboneProduct =
+      (product?.accordionCategory || "").toLowerCase().includes('herringbone') ||
+      (product?.name || "").toLowerCase().includes('herringbone');
+    if (herringboneMode && !isHerringboneProduct) {
+      handleToggleHerringbone();
+    }
     if (monzaDualMode && (product.accordionCategory.toLowerCase().includes('monza') || product.accordionCategory.toLowerCase().includes('stoneland'))) {
       if (activeMonzaSlot === 2) {
         setMonzaTile2(product);
@@ -2179,8 +2156,8 @@ const handleRequestDownload = (downloadFn) => {
                   // NEW ACCORDION LOGIC
                   const isSearching = searchQuery.trim().length > 0;
                   const isExpanded = isSearching
-                    ? !collapsedDuringSearch.includes(categoryName) // Auto-open on search, unless explicitly closed
-                    : expandedProductCategory === categoryName;     // Normal accordion behavior
+                    ? !collapsedDuringSearch.includes(categoryName)
+                    : expandedProductCategory === categoryName;
 
                   const handleAccordionToggle = () => {
                     if (isSearching) {
@@ -2191,14 +2168,8 @@ const handleRequestDownload = (downloadFn) => {
                       const willExpand = !isExpanded;
                       setExpandedProductCategory(willExpand ? categoryName : null);
 
-                      // Sirf Stoneland Monza ke liye auto first-tile apply
-                      const isMonzaCategory =
-                        categoryName.toLowerCase().includes('monza') ||
-                        categoryName.toLowerCase().includes('stoneland');
-
-                      if (willExpand && isMonzaCategory) {
+                      if (willExpand) {
                         setActiveFooterCategory(categoryName);
-                        wrapFirstTileForCategory(categoryName, currentTabFilteredProducts);
                       }
                     }
                   };
@@ -2266,7 +2237,12 @@ const handleRequestDownload = (downloadFn) => {
                                       key={prod.id}
                                       onClick={(e) => {
                                         const cardEl = e.currentTarget;
-                                        if (herringboneMode && isHerringbonePanelOpen) {
+                                        const isHerringboneCat =
+                                          prod.accordionCategory.toLowerCase().includes('herringbone') ||
+                                          prod.name.toLowerCase().includes('herringbone');
+
+                                       
+                                        if (herringboneMode && isHerringbonePanelOpen && isHerringboneCat) {
                                           handleHerringboneTileAssign(prod);
                                           setFooterDisplayProduct(prod);
                                         } else {
