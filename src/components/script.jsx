@@ -139,7 +139,8 @@ async function generateHerringboneDataURL(
     fetchBase64(tex1Url),
     fetchBase64(tex2Url),
   ]);
-  const size = 1024;
+  // const size = 1024;
+  const size = 914.4;
   const nx = 4;
   const l = size / (nx * Math.SQRT2);
   // Hardcoded values replaced with dynamic function parameters
@@ -211,7 +212,8 @@ async function generateStaggeredDataURL(
   plankL_mm_Ignored = 914.4,
 ) {
   const base64 = await fetchBase64(texUrl);
-  const size = 1024;
+  // const size = 1024;
+  const size = 914.4;
 
   return new Promise((resolve, reject) => {
     const img = new Image();
@@ -219,7 +221,7 @@ async function generateStaggeredDataURL(
       // ✅ MAGIC FIX: Dynamic Aspect Ratio Calculation
       // Image ka asli size check karke length decide hogi, taaki stretch na ho!
       let plankW = plankW_mm;
-      let plankL;
+      let plankL = plankL_mm_Ignored;
 
       if (img.width > img.height) {
         // Agar image chaudi (horizontal) hai
@@ -249,6 +251,7 @@ async function generateStaggeredDataURL(
           let y = j * plankL + yOffset;
           // + 0.5 for micro-overlap (Grout lines hatane ke liye)
           svg += `<rect x="${x}" y="${y}" width="${plankW + 0.5}" height="${plankL + 0.5}" fill="url(#tex)"/>`;
+          // svg += `<rect x="${x}" y="${y}" width="${plankW}" height="${plankL}" fill="url(#tex)"/>`;
         }
       }
       svg += `</svg>`;
@@ -290,7 +293,8 @@ async function generateCheckerboardDataURL(
     fetchBase64(tex1Url),
     fetchBase64(tex2Url),
   ]);
-  const size = 1024;
+  // const size = 1024;
+  const size = 914.4;
   const tileSize = size / 4;
   const groutColor = "#020202";
 
@@ -530,7 +534,7 @@ export const initVisualizer = (container, predictionData = null) => {
     const ambient = new THREE.HemisphereLight(0xffffff, 0xb7ad9f, 1.55);
     scene.add(ambient);
 
-    const keyLight = new THREE.DirectionalLight(0xffffff, 1.15);
+    const keyLight = new THREE.DirectionalLight(0xffffff, 0.5);
     keyLight.position.set(-3.5, 6, 2.5);
     scene.add(keyLight);
 
@@ -643,7 +647,8 @@ export const initVisualizer = (container, predictionData = null) => {
             }
 
             // Visual multiplier (2.5x expansion) for realistic room depth scaling
-            const visualScale = 2.5;
+            // const visualScale = 2.5;
+            const visualScale = 1;
             const repeatX = prediction?.camera
               ? 1 / (realWidthMeters * visualScale)
               : 12;
@@ -686,7 +691,8 @@ export const initVisualizer = (container, predictionData = null) => {
                   tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
 
                   // Visual multiplier (3.2x expansion) fixes tiny chevron bug
-                  const visualScale = 3.2;
+                  // const visualScale = 3.2;
+                  const visualScale = 1;
                   const repeatX = prediction?.camera
                     ? 1 / (blockWidthMeters * visualScale)
                     : 10;
@@ -736,7 +742,8 @@ export const initVisualizer = (container, predictionData = null) => {
                   tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
 
                   // Visual multiplier (2.8x expansion) prevents vertical plank squeezing
-                  const visualScale = 2.8;
+                  // const visualScale = 2.8;
+                  const visualScale = 1;
                   const repeatX = prediction?.camera
                     ? 1 / (blockWidthMeters * visualScale)
                     : 12;
@@ -780,7 +787,8 @@ export const initVisualizer = (container, predictionData = null) => {
                   tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
 
                   // Visual multiplier (2.5x expansion) for 18" tiles
-                  const visualScale = 2.5;
+                  // const visualScale = 2.5;
+                  const visualScale = 1;
                   const repeatX = prediction?.camera
                     ? 1 / (blockWidthMeters * visualScale)
                     : 8;
