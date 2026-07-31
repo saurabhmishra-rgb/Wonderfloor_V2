@@ -2115,7 +2115,7 @@ const handleRequestDownload = (downloadFn) => {
                   if (firstCategory) {
                     setExpandedProductCategory(firstCategory);
                     setActiveFooterCategory(firstCategory); //  Fix 2: Sync Flooring footer strip even on early return
-                    wrapFirstTileForCategory(firstCategory, newTabProducts);
+                    // wrapFirstTileForCategory(firstCategory, newTabProducts);
                   }
                 }
               }}
@@ -2227,7 +2227,7 @@ const handleRequestDownload = (downloadFn) => {
                                 <button
                                   onClick={() => {
                                     setMonzaDualMode(false);
-                                    // ✅ FIX: dualMode explicitly false pass kiya, stale wait nahi karna
+                                    //  FIX: dualMode explicitly false pass kiya, stale wait nahi karna
                                     applyFloorOverlay(selectedProduct, floorRotation, true, null, false);
                                   }}
                                   className={`cursor-pointer flex-1 py-1.5 text-xs font-bold rounded-lg transition-all ${!monzaDualMode ? 'bg-white dark:bg-slate-700 shadow shadow-black/5 text-gray-900 dark:text-white' : 'text-gray-500'}`}
@@ -2236,7 +2236,7 @@ const handleRequestDownload = (downloadFn) => {
                                 </button>
                                 <button
                                   onClick={() => {
-                                    // ✅ FIX: naya tile2 pehle nikalo, phir sab jagah wahi explicit value use karo
+                                    //  FIX: naya tile2 pehle nikalo, phir sab jagah wahi explicit value use karo
                                     const newTile2 = monzaTile2 || categoryProducts[0] || selectedProduct;
                                     setMonzaDualMode(true);
                                     setMonzaTile2(newTile2);
