@@ -109,33 +109,30 @@ export function useHerringbonePattern({
     }
   }, [activeBaseImage, visualizerInstance, floorRotation, setErrorMsg, setIsProcessing]);
 
-  const handleToggleHerringbone = useCallback(() => {
-    if (!activeBaseImage?.maskUrl) {
-      setErrorMsg('Herringbone sirf 3D rooms mein available hai.');
-      return;
+ const handleToggleHerringbone = useCallback(() => {
+  if (!activeBaseImage?.maskUrl) {
+    setErrorMsg('Herringbone sirf 3D rooms mein available hai.');
+    return;
+  }
+
+  if (herringboneMode) {
+    setHerringboneMode(false);
+    setIsHerringbonePanelOpen(false);
+    if (visualizerInstance.current?.updateTexture) {
+      visualizerInstance.current.updateTexture(selectedProduct.img, floorRotation);
     }
+    return;
+  }
 
-    if (herringboneMode) {
-      setHerringboneMode(false);
-      setIsHerringbonePanelOpen(false);
-      if (visualizerInstance.current?.updateTexture) {
-        visualizerInstance.current.updateTexture(selectedProduct.img, floorRotation);
-      }
-      return;
-    }
+ 
+  setHerringboneMode(true);
+  setIsHerringbonePanelOpen(true);
+}, [activeBaseImage, herringboneMode, selectedProduct, floorRotation, visualizerInstance, setErrorMsg]);
 
-    const seedTile1 = herringboneTile1 || selectedProduct;
-    const seedTile2 = herringboneTile2 || selectedProduct;
-    setHerringboneTile1(seedTile1);
-    setHerringboneTile2(seedTile2);
-    setActiveHerringboneSlot(1);
-    setHerringboneMode(true);
-    setIsHerringbonePanelOpen(true);
-    applyHerringbonePattern(seedTile1.img, seedTile2.img);
-  }, [activeBaseImage, herringboneMode, herringboneTile1, herringboneTile2, selectedProduct, floorRotation, visualizerInstance, setErrorMsg, applyHerringbonePattern]);
+  const handleHerringboneTileAssign = useCallback((product, slotOverride = null) => {
+    const targetSlot = slotOverride ?? activeHerringboneSlot;
 
-  const handleHerringboneTileAssign = useCallback((product) => {
-    if (activeHerringboneSlot === 1) {
+    if (targetSlot === 1) {
       setHerringboneTile1(product);
       applyHerringbonePattern(product.img, (herringboneTile2 || product).img);
     } else {
