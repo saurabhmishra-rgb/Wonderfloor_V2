@@ -1057,56 +1057,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
     }
   };
 
-  // // Canvas-only composite that doesn't need the live ThreeJS instance
-  // const generateStaticComposite = async (productImgUrl,) => {
-  //   if (!activeBaseImage?.maskUrl) return null;
-
-  //   return new Promise((resolve) => {
-  //     const canvas = document.createElement('canvas');
-  //     const bgImg = new Image();
-  //     bgImg.crossOrigin = 'anonymous';
-
-  //     bgImg.onload = () => {
-  //       canvas.width = bgImg.width;
-  //       canvas.height = bgImg.height;
-  //       const ctx = canvas.getContext('2d');
-
-  //       // Layer 1: Draw room background
-  //       ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
-
-  //       // Layer 2: Draw tiled floor texture
-  //       const tileImg = new Image();
-  //       tileImg.crossOrigin = 'anonymous';
-  //       tileImg.onload = () => {
-  //         // Simple repeating tile fill as a floor approximation
-  //         const pattern = ctx.createPattern(tileImg, 'repeat');
-  //         if (pattern) {
-  //           ctx.save();
-  //           ctx.globalAlpha = 0.85;
-  //           ctx.fillStyle = pattern;
-  //           ctx.fillRect(0, canvas.height * 0.45, canvas.width, canvas.height * 0.55);
-  //           ctx.restore();
-  //         }
-
-  //         // Layer 3: Draw mask on top
-  //         const maskImg = new Image();
-  //         maskImg.crossOrigin = 'anonymous';
-  //         maskImg.onload = () => {
-  //           ctx.drawImage(maskImg, 0, 0, canvas.width, canvas.height);
-  //           resolve(canvas.toDataURL('image/jpeg', 0.9));
-  //         };
-  //         maskImg.onerror = () => resolve(null);
-  //         maskImg.src = activeBaseImage.maskUrl;
-  //       };
-  //       tileImg.onerror = () => resolve(null);
-  //       tileImg.src = productImgUrl;
-  //     };
-  //     bgImg.onerror = () => resolve(null);
-  //     bgImg.src = activeBaseImage.previewUrl;
-  //   });
-  // };
   const handleEnterCompare = async () => {
-    // ✅ Step 1: Capture composite WHILE visualizer is still alive
     let initialComposite = null;
     if (activeBaseImage?.maskUrl && visualizerInstance.current) {
       setIsProcessing(true);
@@ -1114,16 +1065,30 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
       setIsProcessing(false);
     }
 
-    //  Step 2: NOW enter compare mode (visualizer gets cleaned up here)
+    //  Step 2: NOW enter compare mode
     setIsCompareMode(true);
-    setCompareLeftProduct(selectedProduct);
+
+    //  Set Left side to "Original Floor" by default instead of duplicating selectedProduct
+    const originalFloorPlaceholder = {
+      id: 'original_floor',
+      name: 'Apply Left Side',
+      img: activeBaseImage?.previewUrl, // Dummy thumbnail for Original Room
+      size: 'Base'
+    };
+
+    setCompareLeftProduct(originalFloorPlaceholder);
     setCompareRightProduct(selectedProduct);
+
     setActiveCompareSide('right');
+
     if (window.innerWidth >= 768) setIsSidebarOpen(true);
 
-    //  Step 3: Use the pre-captured composite
+    // ✅ FIX 2: Set Left image to the base room image (without any floor applied)
+    const baseRoomImage = activeBaseImage?.previewUrl || currentSrc;
+    setCompareLeftImage(baseRoomImage);
+
+    //  Step 3: Use the pre-captured composite ONLY for the RIGHT side
     if (initialComposite) {
-      setCompareLeftImage(initialComposite);
       setCompareRightImage(initialComposite);
       return;
     }
@@ -1139,21 +1104,19 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
         formData.append('instructions', `The flooring tiles have physical dimensions of ${selectedProduct.size}.`);
         const response = await fetch(`${PYTHON_BACKEND_URL}/api/replace-floor`, { method: 'POST', body: formData });
         const data = await response.json();
+
         if (response.ok && data.success) {
-          setCompareLeftImage(data.imageDataUrl);
+          // ✅ FIX 3: Apply the backend-generated floor ONLY to the Right Image
           setCompareRightImage(data.imageDataUrl);
         } else {
-          setCompareLeftImage(currentSrc);
           setCompareRightImage(currentSrc);
         }
       } catch {
-        setCompareLeftImage(currentSrc);
         setCompareRightImage(currentSrc);
       } finally {
         setIsProcessing(false);
       }
     } else {
-      setCompareLeftImage(currentSrc);
       setCompareRightImage(currentSrc);
     }
   };
@@ -1507,7 +1470,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
       if (categoryId === 'accordionCategory' && !isRemoving) {
         setExpandedProductCategory(option);
         setActiveFooterCategory(option);
-        wrapFirstTileForCategory(option, currentTabFilteredProducts);
+        // wrapFirstTileForCategory(option, currentTabFilteredProducts);
       }
 
       if (isRemoving) {
@@ -1678,6 +1641,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
             onBack={() => setIsFavoritesViewOpen(false)}
             onSelectProduct={handleTileSelection}
             onToggleFavorite={toggleFavorite}
+            onOpenDetails={handleOpenDetails}
           />
         ) : isFilterMenuOpen ? (
           <div className={`flex flex-col w-full h-full z-40 animate-fade-in
@@ -2227,11 +2191,14 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
                                 {categoryProducts.map((prod) => {
                                   const isFavorite = favoriteProducts.includes(prod.id);
                                   const isMonzaCat = prod.accordionCategory.toLowerCase().includes('monza') || prod.accordionCategory.toLowerCase().includes('stoneland');
+                                  const isHerringboneCat = prod.accordionCategory.toLowerCase().includes('herringbone') || prod.name.toLowerCase().includes('herringbone');
                                   const isSelected = isCompareMode
                                     ? (activeCompareSide === 'left' ? compareLeftProduct?.id === prod.id : compareRightProduct?.id === prod.id)
-                                    : (monzaDualMode && isMonzaCat)
-                                      ? (activeMonzaSlot === 2 ? monzaTile2?.id === prod.id : selectedProduct.id === prod.id)
-                                      : selectedProduct.id === prod.id;
+                                    : (herringboneMode && isHerringboneCat)
+                                      ? (activeHerringboneSlot === 2 ? herringboneTile2?.id === prod.id : herringboneTile1?.id === prod.id)
+                                      : (monzaDualMode && isMonzaCat)
+                                        ? (activeMonzaSlot === 2 ? monzaTile2?.id === prod.id : selectedProduct.id === prod.id)
+                                        : selectedProduct.id === prod.id;
                                   return (
                                     <div
                                       key={prod.id}
@@ -2241,7 +2208,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
                                           prod.accordionCategory.toLowerCase().includes('herringbone') ||
                                           prod.name.toLowerCase().includes('herringbone');
 
-                                       
+
                                         if (herringboneMode && isHerringbonePanelOpen && isHerringboneCat) {
                                           handleHerringboneTileAssign(prod);
                                           setFooterDisplayProduct(prod);
@@ -2705,7 +2672,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
                           onClick={(e) => { e.stopPropagation(); setActiveHerringboneSlot(1); }}
                           className={`flex items-center gap-1.5 p-1 border rounded-md transition-all cursor-pointer ${activeHerringboneSlot === 1 ? 'border-[#0b5e5e] bg-[#0b5e5e]/5' : 'border-gray-200 hover:bg-gray-50'}`}
                         >
-                          <img src={herringboneTile1?.img} className="w-6 h-6 rounded object-cover border border-gray-100 shrink-0" alt="T1" />
+                          <img src={herringboneTile1?.img || activeBaseImage?.previewUrl} className="w-6 h-6 rounded object-cover border border-gray-100 shrink-0" alt="T1" />
                           <span className="text-xs font-bold truncate max-w-[70px] hidden sm:inline">{herringboneTile1?.name || 'Select'}</span>
                         </button>
 
@@ -2714,7 +2681,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
                           onClick={(e) => { e.stopPropagation(); setActiveHerringboneSlot(2); }}
                           className={`flex items-center gap-1.5 p-1 border rounded-md transition-all cursor-pointer ${activeHerringboneSlot === 2 ? 'border-[#0b5e5e] bg-[#0b5e5e]/5' : 'border-gray-200 hover:bg-gray-50'}`}
                         >
-                          <img src={herringboneTile2?.img} className="w-6 h-6 rounded object-cover border border-gray-100 shrink-0" alt="T2" />
+                          <img src={herringboneTile2?.img || activeBaseImage?.previewUrl} className="w-6 h-6 rounded object-cover border border-gray-100 shrink-0" alt="T2" />
                           <span className="text-xs font-bold truncate max-w-[70px] hidden sm:inline">{herringboneTile2?.name || 'Select'}</span>
                         </button>
                       </div>
