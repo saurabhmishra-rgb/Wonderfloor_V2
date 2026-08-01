@@ -5,14 +5,15 @@ const FavoritesView = ({
   allProducts,
   onBack,
   onSelectProduct,
-  onToggleFavorite
+  onToggleFavorite,
+  onOpenDetails
 }) => {
   // Filter the main product list to only show items that are favorited
   const favoriteProducts = allProducts.filter(prod => favoriteIds.includes(prod.id));
 
   return (
     <div className="flex flex-col h-full bg-white absolute inset-0 z-40 animate-fade-in md:rounded-none rounded-t-3xl overflow-hidden w-full">
-      
+
       {/* Header */}
       <div className="p-4 md:p-5 flex items-center gap-3 border-b border-gray-100 shrink-0 bg-white">
         <button
@@ -55,7 +56,7 @@ const FavoritesView = ({
             <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">
               Saved Items ({favoriteProducts.length})
             </p>
-            
+
             {favoriteProducts.map((prod) => (
               <div
                 key={prod.id}
@@ -77,26 +78,31 @@ const FavoritesView = ({
                   </svg>
                 </button>
 
-                <img 
-                  src={prod.img} 
-                  alt={prod.name} 
-                  className="w-20 h-20 md:w-24 md:h-24 object-cover rounded shadow-sm bg-gray-100 shrink-0 border border-gray-200 group-hover:border-[#0b5e5e]/50 transition-colors" 
+                <img
+                  src={prod.img}
+                  alt={prod.name}
+                  className="w-20 h-20 md:w-24 md:h-24 object-cover rounded shadow-sm bg-gray-100 shrink-0 border border-gray-200 group-hover:border-[#0b5e5e]/50 transition-colors"
                 />
-                
+
                 <div className="flex flex-col justify-center min-w-0 flex-1 pr-8">
+                  <span className="text-xs text-gray-500 uppercase tracking-widest font-semibold">Wonderfloor</span>
                   <span className="text-[10px] md:text-[11px] text-[#0b5e5e] uppercase tracking-wider font-semibold">{prod.accordionCategory || 'Wonderfloor'}</span>
                   <span className="font-bold text-sm md:text-base text-gray-900 truncate mt-0.5">{prod.name}</span>
-                  <div className="flex flex-col gap-0.5 mt-1.5">
-                    <span className="text-xs text-gray-500 flex items-center gap-1">
-                       <span className="w-1 h-1 rounded-full bg-gray-300"></span> 
-                       Size: {prod.size}
+                  <div className="flex flex-col mt-1">
+                    {/* 1. Show the Size */}
+                    <span className="text-xs text-gray-500">
+                      Size: {prod.size}
                     </span>
-                    {prod.colour && (
-                       <span className="text-xs text-gray-500 flex items-center gap-1">
-                         <span className="w-1 h-1 rounded-full bg-gray-300"></span> 
-                         Color: {prod.colour}
-                       </span>
-                    )}
+                    {/* button for more detail on Favourite */}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation(); // Stop main event Flikaring
+                        if (onOpenDetails) onOpenDetails(e, prod);
+                      }}
+                      className="text-xs mt-1 text-left cursor-pointer z-10 block w-max font-medium text-[#0b5e5e] hover:underline transition-colors"
+                    >
+                      More details →
+                    </button>
                   </div>
                 </div>
               </div>
