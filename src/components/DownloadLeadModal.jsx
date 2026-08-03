@@ -87,7 +87,7 @@ const DownloadLeadModal = ({ isOpen, onClose, onSubmit, isDarkMode }) => {
               name="fullName"
               value={formData.fullName}
               onChange={handleChange}
-              placeholder="John Doe"
+              placeholder="Enter Your Name"
               className={`w-full h-11 px-3 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-[#0b5e5e]/30 transition-colors
                 ${isDarkMode ? 'bg-[#0f1b2d] border-[#334155] text-white placeholder-gray-500' : 'bg-white border-gray-300'}
                 ${errors.fullName ? 'border-red-500' : ''}`}
@@ -104,7 +104,7 @@ const DownloadLeadModal = ({ isOpen, onClose, onSubmit, isDarkMode }) => {
               name="email"
               value={formData.email}
               onChange={handleChange}
-              placeholder="john@example.com"
+              placeholder="Enter Your Email"
               className={`w-full h-11 px-3 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-[#0b5e5e]/30 transition-colors
                 ${isDarkMode ? 'bg-[#0f1b2d] border-[#334155] text-white placeholder-gray-500' : 'bg-white border-gray-300'}
                 ${errors.email ? 'border-red-500' : ''}`}
@@ -121,7 +121,7 @@ const DownloadLeadModal = ({ isOpen, onClose, onSubmit, isDarkMode }) => {
               name="contactNo"
               value={formData.contactNo}
               onChange={handleChange}
-              placeholder="+91 98765 43210"
+              placeholder="Enter your Contact Number"
               className={`w-full h-11 px-3 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-[#0b5e5e]/30 transition-colors
                 ${isDarkMode ? 'bg-[#0f1b2d] border-[#334155] text-white placeholder-gray-500' : 'bg-white border-gray-300'}
                 ${errors.contactNo ? 'border-red-500' : ''}`}
