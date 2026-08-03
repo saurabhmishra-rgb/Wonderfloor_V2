@@ -288,7 +288,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
     if (activeBaseImage?.maskUrl && visualizerInstance.current) {
       setIsGeneratingDownload(true);
       try {
-        const composite = await generateCompositeImage(selectedProduct, floorRotation);
+        const composite = await generateCompositeImage(selectedProduct, -floorRotation);
         if (composite) imgUrl = composite;
       } catch (e) {
         console.error('Composite failed for download:', e);
@@ -313,7 +313,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
     if (activeBaseImage?.maskUrl && visualizerInstance.current) {
       setIsGeneratingDownload(true);
       try {
-        const composite = await generateCompositeImage(selectedProduct, floorRotation);
+        const composite = await generateCompositeImage(selectedProduct, -floorRotation);
         if (composite) imgUrl = composite;
       } catch (e) {
         console.error('Composite failed for download:', e);
@@ -2432,7 +2432,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
               </div>
 
               <div className={`flex items-center gap-1.5 md:gap-5 border-l pl-1.5 md:pl-5 h-full shrink-0 transition-colors ${isDarkMode ? 'border-[#334155]' : 'border-gray-200'}`}>
-                {/* 🌙 DARK MODE TOGGLE — Premium Animated Version */}
+                {/*  DARK MODE TOGGLE — Premium Animated Version */}
                 <button
                   onClick={() => setIsDarkMode(prev => !prev)}
                   title={isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
@@ -2507,7 +2507,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={`shrink-0 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                           <path d="M2 3h20v14H2z" /><path d="M8 21h8" /><path d="M12 17v4" />
                         </svg>
-                        Fullscreen
+                        Full Screen
                       </button>
                     </div>
                   )}
@@ -2515,7 +2515,6 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
               </div>
             </div>
           )}
-
           {/* ── IMAGE VIEWER ── */}
           <div
             ref={imageContainerRef}
@@ -2552,7 +2551,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
                   <path d="M8 3v3a2 2 0 0 1-2 2H3" /><path d="M21 8h-3a2 2 0 0 1-2-2V3" />
                   <path d="M3 16h3a2 2 0 0 1 2 2v3" /><path d="M16 21v-3a2 2 0 0 1 2-2h3" />
                 </svg>
-                Exit Immersive
+                Exit Full Screen
               </button>
             )}
 
@@ -2841,7 +2840,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
                     { label: 'Colour', value: formatDisplayValue(detailsProduct.colour) },
                     { label: 'Shade', value: formatDisplayValue(detailsProduct.shade) },
                     { label: 'Thickness', value: formatDisplayValue(detailsProduct.thickness, true) },
-                    { label: 'Style', value: formatDisplayValue(detailsProduct.style) },
+                    { label: 'Type Of Flooring', value: formatDisplayValue(detailsProduct.style) },
                     { label: 'Pattern / Layout', value: formatDisplayValue(detailsProduct.pattern) },
                     { label: 'User Industry', value: formatDisplayValue(detailsProduct.userIndustry) },
                     { label: 'Application Area', value: formatDisplayValue(detailsProduct.applicationArea) },
