@@ -85,21 +85,19 @@ const FavoritesView = ({
                 />
 
                 <div className="flex flex-col justify-center min-w-0 flex-1 pr-8">
-                  <span className="text-xs text-gray-500 uppercase tracking-widest font-semibold">Wonderfloor</span>
+                  <span className="text-[9px] md:text-[10px] text-gray-500 uppercase tracking-widest font-semibold">Wonderfloor</span>
                   <span className="text-[10px] md:text-[11px] text-[#0b5e5e] uppercase tracking-wider font-semibold">{prod.accordionCategory || 'Wonderfloor'}</span>
                   <span className="font-bold text-sm md:text-base text-gray-900 truncate mt-0.5">{prod.name}</span>
                   <div className="flex flex-col mt-1">
-                    {/* 1. Show the Size */}
-                    <span className="text-xs text-gray-500">
+                    <span className="text-xs text-gray-500 whitespace-nowrap">
                       Size: {prod.size}
                     </span>
-                    {/* button for more detail on Favourite */}
                     <button
                       onClick={(e) => {
-                        e.stopPropagation(); // Stop main event Flikaring
+                        e.stopPropagation();
                         if (onOpenDetails) onOpenDetails(e, prod);
                       }}
-                      className="text-xs mt-1 text-left cursor-pointer z-10 block w-max font-medium text-[#0b5e5e] hover:underline transition-colors"
+                      className="text-xs mt-1 text-left cursor-pointer z-10 block w-max font-medium text-[#0b5e5e] hover:underline transition-colors whitespace-nowrap"
                     >
                       More details →
                     </button>
