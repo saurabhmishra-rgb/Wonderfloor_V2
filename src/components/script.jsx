@@ -648,17 +648,15 @@ export const initVisualizer = (container, predictionData = null) => {
 
             // Visual multiplier (2.5x expansion) for realistic room depth scaling
             // const visualScale = 2.5;
-            const visualScale = 1;
+            const visualScale = 2;
             const repeatX = prediction?.camera
               ? 1 / (realWidthMeters * visualScale)
               : 12;
-            const repeatY = prediction?.camera
-              ? 1 / (realHeightMeters * visualScale)
-              : 12;
+            const repeatY = prediction?.camera ? 1 : 12;
 
             tex.repeat.set(repeatX, repeatY);
             tex.center.set(0.5, 0.5);
-            tex.rotation = (angleInDegrees * Math.PI) / 180;
+            tex.rotation = ((angleInDegrees - 15) * Math.PI) / 180;
 
             floorMaterial.map = tex;
             floorMaterial.needsUpdate = true;
@@ -792,13 +790,11 @@ export const initVisualizer = (container, predictionData = null) => {
                   const repeatX = prediction?.camera
                     ? 1 / (blockWidthMeters * visualScale)
                     : 8;
-                  const repeatY = prediction?.camera
-                    ? 1 / (blockHeightMeters * visualScale)
-                    : 8;
+                  const repeatY = prediction?.camera ? 1 : 8;
 
                   tex.repeat.set(repeatX, repeatY);
                   tex.center.set(0.5, 0.5);
-                  tex.rotation = (angleInDegrees * Math.PI) / 180;
+                  tex.rotation = ((angleInDegrees+90) * Math.PI) / 180;
 
                   floorMaterial.map = tex;
                   floorMaterial.needsUpdate = true;
