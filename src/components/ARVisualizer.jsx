@@ -2456,7 +2456,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
                   )}
                   <span className="hidden md:inline relative z-10">{isDarkMode ? 'Light' : 'Dark'}</span>
                 </button>
-                <a href="https://www.wonderfloor.co.in/contact-us" target="_blank" rel="noopener noreferrer" title="Contact Us | Wonderfloor">
+                <a href="https://www.wonderfloor.co.in/contact-us.php" target="_blank" rel="noopener noreferrer" title="Contact Us | Wonderfloor">
                   <button className="group relative flex items-center justify-center gap-2 w-8 h-8 md:w-auto md:h-auto md:px-4 md:py-2 rounded-full text-sm font-bold tracking-wide transition-all duration-300 cursor-pointer overflow-hidden border border-teal-500/30 bg-gradient-to-r from-[#0b5e5e] to-teal-600 text-white hover:from-[#084747] hover:to-teal-700 shadow-md hover:shadow-lg shrink-0">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 group-hover:-translate-y-0.5 transition-transform duration-300">
                       <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline>
