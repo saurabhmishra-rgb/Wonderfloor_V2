@@ -326,7 +326,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
   };
 
   const handleLeadFormSubmit = async (formData) => {
-    console.log('Lead captured:', formData, 'Product:', selectedProduct?.name);
+    // console.log('Lead captured:', formData, 'Product:', selectedProduct?.name);
     setIsLeadModalOpen(false);
     if (pendingDownloadFn) {
       await pendingDownloadFn();
@@ -747,10 +747,10 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
   // 🔍 TEMP DEBUG — issue confirm hone ke baad hata dena
   useEffect(() => {
     if (!isLoadingDbProducts) {
-      console.log('roomSupportedCollections:', roomSupportedCollections);
-      console.log('Available accordionCategories:',
-        [...new Set(combinedProducts.map(p => `"${p.accordionCategory}"`))]
-      );
+      // console.log('roomSupportedCollections:', roomSupportedCollections);
+      // console.log('Available accordionCategories:',
+      //   [...new Set(combinedProducts.map(p => `"${p.accordionCategory}"`))]
+      // );
     }
   }, [isLoadingDbProducts, roomSupportedCollections, combinedProducts]);
 
@@ -1496,9 +1496,9 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
   const clearFilters = () => setActiveFilters({});
   // Filter Logic
   const navProducts = combinedProducts.filter(p => p.navCategory === activeNavCategory);
-  console.log('activeNavCategory:', activeNavCategory);
-  console.log('navProducts count:', navProducts.length);
-  console.log('ALL_PRODUCTS count:', ALL_PRODUCTS.length);
+  // console.log('activeNavCategory:', activeNavCategory);
+  // console.log('navProducts count:', navProducts.length);
+  // console.log('ALL_PRODUCTS count:', ALL_PRODUCTS.length);
 
 
   // ── FILTER LOGIC SECTION KO IS TARAH UPDATE KAREIN ──

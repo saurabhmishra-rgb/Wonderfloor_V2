@@ -53,7 +53,7 @@ export function matchIndustryCategory(scene) {
   }
 
   console.group('🔍 [categoryMatcher] Matching process');
-  console.log('Normalized labels:', entries);
+  // console.log('Normalized labels:', entries);
 
   let bestMatch = null;
   let bestScore = 0;
@@ -91,7 +91,7 @@ export function matchIndustryCategory(scene) {
       }, {})
   );
 
-  console.log(' Winner:', bestMatch || ' No category scored above 0', `(score: ${bestScore.toFixed(2)})`);
+  // console.log(' Winner:', bestMatch || ' No category scored above 0', `(score: ${bestScore.toFixed(2)})`);
   console.groupEnd();
 
   return bestMatch;
