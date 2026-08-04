@@ -721,7 +721,7 @@ export const initVisualizer = (container, predictionData = null) => {
       texUrl,
       staggerRatio = 0.333,
       angleInDegrees = 0,
-      plankW_mm = 152.4,
+      plankW_mm = 914.4,
       plankL_mm = 914.4,
     ) => {
       return generateStaggeredDataURL(
@@ -742,7 +742,7 @@ export const initVisualizer = (container, predictionData = null) => {
 
                   // Visual multiplier (2.8x expansion) prevents vertical plank squeezing
                   // const visualScale = 2.8;
-                  const visualScale = 1;
+                  const visualScale = 2;
                   const repeatX = prediction?.camera
                     ? 1 / (blockWidthMeters * visualScale)
                     : 12;
