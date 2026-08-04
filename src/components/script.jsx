@@ -569,9 +569,10 @@ export const initVisualizer = (container, predictionData = null) => {
     const floorMaterial = new THREE.MeshPhysicalMaterial({
       side: THREE.DoubleSide,
       transparent: true,
-      roughness: 0.6,
+      roughness: 0.08,
       metalness: 0.0,
-      clearcoat: 0.1,
+      clearcoat: 1,
+      clearcoatRoughness: 0.03,
       reflectivity: 0.5,
     });
 
@@ -656,7 +657,7 @@ export const initVisualizer = (container, predictionData = null) => {
 
             tex.repeat.set(repeatX, repeatY);
             tex.center.set(0.5, 0.5);
-            tex.rotation = ((angleInDegrees - 15) * Math.PI) / 180;
+            tex.rotation = ((angleInDegrees - 7.5) * Math.PI) / 180;
 
             floorMaterial.map = tex;
             floorMaterial.needsUpdate = true;
