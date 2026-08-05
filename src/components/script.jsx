@@ -378,7 +378,12 @@ function configureCameraFromIntrinsics(
   const top = (cy / fy) * NEAR;
   const bottom = (-(containerHeight - cy) / fy) * NEAR;
 
-  camera.position.set(0, 0, 0);
+  const camera_height = cameraData.height_meters;
+
+  // console.log("left, right, top, bottom, NEAR, FAR : ", left, right, top, bottom, NEAR, FAR);
+  
+
+  camera.position.set(0, camera_height, 0);
   camera.quaternion.identity();
   camera.scale.set(1, 1, 1);
   camera.near = NEAR;
@@ -455,8 +460,8 @@ function buildCalibratedFloorGeometry(prediction) {
 
   const minWidth = -200;
   const maxWidth = 200;
-  const minDepth = -50;
-  const maxDepth = 250;
+  const minDepth = -200;
+  const maxDepth = 200;
 
   const floorWidthMeters = maxWidth - minWidth;
   const floorDepthMeters = maxDepth - minDepth;
