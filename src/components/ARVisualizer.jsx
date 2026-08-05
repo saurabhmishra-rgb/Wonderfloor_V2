@@ -14,6 +14,7 @@ import SidebarNavTabs from './SidebarNavTabs';
 import { useTileHoverPreview, TileHoverPreviewOverlay, TileHoverHintOverlay } from './TileHoverPreview.jsx';
 
 // const PYTHON_BACKEND_URL = 'http://127.0.0.1:8000';
+// const NODE_BACKEND_URL = 'http://localhost:8000';
 const NODE_BACKEND_URL = 'https://wonderfloor-dashboard.vercel.app'
 // const BACKEND_URL = 'https://wonderfloor-backend-1.onrender.com';
 const PYTHON_BACKEND_URL = 'https://python-floor-backend.onrender.com';
@@ -300,12 +301,39 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
     setIsDownloadMenuOpen(true);
   };
 
-  const handleRequestDownload = (downloadFn) => {
-    setIsDownloadMenuOpen(false);
-    setPendingDownloadFn(() => downloadFn);
-    setIsLeadModalOpen(true);
-  };
+ const handleRequestDownload = (downloadFn) => {
+  setIsDownloadMenuOpen(false);
 
+  // ✅ Check: is browser se pehle kabhi lead form fill hua hai?
+  const savedLead = localStorage.getItem('wf_leadInfo');
+
+  if (savedLead) {
+    // Already captured — background mein silently backend ko update kar do (downloadCount++)
+    try {
+      const { name, phone } = JSON.parse(savedLead);
+      fetch(`${NODE_BACKEND_URL}/leads`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name,
+          phone,
+          productName: selectedProduct?.name,
+          productSku: selectedProduct?.sku,
+          roomId: initialImage?.id || 'default',
+        }),
+      }).catch(() => {}); // fail silently, download ko block mat karo
+    } catch (e) {
+      console.error('Repeat visit log failed:', e);
+    }
+
+    downloadFn(); // seedha download, form skip
+    return;
+  }
+
+  // Naya user — form dikhao
+  setPendingDownloadFn(() => downloadFn);
+  setIsLeadModalOpen(true);
+};
   const proceedToDownload = async () => {
     setIsLeadModalOpen(false);
 
@@ -325,18 +353,48 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
     setIsDownloadMenuOpen(true);
   };
 
-  const handleLeadFormSubmit = async (formData) => {
-    // console.log('Lead captured:', formData, 'Product:', selectedProduct?.name);
-    setIsLeadModalOpen(false);
-    if (pendingDownloadFn) {
-      await pendingDownloadFn();
-      setPendingDownloadFn(null);
+const handleLeadFormSubmit = async (formData) => {
+  setIsLeadModalOpen(false);
+
+  try {
+    const response = await fetch(`${NODE_BACKEND_URL}/leads`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        // ✅ FIX: DownloadLeadModal ke field names ko backend schema ke names se map karo
+        name: formData.fullName,
+        phone: formData.contactNo,
+        email: formData.email,
+        message: formData.message,
+        productName: selectedProduct?.name,
+        productSku: selectedProduct?.sku,
+        roomId: initialImage?.id || 'default',
+      }),
+    });
+
+    const data = await response.json();
+    console.log('Lead save response:', data);
+
+    if (response.ok && data.success) {
+      localStorage.setItem('wf_leadInfo', JSON.stringify({
+        name: formData.fullName,
+        phone: formData.contactNo,
+        submittedAt: new Date().toISOString(),
+      }));
     } else {
-      await proceedToDownload();  // fallback, agar kabhi pendingDownloadFn set na ho
+      console.error('Lead save failed on backend:', data.error);
     }
-  };
+  } catch (err) {
+    console.error('Lead save network error:', err);
+  }
 
-
+  if (pendingDownloadFn) {
+    await pendingDownloadFn();
+    setPendingDownloadFn(null);
+  } else {
+    await proceedToDownload();
+  }
+};
   const { productId } = useParams();
   const navigate = useNavigate();
 
@@ -744,17 +802,17 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoadingDbProducts, combinedProducts, activeNavCategory, hasRoomFilter, roomSupportedCollections, activeBaseImage]);
 
-  // 🔍 TEMP DEBUG — issue confirm hone ke baad hata dena
+  //  TEMP DEBUG — issue confirm hone ke baad hata dena
   useEffect(() => {
     if (!isLoadingDbProducts) {
-      // console.log('roomSupportedCollections:', roomSupportedCollections);
-      // console.log('Available accordionCategories:',
-      //   [...new Set(combinedProducts.map(p => `"${p.accordionCategory}"`))]
-      // );
+      console.log('roomSupportedCollections:', roomSupportedCollections);
+      console.log('Available accordionCategories:',
+        [...new Set(combinedProducts.map(p => `"${p.accordionCategory}"`))]
+      );
     }
   }, [isLoadingDbProducts, roomSupportedCollections, combinedProducts]);
 
-  // ✅ NEW: Jab DB products load ho jaayen, productId (URL SKU) ko re-verify/correct karo
+  //  NEW: Jab DB products load ho jaayen, productId (URL SKU) ko re-verify/correct karo
   useEffect(() => {
     if (isLoadingDbProducts) return;
     if (!productId) return;
@@ -1496,9 +1554,9 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
   const clearFilters = () => setActiveFilters({});
   // Filter Logic
   const navProducts = combinedProducts.filter(p => p.navCategory === activeNavCategory);
-  // console.log('activeNavCategory:', activeNavCategory);
-  // console.log('navProducts count:', navProducts.length);
-  // console.log('ALL_PRODUCTS count:', ALL_PRODUCTS.length);
+  console.log('activeNavCategory:', activeNavCategory);
+  console.log('navProducts count:', navProducts.length);
+  console.log('ALL_PRODUCTS count:', ALL_PRODUCTS.length);
 
 
   // ── FILTER LOGIC SECTION KO IS TARAH UPDATE KAREIN ──
