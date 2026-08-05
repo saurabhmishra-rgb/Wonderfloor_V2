@@ -337,13 +337,13 @@ const [selectedProduct, setSelectedProduct] = useState('Product Collections');
   useEffect(() => {
     const handleConnect = () => {
       if (sessionId) {
-        console.log('Socket reconnected! Re-joining session:', sessionId);
+        // console.log('Socket reconnected! Re-joining session:', sessionId);
         socket.emit('join_session', sessionId);
       }
     };
 
     const handleImageUploaded = async (base64Data) => {
-      console.log('Image received from mobile!');
+      // console.log('Image received from mobile!');
       try {
         const dataUrl = base64Data.startsWith('data:image')
           ? base64Data
@@ -355,12 +355,12 @@ const [selectedProduct, setSelectedProduct] = useState('Product Collections');
 
         // 1. Original Mobile file ki details log karein
         console.group("📱 Mobile Image Sync & Conversion");
-        console.log("Original Mobile File Type:", file.type);
-        console.log("Original Mobile File Size:", (file.size / 1024).toFixed(2), "KB");
+        // console.log("Original Mobile File Type:", file.type);
+        // console.log("Original Mobile File Size:", (file.size / 1024).toFixed(2), "KB");
         setIsAnalyzingRoom(true);
         const webpFile = await convertToWebP(file);
-        console.log("Converted Mobile File Type:", webpFile.type);
-        console.log("Converted Mobile File Size:", (webpFile.size / 1024).toFixed(2), "KB");
+        // console.log("Converted Mobile File Type:", webpFile.type);
+        // console.log("Converted Mobile File Size:", (webpFile.size / 1024).toFixed(2), "KB");
         console.groupEnd();
 
         let maskUrl = null;
@@ -469,18 +469,18 @@ const [selectedProduct, setSelectedProduct] = useState('Product Collections');
     if (!file) return;
 
     // 1. Original file ki details log karein
-    console.group("📸 Desktop Image Upload & Conversion");
-    console.log("Original File Name:", file.name);
-    console.log("Original File Type:", file.type);
-    console.log("Original File Size:", (file.size / 1024).toFixed(2), "KB");
+    // console.group("📸 Desktop Image Upload & Conversion");
+    // console.log("Original File Name:", file.name);
+    // console.log("Original File Type:", file.type);
+    // console.log("Original File Size:", (file.size / 1024).toFixed(2), "KB");
 
     setIsAnalyzingRoom(true);
     const webpFile = await convertToWebP(file);
     // 2. Converted WebP file ki details log karein
-    console.log("Converted File Type:", webpFile.type);
-    console.log("Converted File Size:", (webpFile.size / 1024).toFixed(2), "KB");
-    console.log("Size Reduction:", (((file.size - webpFile.size) / file.size) * 100).toFixed(2) + "%");
-    console.groupEnd();
+    // console.log("Converted File Type:", webpFile.type);
+    // console.log("Converted File Size:", (webpFile.size / 1024).toFixed(2), "KB");
+    // console.log("Size Reduction:", (((file.size - webpFile.size) / file.size) * 100).toFixed(2) + "%");
+    // console.groupEnd();
 
     let maskUrl = null;
     let supportedCollections = [];
@@ -494,10 +494,10 @@ const [selectedProduct, setSelectedProduct] = useState('Product Collections');
 
       // 3. Scene detection debug log
       console.group("🏷️ Scene Detection & Category Match");
-      console.log("RunPod Scene Output:", scene);
+      // console.log("RunPod Scene Output:", scene);
 
       const matchedIndustry = matchIndustryCategory(scene);
-      console.log("Matched Industry:", matchedIndustry || "❌ No match found");
+      // console.log("Matched Industry:", matchedIndustry || "❌ No match found");
 
       if (matchedIndustry) {
         // 👇 PEHLE: admin ke existing curated demo rooms se try karo
@@ -516,7 +516,7 @@ const [selectedProduct, setSelectedProduct] = useState('Product Collections');
           ));
         }
       }
-      console.log("Derived supportedCollections:", supportedCollections);
+      // console.log("Derived supportedCollections:", supportedCollections);
       console.groupEnd();
     } catch (err) {
       console.error('Floor mask generation failed, falling back to 2D pipeline:', err);
