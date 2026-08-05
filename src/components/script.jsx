@@ -114,7 +114,7 @@ import * as THREE from "three";
 
 // ── CONSTANTS & METRIC CONVERSIONS ──
 const NEAR = 0.01;
-const FAR = 350;
+const FAR = 100;
 
 // ── 1. BASE64 & SVG PATTERN GENERATORS (ASPECT-RATIO PRESERVED) ──
 
@@ -380,9 +380,6 @@ function configureCameraFromIntrinsics(
 
   const camera_height = cameraData.height_meters;
 
-  // console.log("left, right, top, bottom, NEAR, FAR : ", left, right, top, bottom, NEAR, FAR);
-  
-
   camera.position.set(0, camera_height, 0);
   camera.quaternion.identity();
   camera.scale.set(1, 1, 1);
@@ -516,9 +513,23 @@ export const initVisualizer = (container, predictionData = null) => {
 
   try {
     const scene = new THREE.Scene();
+
+    const prediction =
+      predictionData?.runpod?.output?.prediction ||
+      predictionData?.output?.prediction ||
+      predictionData;
+
+    const imageHeight = prediction.input.height;
+
+    const imageWidth = prediction.input.width;
+    const fy = prediction.camera.fy;
+
+    const verticalFov =
+      2 * Math.atan(imageHeight / (2 * fy)) * THREE.MathUtils.RAD2DEG;
+
     const camera = new THREE.PerspectiveCamera(
-      50,
-      container.clientWidth / container.clientHeight,
+      verticalFov,
+      imageHeight / imageWidth,
       NEAR,
       FAR,
     );
@@ -547,11 +558,6 @@ export const initVisualizer = (container, predictionData = null) => {
 
     let floorGeometry;
     let floorWidthMeters = 8.0;
-
-    const prediction =
-      predictionData?.runpod?.output?.prediction ||
-      predictionData?.output?.prediction ||
-      predictionData;
 
     const inputData = prediction?.images?.input || prediction?.input;
 
@@ -654,15 +660,18 @@ export const initVisualizer = (container, predictionData = null) => {
 
             // Visual multiplier (2.5x expansion) for realistic room depth scaling
             // const visualScale = 2.5;
-            const visualScale = 2;
+            const visualScale = 4;
             const repeatX = prediction?.camera
               ? 1 / (realWidthMeters * visualScale)
               : 12;
-            const repeatY = prediction?.camera ? 1 : 12;
+
+            const repeatY = prediction?.camera
+              ? 1 / (realHeightMeters * visualScale)
+              : 12;
 
             tex.repeat.set(repeatX, repeatY);
             tex.center.set(0.5, 0.5);
-            tex.rotation = ((angleInDegrees - 7.5) * Math.PI) / 180;
+            tex.rotation = (angleInDegrees * Math.PI) / 180;
 
             floorMaterial.map = tex;
             floorMaterial.needsUpdate = true;
@@ -747,7 +756,7 @@ export const initVisualizer = (container, predictionData = null) => {
 
                   // Visual multiplier (2.8x expansion) prevents vertical plank squeezing
                   // const visualScale = 2.8;
-                  const visualScale = 2;
+                  const visualScale = 4;
                   const repeatX = prediction?.camera
                     ? 1 / (blockWidthMeters * visualScale)
                     : 12;
@@ -792,15 +801,17 @@ export const initVisualizer = (container, predictionData = null) => {
 
                   // Visual multiplier (2.5x expansion) for 18" tiles
                   // const visualScale = 2.5;
-                  const visualScale = 1;
+                  const visualScale = 2;
                   const repeatX = prediction?.camera
                     ? 1 / (blockWidthMeters * visualScale)
                     : 8;
-                  const repeatY = prediction?.camera ? 1 : 8;
+                  const repeatY = prediction?.camera
+                    ? 1 / (blockHeightMeters * visualScale)
+                    : 8;
 
                   tex.repeat.set(repeatX, repeatY);
                   tex.center.set(0.5, 0.5);
-                  tex.rotation = ((angleInDegrees+90) * Math.PI) / 180;
+                  tex.rotation = (angleInDegrees * Math.PI) / 180;
 
                   floorMaterial.map = tex;
                   floorMaterial.needsUpdate = true;

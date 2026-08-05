@@ -1,7 +1,7 @@
 export const demoPredictions = {
   // Industrial Flooring - Office
-  
-  "6a4606084ca404204c794cae":  {
+
+  "6a4606084ca404204c794cae": {
     camera: {
       cx: 800,
       cy: 599.9999389648438,
@@ -17,11 +17,10 @@ export const demoPredictions = {
         normal: [-0.015559538536334691, -0.9850955249388406, -0.17130296992757144]
       }
     },
-    images: {
-      input: {
-        height: 1200,
-        width: 1600
-      }
+    images: {},
+    input: {
+      height: 1200,
+      width: 1600
     }
   },
 
@@ -55,7 +54,7 @@ export const demoPredictions = {
   },
 
   // School
- // 1. School Room
+  // 1. School Room
   "6a46243bac0c56bac243c30f": {
     camera: {
       cx: 800,
@@ -72,11 +71,10 @@ export const demoPredictions = {
         normal: [-0.015559538536334691, -0.9850955249388406, -0.17130296992757144]
       }
     },
-    images: {
-      input: {
-        height: 1200,
-        width: 1600
-      }
+    images: {},
+    input: {
+      height: 1200,
+      width: 1600
     }
   },
 
@@ -101,11 +99,10 @@ export const demoPredictions = {
         ]
       }
     },
-    images: {
-      input: {
-        height: 1200,
-        width: 1600
-      }
+    images: {},
+    input: {
+      height: 1200,
+      width: 1600
     }
   },
   //Supermarket
@@ -129,15 +126,14 @@ export const demoPredictions = {
         ]
       }
     },
-    images: {
-      input: {
-        height: 1200,
-        width: 1600
-      }
+    images: {},
+    input: {
+      height: 1200,
+      width: 1600
     }
   },
   // Supermarket
-  "6a462d6b12f464296f8a98e2":{
+  "6a462d6b12f464296f8a98e2": {
     camera: {
       cx: 800,
       cy: 599.9999389648438,
@@ -157,11 +153,10 @@ export const demoPredictions = {
         ]
       }
     },
-    images: {
-      input: {
-        height: 1200,
-        width: 1600
-      }
+    images: {},
+    input: {
+      height: 1200,
+      width: 1600
     }
   },
   //Hospital
@@ -185,11 +180,10 @@ export const demoPredictions = {
         ]
       }
     },
-    images: {
-      input: {
-        height: 1200,
-        width: 1600
-      }
+    images: {},
+    input: {
+      height: 1200,
+      width: 1600
     }
   },
   //Hotel and Hospitality
@@ -213,11 +207,10 @@ export const demoPredictions = {
         ]
       }
     },
-    images: {
-      input: {
-        height: 1200,
-        width: 1600
-      }
+    images: {},
+    input: {
+      height: 1200,
+      width: 1600
     }
   },
   //Prefab
@@ -241,14 +234,13 @@ export const demoPredictions = {
         ]
       }
     },
-    images: {
-      input: {
-        height: 1200,
-        width: 1600
-      }
+    images: {},
+    input: {
+      height: 1200,
+      width: 1600
     }
   },
-  "6a4622fad0ce9cfc46e4093b":{
+  "6a4622fad0ce9cfc46e4093b": {
     camera: {
       cx: 800,
       cy: 599.9999389648438,
@@ -268,11 +260,10 @@ export const demoPredictions = {
         ]
       }
     },
-    images: {
-      input: {
-        height: 1200,
-        width: 1600
-      }
+    images: {},
+    input: {
+      height: 1200,
+      width: 1600
     }
   }
 };
