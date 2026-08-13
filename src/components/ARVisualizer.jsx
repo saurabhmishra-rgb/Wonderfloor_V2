@@ -28,12 +28,16 @@ const CompareView = ({
   activeSide,
   setActiveSide,
   onClose,
-  onOpenSidebar
+  onOpenSidebar,
+  onRotate,
+  onReset,
+  leftRotation = 0,
+  rightRotation = 0
 }) => {
   const [sliderPosition, setSliderPosition] = useState(50);
   const [isDragging, setIsDragging] = useState(false);
   const containerRef = useRef(null);
-
+const currentRotation = activeSide === 'left' ? leftRotation : rightRotation;
   const handleMove = (clientX) => {
     if (!isDragging || !containerRef.current) return;
     const rect = containerRef.current.getBoundingClientRect();
@@ -128,9 +132,21 @@ const CompareView = ({
 
       {/* Footer Controls for Compare Mode */}
       <div className="bg-white border-t border-gray-200 p-3 md:p-4 shrink-0 flex justify-center items-center gap-2 md:gap-4 z-50 shadow-[0_-4px_10px_rgba(0,0,0,0.03)]">
+        <div className="flex gap-2 w-1/3 -ml-[20%] md:-ml-[15%] justify-start">
+          <button onClick={onRotate} className="flex -ml-[10%] items-center gap-1.5 px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 2v6h-6"></path><path d="M3 12a9 9 0 0 1 15-6.7L21 8"></path></svg>
+            <span className="hidden lg:inline">Rotate</span>
+            <span className="font-bold ml-1">{currentRotation}°</span>
+          </button>
+          <button onClick={onReset} className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><polyline points="3 3 3 8 8 8"></polyline></svg>
+            <span className="hidden lg:inline">Reset</span>
+          </button>
+        </div>
+
         <button
           onClick={() => setActiveSide('left')}
-          className={`flex-1 max-w-[200px] flex items-center p-2 border-2 rounded-lg transition-all cursor-pointer ${activeSide === 'left' ? 'border-[#0b5e5e] bg-[#0b5e5e]/5' : 'border-gray-200 hover:border-gray-300'}`}
+          className={`flex-1 -ml-[19%] max-w-[200px] flex items-center p-2 border-2 rounded-lg transition-all cursor-pointer ${activeSide === 'left' ? 'border-[#0b5e5e] bg-[#0b5e5e]/5' : 'border-gray-200 hover:border-gray-300'}`}
         >
           <img src={leftProduct?.img} className="w-8 h-8 md:w-10 md:h-10 rounded object-cover border border-gray-200 shrink-0 bg-gray-100" alt="Left" />
           <div className="ml-2 md:ml-3 text-left overflow-hidden">
@@ -149,6 +165,7 @@ const CompareView = ({
             <span className="block text-xs md:text-sm font-bold text-gray-900 truncate">{rightProduct?.name || 'Select Floor'}</span>
           </div>
         </button>
+
       </div>
     </div>
   );
@@ -301,39 +318,39 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
     setIsDownloadMenuOpen(true);
   };
 
- const handleRequestDownload = (downloadFn) => {
-  setIsDownloadMenuOpen(false);
+  const handleRequestDownload = (downloadFn) => {
+    setIsDownloadMenuOpen(false);
 
-  // ✅ Check: is browser se pehle kabhi lead form fill hua hai?
-  const savedLead = localStorage.getItem('wf_leadInfo');
+    // ✅ Check: is browser se pehle kabhi lead form fill hua hai?
+    const savedLead = localStorage.getItem('wf_leadInfo');
 
-  if (savedLead) {
-    // Already captured — background mein silently backend ko update kar do (downloadCount++)
-    try {
-      const { name, phone } = JSON.parse(savedLead);
-      fetch(`${NODE_BACKEND_URL}/leads`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name,
-          phone,
-          productName: selectedProduct?.name,
-          productSku: selectedProduct?.sku,
-          roomId: initialImage?.id || 'default',
-        }),
-      }).catch(() => {}); // fail silently, download ko block mat karo
-    } catch (e) {
-      console.error('Repeat visit log failed:', e);
+    if (savedLead) {
+      // Already captured — background mein silently backend ko update kar do (downloadCount++)
+      try {
+        const { name, phone } = JSON.parse(savedLead);
+        fetch(`${NODE_BACKEND_URL}/leads`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name,
+            phone,
+            productName: selectedProduct?.name,
+            productSku: selectedProduct?.sku,
+            roomId: initialImage?.id || 'default',
+          }),
+        }).catch(() => { }); // fail silently, download ko block mat karo
+      } catch (e) {
+        console.error('Repeat visit log failed:', e);
+      }
+
+      downloadFn(); // seedha download, form skip
+      return;
     }
 
-    downloadFn(); // seedha download, form skip
-    return;
-  }
-
-  // Naya user — form dikhao
-  setPendingDownloadFn(() => downloadFn);
-  setIsLeadModalOpen(true);
-};
+    // Naya user — form dikhao
+    setPendingDownloadFn(() => downloadFn);
+    setIsLeadModalOpen(true);
+  };
   const proceedToDownload = async () => {
     setIsLeadModalOpen(false);
 
@@ -353,48 +370,48 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
     setIsDownloadMenuOpen(true);
   };
 
-const handleLeadFormSubmit = async (formData) => {
-  setIsLeadModalOpen(false);
+  const handleLeadFormSubmit = async (formData) => {
+    setIsLeadModalOpen(false);
 
-  try {
-    const response = await fetch(`${NODE_BACKEND_URL}/leads`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        // ✅ FIX: DownloadLeadModal ke field names ko backend schema ke names se map karo
-        name: formData.fullName,
-        phone: formData.contactNo,
-        email: formData.email,
-        message: formData.message,
-        productName: selectedProduct?.name,
-        productSku: selectedProduct?.sku,
-        roomId: initialImage?.id || 'default',
-      }),
-    });
+    try {
+      const response = await fetch(`${NODE_BACKEND_URL}/leads`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          // ✅ FIX: DownloadLeadModal ke field names ko backend schema ke names se map karo
+          name: formData.fullName,
+          phone: formData.contactNo,
+          email: formData.email,
+          message: formData.message,
+          productName: selectedProduct?.name,
+          productSku: selectedProduct?.sku,
+          roomId: initialImage?.id || 'default',
+        }),
+      });
 
-    const data = await response.json();
-    console.log('Lead save response:', data);
+      const data = await response.json();
+      console.log('Lead save response:', data);
 
-    if (response.ok && data.success) {
-      localStorage.setItem('wf_leadInfo', JSON.stringify({
-        name: formData.fullName,
-        phone: formData.contactNo,
-        submittedAt: new Date().toISOString(),
-      }));
-    } else {
-      console.error('Lead save failed on backend:', data.error);
+      if (response.ok && data.success) {
+        localStorage.setItem('wf_leadInfo', JSON.stringify({
+          name: formData.fullName,
+          phone: formData.contactNo,
+          submittedAt: new Date().toISOString(),
+        }));
+      } else {
+        console.error('Lead save failed on backend:', data.error);
+      }
+    } catch (err) {
+      console.error('Lead save network error:', err);
     }
-  } catch (err) {
-    console.error('Lead save network error:', err);
-  }
 
-  if (pendingDownloadFn) {
-    await pendingDownloadFn();
-    setPendingDownloadFn(null);
-  } else {
-    await proceedToDownload();
-  }
-};
+    if (pendingDownloadFn) {
+      await pendingDownloadFn();
+      setPendingDownloadFn(null);
+    } else {
+      await proceedToDownload();
+    }
+  };
   const { productId } = useParams();
   const navigate = useNavigate();
 
@@ -606,6 +623,9 @@ const handleLeadFormSubmit = async (formData) => {
   const [compareRightImage, setCompareRightImage] = useState(null);
   const [activeCompareSide, setActiveCompareSide] = useState('right'); // 'left' or 'right'
 
+  const [compareLeftRotation, setCompareLeftRotation] = useState(0);
+  const [compareRightRotation, setCompareRightRotation] = useState(0);
+
   //  FOR FAVOURITE VIEW
   const [isFavoritesViewOpen, setIsFavoritesViewOpen] = useState(false);
   const [zoomScale, setZoomScale] = useState(1);
@@ -802,17 +822,17 @@ const handleLeadFormSubmit = async (formData) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoadingDbProducts, combinedProducts, activeNavCategory, hasRoomFilter, roomSupportedCollections, activeBaseImage]);
 
-  //  TEMP DEBUG — issue confirm hone ke baad hata dena
+  // 🔍 TEMP DEBUG — issue confirm hone ke baad hata dena
   useEffect(() => {
     if (!isLoadingDbProducts) {
-      console.log('roomSupportedCollections:', roomSupportedCollections);
-      console.log('Available accordionCategories:',
-        [...new Set(combinedProducts.map(p => `"${p.accordionCategory}"`))]
-      );
+      // console.log('roomSupportedCollections:', roomSupportedCollections);
+      // console.log('Available accordionCategories:',
+      //   [...new Set(combinedProducts.map(p => `"${p.accordionCategory}"`))]
+      // );
     }
   }, [isLoadingDbProducts, roomSupportedCollections, combinedProducts]);
 
-  //  NEW: Jab DB products load ho jaayen, productId (URL SKU) ko re-verify/correct karo
+  // ✅ NEW: Jab DB products load ho jaayen, productId (URL SKU) ko re-verify/correct karo
   useEffect(() => {
     if (isLoadingDbProducts) return;
     if (!productId) return;
@@ -1112,6 +1132,66 @@ const handleLeadFormSubmit = async (formData) => {
     } catch (e) {
       console.error("Static composite failed:", e);
       return null;
+    }
+  };
+  // ── COMPARE MODE ROTATE HANDLER ──
+  const handleCompareRotate = async () => {
+    const isLeft = activeCompareSide === 'left';
+    const product = isLeft ? compareLeftProduct : compareRightProduct;
+
+    // Prevent rotation if it's the original base floor
+    if (!product || product.id === 'original_floor') return;
+
+    // Increment angle by 15 degrees
+    const nextAngle = isLeft ? (compareLeftRotation + 15) % 180 : (compareRightRotation + 15) % 180;
+
+    if (isLeft) setCompareLeftRotation(nextAngle);
+    else setCompareRightRotation(nextAngle);
+
+    try {
+      if (activeBaseImage?.maskUrl && visualizerInstance.current) {
+        // Generate new 3D texture
+        const compositeDataUrl = await generateCompositeImage(product, nextAngle);
+        if (compositeDataUrl) {
+          isLeft ? setCompareLeftImage(compositeDataUrl) : setCompareRightImage(compositeDataUrl);
+        }
+      } else if (activeBaseImage?.rawFile) {
+        // Fallback for 2D rooms via Python Backend
+        const tileBlob = await getRotatedTileBlob(product.img, nextAngle);
+        const formData = new FormData();
+        formData.append('roomImage', activeBaseImage.rawFile);
+        formData.append('floorImage', tileBlob, `${product.name}_rotated.jpg`);
+        formData.append('instructions', `The flooring tiles have physical dimensions of ${product.size}. Please scale realistically.`);
+
+        const response = await fetch(`${PYTHON_BACKEND_URL}/api/replace-floor`, { method: 'POST', body: formData });
+        const data = await response.json();
+        if (response.ok && data.success) {
+          isLeft ? setCompareLeftImage(data.imageDataUrl) : setCompareRightImage(data.imageDataUrl);
+        }
+      }
+    } catch (err) {
+      setErrorMsg(`Rotate Error: ${err.message}`);
+    }
+  };
+
+  // ── COMPARE MODE RESET HANDLER ──
+  const handleCompareReset = () => {
+    const baseRoomImage = activeBaseImage?.previewUrl || currentSrc;
+    const originalFloorPlaceholder = {
+      id: 'original_floor',
+      name: 'Original Floor',
+      img: baseRoomImage, // Dummy thumbnail
+      size: 'Base'
+    };
+
+    if (activeCompareSide === 'left') {
+      setCompareLeftProduct(originalFloorPlaceholder);
+      setCompareLeftImage(baseRoomImage);
+      setCompareLeftRotation(0);
+    } else {
+      setCompareRightProduct(originalFloorPlaceholder);
+      setCompareRightImage(baseRoomImage);
+      setCompareRightRotation(0);
     }
   };
 
@@ -2407,6 +2487,10 @@ const handleLeadFormSubmit = async (formData) => {
               setActiveSide={setActiveCompareSide}
               onClose={() => setIsCompareMode(false)}
               onOpenSidebar={() => setIsSidebarOpen(true)}
+              onRotate={handleCompareRotate}
+              onReset={handleCompareReset}
+              leftRotation={compareLeftRotation}
+              rightRotation={compareRightRotation}
             />
             {isProcessing && <AttractiveLoader productName={activeCompareSide === 'left' ? compareLeftProduct?.name : compareRightProduct?.name} />}
           </>
@@ -2615,7 +2699,7 @@ const handleLeadFormSubmit = async (formData) => {
 
             {/* --- MAIN 4/3 CONTAINER --- */}
             <div
-              className="relative z-10 bg-white shadow-[0_20px_50px_rgba(0,0,0,0.5)] rounded-md overflow-hidden ring-1 ring-black/10"
+              className="relative z-10 bg-white shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden ring-1 ring-black/10"
               style={{
                 aspectRatio: '4/3',
                 height: '100%',
@@ -2663,10 +2747,10 @@ const handleLeadFormSubmit = async (formData) => {
             </div>
 
             {/* Powered-by badge */}
-            <div className="absolute bottom-3 right-3 md:bottom-5 md:right-5 bg-gradient-to-r from-red-600/80 to-rose-500/80 backdrop-blur-xl border border-white/20 px-5 md:px-4 py-1.5 md:py-2 rounded-full z-30 pointer-events-none flex items-center gap-1.5 shadow-lg shadow-red-500/40 ring-1 ring-inset ring-white/10">
+            {/* <div className="absolute bottom-3 right-3 md:bottom-5 md:right-5 bg-gradient-to-r from-red-600/80 to-rose-500/80 backdrop-blur-xl border border-white/20 px-5 md:px-4 py-1.5 md:py-2 rounded-full z-30 pointer-events-none flex items-center gap-1.5 shadow-lg shadow-red-500/40 ring-1 ring-inset ring-white/10">
               <span className="text-[10px] md:text-[11px] font-normal text-gray-200">Powered by</span>
               <span className="text-[11px] md:text-[12px] font-bold text-white tracking-wide">WonderFloor</span>
-            </div>
+            </div> */}
           </div>
 
           {/* ── FOOTER BAR ── */}
@@ -2712,6 +2796,7 @@ const handleLeadFormSubmit = async (formData) => {
                     >
                       <span className="hidden sm:inline">Rotate</span>
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="md:w-4 md:h-4"><path d="M21 2v6h-6"></path><path d="M3 12a9 9 0 0 1 15-6.7L21 8"></path><path d="M3 22v-6h6"></path><path d="M21 12a9 9 0 0 1-15 6.7L3 16"></path></svg>
+
                       {floorRotation !== 0 && (
                         <span className="ml-1 px-1.5 py-0.5 text-[10px] md:text-xs font-bold text-[#0b5e5e] bg-[#0b5e5e]/10 rounded-full group-hover:bg-[#0b5e5e]/20 transition-colors">
                           {floorRotation}&deg;
@@ -2914,9 +2999,9 @@ const handleLeadFormSubmit = async (formData) => {
             </div>
             <div className="p-4 sm:p-5 border-t border-gray-200 bg-gray-50 flex flex-col sm:flex-row justify-between items-center gap-4 shrink-0">
               <a
-                href={detailsProduct.url}
-                href={detailsProduct.productLink || '#'}
+                href={detailsProduct.productLink || detailsProduct.url || '#'}
                 target="_blank"
+               
                 rel="noopener noreferrer"
                 // Also disable the link visually when there's no URL
                 className={`flex items-center gap-2 text-sm font-medium transition-colors w-full sm:w-auto justify-center sm:justify-start
