@@ -132,6 +132,7 @@ async function fetchBase64(url) {
 async function generateHerringboneDataURL(
   tex1Url,
   tex2Url,
+  angleInDegrees = 0,
   plankW_mm = 101.6,
   plankL_mm = 457.2,
 ) {
@@ -207,13 +208,17 @@ async function generateHerringboneDataURL(
 // Apni Three.js (script.jsx) me is function ko replace karein:
 async function generateStaggeredDataURL(
   texUrl,
-  staggerRatio,
-  plankW_mm = 152.4,
-  plankL_mm_Ignored = 914.4,
+  // staggerRatio,
+  angleInDegrees = 0,
+  plankW_mm = 750,
+  plankL_mm = 3000,
 ) {
   const base64 = await fetchBase64(texUrl);
   // const size = 1024;
   const size = 914.4;
+
+  console.log("Plank width : ", plankW_mm);
+  console.log("Plank length : ", plankL_mm);
 
   return new Promise((resolve, reject) => {
     const img = new Image();
@@ -221,16 +226,19 @@ async function generateStaggeredDataURL(
       // ✅ MAGIC FIX: Dynamic Aspect Ratio Calculation
       // Image ka asli size check karke length decide hogi, taaki stretch na ho!
       let plankW = plankW_mm;
-      let plankL = plankL_mm_Ignored;
+      let plankL = plankL_mm;
 
-      if (img.width > img.height) {
-        // Agar image chaudi (horizontal) hai
-        plankL = plankW_mm;
-        plankW = plankL * (img.width / img.height);
-      } else {
-        // Agar image lambi (vertical normal plank) hai
-        plankL = plankW * (img.height / img.width);
-      }
+      console.log("Plank width2 : ", plankW);
+      console.log("Plank length2 : ", plankL);
+
+      // if (img.width > img.height) {
+      //   // Agar image chaudi (horizontal) hai
+      //   plankL = plankW_mm;
+      //   plankW = plankL * (img.width / img.height);
+      // } else {
+      //   // Agar image lambi (vertical normal plank) hai
+      //   plankL = plankW * (img.height / img.width);
+      // }
 
       const cols = Math.ceil(size / plankW) + 1;
       const rows = Math.ceil(size / plankL) + 2;
@@ -244,13 +252,13 @@ async function generateStaggeredDataURL(
 
       for (let i = 0; i < cols; i++) {
         let x = i * plankW;
-        let shiftStep = Math.round(1 / staggerRatio);
-        let yOffset = -(plankL * staggerRatio * (i % shiftStep));
+        // let shiftStep = Math.round(1 / staggerRatio);
+        // let yOffset = -(plankL * staggerRatio * (i % shiftStep));
 
-        for (let j = -1; j <= rows; j++) {
-          let y = j * plankL + yOffset;
+        for (let j = 0; j < rows; j++) {
+          let y = j * plankL;
           // + 0.5 for micro-overlap (Grout lines hatane ke liye)
-          svg += `<rect x="${x}" y="${y}" width="${plankW + 0.5}" height="${plankL + 0.5}" fill="url(#tex)"/>`;
+          svg += `<rect x="${x}" y="${y}" width="${plankW}" height="${plankL}" fill="url(#tex)"/>`;
           // svg += `<rect x="${x}" y="${y}" width="${plankW}" height="${plankL}" fill="url(#tex)"/>`;
         }
       }
@@ -287,34 +295,55 @@ async function generateStaggeredDataURL(
 async function generateCheckerboardDataURL(
   tex1Url,
   tex2Url,
-  singleTileMeters = 0.4572,
+  angleInDegrees,
+  tileW_mm = 457.2,
+  tileL_mm = 457.2,
 ) {
   const [base64_1, base64_2] = await Promise.all([
     fetchBase64(tex1Url),
     fetchBase64(tex2Url),
   ]);
-  // const size = 1024;
-  const size = 914.4;
-  const tileSize = size / 4;
   const groutColor = "#020202";
+  const safeTileW_mm =
+    Number.isFinite(Number(tileW_mm)) && Number(tileW_mm) > 0
+      ? Number(tileW_mm)
+      : 457.2;
+  const safeTileL_mm =
+    Number.isFinite(Number(tileL_mm)) && Number(tileL_mm) > 0
+      ? Number(tileL_mm)
+      : 457.2;
+  const tileW_m = safeTileW_mm / 1000;
+  const tileL_m = safeTileL_mm / 1000;
+  const baseTilePx = 512;
+  const tileAspect = safeTileW_mm / safeTileL_mm;
+  const tileW_px =
+    tileAspect >= 1
+      ? baseTilePx
+      : Math.max(64, Math.round(baseTilePx * tileAspect));
+  const tileL_px =
+    tileAspect >= 1
+      ? Math.max(64, Math.round(baseTilePx / tileAspect))
+      : baseTilePx;
+  const blockW_px = tileW_px * 2;
+  const blockL_px = tileL_px * 2;
 
-  let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}">
+  let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${blockW_px}" height="${blockL_px}">
     <defs>
-      <pattern id="ctex1" patternUnits="userSpaceOnUse" width="${tileSize}" height="${tileSize}">
-        <image href="${base64_1}" x="0" y="0" width="${tileSize}" height="${tileSize}" preserveAspectRatio="xMidYMid slice"/>
+      <pattern id="ctex1" patternUnits="userSpaceOnUse" width="${tileW_px}" height="${tileL_px}">
+        <image href="${base64_1}" x="0" y="0" width="${tileW_px}" height="${tileL_px}" preserveAspectRatio="xMidYMid slice"/>
       </pattern>
-      <pattern id="ctex2" patternUnits="userSpaceOnUse" width="${tileSize}" height="${tileSize}">
-        <image href="${base64_2}" x="0" y="0" width="${tileSize}" height="${tileSize}" preserveAspectRatio="xMidYMid slice"/>
+      <pattern id="ctex2" patternUnits="userSpaceOnUse" width="${tileW_px}" height="${tileL_px}">
+        <image href="${base64_2}" x="0" y="0" width="${tileW_px}" height="${tileL_px}" preserveAspectRatio="xMidYMid slice"/>
       </pattern>
     </defs>
-    <rect width="${size}" height="${size}" fill="${groutColor}"/>`;
+    <rect width="${blockW_px}" height="${blockL_px}" fill="${groutColor}"/>`;
 
-  for (let i = 0; i < 4; i++) {
-    for (let j = 0; j < 4; j++) {
-      const x = i * tileSize;
-      const y = j * tileSize;
+  for (let i = 0; i < 2; i++) {
+    for (let j = 0; j < 2; j++) {
+      const x = i * tileW_px;
+      const y = j * tileL_px;
       const fillPattern = (i + j) % 2 === 0 ? "url(#ctex1)" : "url(#ctex2)";
-      svg += `<rect x="${x}" y="${y}" width="${tileSize}" height="${tileSize}" fill="${fillPattern}"/>`;
+      svg += `<rect x="${x}" y="${y}" width="${tileW_px}" height="${tileL_px}" fill="${fillPattern}"/>`;
     }
   }
   svg += `</svg>`;
@@ -326,19 +355,19 @@ async function generateCheckerboardDataURL(
 
     img.onload = () => {
       const canvas = document.createElement("canvas");
-      canvas.width = size;
-      canvas.height = size;
+      canvas.width = blockW_px;
+      canvas.height = blockL_px;
       const ctx = canvas.getContext("2d");
       ctx.imageSmoothingEnabled = true;
       ctx.imageSmoothingQuality = "high";
       ctx.drawImage(img, 0, 0);
       URL.revokeObjectURL(url);
 
-      // ✅ FIX: Resolve Object & pass accurate block dimensions based on 4x4 grid
+      // Resolve real dimensions for the 2x2 checker block used by RepeatWrapping.
       resolve({
         dataUrl: canvas.toDataURL("image/jpeg", 1.0),
-        blockWidthMeters: singleTileMeters * 4,
-        blockHeightMeters: singleTileMeters * 4,
+        blockWidthMeters: tileW_m * 8,
+        blockHeightMeters: tileL_m * 8,
       });
     };
     img.onerror = reject;
@@ -547,12 +576,25 @@ export const initVisualizer = (container, predictionData = null) => {
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     container.appendChild(renderer.domElement);
 
-    const ambient = new THREE.HemisphereLight(0xffffff, 0xb7ad9f, 1.55);
-    scene.add(ambient);
+    // const ambient = new THREE.HemisphereLight(0xffffff, 0xffffff, 1.55);
+    // scene.add(ambient);
 
-    const keyLight = new THREE.DirectionalLight(0xffffff, 0.5);
-    keyLight.position.set(-3.5, 6, 2.5);
+    // const keyLight = new THREE.DirectionalLight(0xffffff, 0.5);
+    // keyLight.position.set(0, 6, 0);
+    // scene.add(keyLight);
+
+    const hemisphereLight = new THREE.HemisphereLight(0xffffff, 0x808080, 1.55);
+    scene.add(hemisphereLight);
+
+    const keyLight = new THREE.DirectionalLight(0xffffff, 0.85);
+    keyLight.position.set(-3, 5, 4);
     scene.add(keyLight);
+
+    const fillLight = new THREE.DirectionalLight(0xffffff, 0.18);
+    fillLight.position.set(3, 2, 2);
+    scene.add(fillLight);
+
+    renderer.toneMappingExposure = 0.92;
 
     const loader = new THREE.TextureLoader();
 
@@ -580,11 +622,11 @@ export const initVisualizer = (container, predictionData = null) => {
     const floorMaterial = new THREE.MeshPhysicalMaterial({
       side: THREE.DoubleSide,
       transparent: true,
-      roughness: 0.08,
+      roughness: 0.65,
       metalness: 0.0,
-      clearcoat: 1,
-      clearcoatRoughness: 0.03,
-      reflectivity: 0.5,
+      clearcoat: 0.08,
+      clearcoatRoughness: 0.55,
+      reflectivity: 0.08,
     });
 
     const floorMesh = new THREE.Mesh(floorGeometry, floorMaterial);
@@ -631,9 +673,13 @@ export const initVisualizer = (container, predictionData = null) => {
     // 🎯 1. Solid / Standard Single Texture Mapper (Fixed Plank & Tile Scaling)
     const updateTexture = (
       textureUrl,
-      angleInDegrees = 0,
-      tileSizeMeters = 0.4572,
+      angleInDegrees,
+      // tileSizeMeters = 0.4572,
+      tileWidth,
+      tileLength,
     ) => {
+      console.log("update texture is calling");
+
       return new Promise((resolve) => {
         loader.load(
           textureUrl,
@@ -647,16 +693,16 @@ export const initVisualizer = (container, predictionData = null) => {
                 ? tex.image.width / tex.image.height
                 : 1.0;
 
-            let realWidthMeters = tileSizeMeters;
-            let realHeightMeters = tileSizeMeters;
+            let realWidthMeters = tileWidth / 1000;
+            let realHeightMeters = tileLength / 1000;
 
-            if (imgAspect > 1.0) {
-              realWidthMeters = tileSizeMeters * imgAspect;
-              realHeightMeters = tileSizeMeters;
-            } else if (imgAspect < 1.0) {
-              realWidthMeters = tileSizeMeters;
-              realHeightMeters = tileSizeMeters / imgAspect;
-            }
+            // if (imgAspect > 1.0) {
+            //   realWidthMeters = tileWidth * imgAspect;
+            //   realHeightMeters = tileLength;
+            // } else if (imgAspect < 1.0) {
+            //   realWidthMeters = tileWidth;
+            //   realHeightMeters = tileLength / imgAspect;
+            // }
 
             // Visual multiplier (2.5x expansion) for realistic room depth scaling
             // const visualScale = 2.5;
@@ -689,10 +735,18 @@ export const initVisualizer = (container, predictionData = null) => {
       tex1Url,
       tex2Url,
       angleInDegrees = 0,
-      plankW_mm = 101.6,
-      plankL_mm = 457.2,
+      plankW_mm,
+      plankL_mm,
     ) => {
-      return generateHerringboneDataURL(tex1Url, tex2Url, plankW_mm, plankL_mm)
+      console.log("updateHerringboneTexture is calling");
+
+      return generateHerringboneDataURL(
+        tex1Url,
+        tex2Url,
+        angleInDegrees,
+        plankW_mm,
+        plankL_mm,
+      )
         .then(
           ({ dataUrl, blockWidthMeters, blockHeightMeters }) =>
             new Promise((resolve) => {
@@ -705,7 +759,7 @@ export const initVisualizer = (container, predictionData = null) => {
 
                   // Visual multiplier (3.2x expansion) fixes tiny chevron bug
                   // const visualScale = 3.2;
-                  const visualScale = 1;
+                  const visualScale = 4;
                   const repeatX = prediction?.camera
                     ? 1 / (blockWidthMeters * visualScale)
                     : 10;
@@ -733,14 +787,17 @@ export const initVisualizer = (container, predictionData = null) => {
     // 🎯 3. Accurate Staggered Planks Mapper (152.4mm x 914.4mm)
     const updateStaggeredTexture = (
       texUrl,
-      staggerRatio = 0.333,
-      angleInDegrees = 0,
-      plankW_mm = 914.4,
-      plankL_mm = 914.4,
+      // staggerRatio = 0,
+      angleInDegrees,
+      plankW_mm,
+      plankL_mm,
     ) => {
+      console.log("updateStaggeredTexture is calling");
+
       return generateStaggeredDataURL(
         texUrl,
-        staggerRatio,
+        // staggerRatio,
+        angleInDegrees,
         plankW_mm,
         plankL_mm,
       )
@@ -767,6 +824,9 @@ export const initVisualizer = (container, predictionData = null) => {
                   tex.repeat.set(repeatX, repeatY);
                   tex.center.set(0.5, 0.5);
                   tex.rotation = (angleInDegrees * Math.PI) / 180;
+                  console.log("angleInDegrees: ", angleInDegrees);
+
+                  console.log("tex rotation: ", tex.rotation);
 
                   floorMaterial.map = tex;
                   floorMaterial.needsUpdate = true;
@@ -786,9 +846,18 @@ export const initVisualizer = (container, predictionData = null) => {
       tex1Url,
       tex2Url,
       angleInDegrees = 0,
-      singleTileMeters = 0.4572,
+      tileW,
+      tileL,
     ) => {
-      return generateCheckerboardDataURL(tex1Url, tex2Url, singleTileMeters)
+      console.log("updateCheckerboardTexture is calling");
+
+      return generateCheckerboardDataURL(
+        tex1Url,
+        tex2Url,
+        angleInDegrees,
+        tileW,
+        tileL,
+      )
         .then(
           ({ dataUrl, blockWidthMeters, blockHeightMeters }) =>
             new Promise((resolve) => {
@@ -801,7 +870,7 @@ export const initVisualizer = (container, predictionData = null) => {
 
                   // Visual multiplier (2.5x expansion) for 18" tiles
                   // const visualScale = 2.5;
-                  const visualScale = 2;
+                  const visualScale = 1;
                   const repeatX = prediction?.camera
                     ? 1 / (blockWidthMeters * visualScale)
                     : 8;
@@ -830,9 +899,12 @@ export const initVisualizer = (container, predictionData = null) => {
     const updateMonzaSolidTexture = (
       textureUrl,
       angleInDegrees = 0,
-      tileSizeMeters = 0.4572,
+      tileW,
+      tileL,
     ) => {
-      return updateTexture(textureUrl, angleInDegrees, tileSizeMeters);
+      console.log("updateMonzaSolidTexture is calling");
+
+      return updateTexture(textureUrl, angleInDegrees, tileW, tileL);
     };
 
     return {
@@ -861,3 +933,109 @@ export const initVisualizer = (container, predictionData = null) => {
     return null;
   }
 };
+
+function calculateFloorTextureAngle(prediction) {
+  const cameraData = prediction.camera;
+  const floorData = prediction.floor;
+  const plane = floorData?.plane;
+  const polygon = floorData?.visible_polygon_pixels;
+
+  if (!cameraData || !plane || !polygon?.length) {
+    return 0;
+  }
+
+  // OpenCV plane normal
+  const cvNormal = new THREE.Vector3(...plane.normal).normalize();
+
+  const planeDistance = Number.isFinite(plane.distance)
+    ? plane.distance
+    : cameraData.height_meters;
+
+  // Same conversion you already use
+  const floorNormal = new THREE.Vector3(
+    cvNormal.x,
+    -cvNormal.y,
+    -cvNormal.z,
+  ).normalize();
+
+  // SAME floor axes as buildCalibratedFloorGeometry()
+  const widthAxis = new THREE.Vector3(1, 0, 0)
+    .projectOnPlane(floorNormal)
+    .normalize();
+
+  const depthAxis = new THREE.Vector3()
+    .crossVectors(floorNormal, widthAxis)
+    .normalize();
+
+  const points = [];
+
+  // -----------------------------------------
+  // Image polygon -> real 3D floor points
+  // -----------------------------------------
+  for (const [u, v] of polygon) {
+    const p = intersectImagePixelWithFloorPlane(
+      u,
+      v,
+      cameraData,
+      cvNormal,
+      planeDistance,
+    );
+
+    if (!p) continue;
+
+    points.push({
+      w: p.dot(widthAxis),
+      d: p.dot(depthAxis),
+    });
+  }
+
+  if (points.length < 3) {
+    return 0;
+  }
+
+  // -----------------------------------------
+  // Mean
+  // -----------------------------------------
+  let meanW = 0;
+  let meanD = 0;
+
+  for (const p of points) {
+    meanW += p.w;
+    meanD += p.d;
+  }
+
+  meanW /= points.length;
+  meanD /= points.length;
+
+  // -----------------------------------------
+  // Covariance
+  // -----------------------------------------
+  let Sww = 0;
+  let Sdd = 0;
+  let Swd = 0;
+
+  for (const p of points) {
+    const dw = p.w - meanW;
+    const dd = p.d - meanD;
+
+    Sww += dw * dw;
+    Sdd += dd * dd;
+    Swd += dw * dd;
+  }
+
+  Sww /= points.length;
+  Sdd /= points.length;
+  Swd /= points.length;
+
+  // -----------------------------------------
+  // THE FORMULA
+  // -----------------------------------------
+  const floorAngleRad = 0.5 * Math.atan2(2 * Swd, Sww - Sdd);
+
+  const floorAngleDeg = THREE.MathUtils.radToDeg(floorAngleRad);
+
+  // Your tex.rotation convention
+  let textureAngleDeg = -floorAngleDeg;
+
+  return textureAngleDeg;
+}
