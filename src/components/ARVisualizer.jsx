@@ -19,6 +19,53 @@ const NODE_BACKEND_URL = 'https://wonderfloor-dashboard.vercel.app'
 // const BACKEND_URL = 'https://wonderfloor-backend-1.onrender.com';
 const PYTHON_BACKEND_URL = 'https://python-floor-backend.onrender.com';
 
+let plankW_mm = 750;
+let plankL_mm = 2250;
+let updateTextureW_mm = 900;
+let updateTextureL_mm = 900;
+let updateHerringboneTextureW_mm = 101.3;
+let updateHerringboneTextureL_mm = 457.2;
+let updateCheckerboardTextureW = 457.2;
+let updateCheckerboardTextureL = 457.2;
+
+// here you can set the default angle of the floor
+let defaultFloorRotation = (0)%180;
+
+const DEFAULT_CHECKERBOARD_TILE_SIZE_MM = { 
+  width: 457.2,
+  length: 457.2,
+};
+
+const unitToMm = (value, unit = 'mm') => {
+  const normalizedUnit = String(unit || 'mm').toLowerCase();
+  if (normalizedUnit.startsWith('cm')) return value * 10;
+  if (normalizedUnit === 'm' || normalizedUnit.startsWith('mtr') || normalizedUnit.startsWith('meter')) return value * 1000;
+  if (normalizedUnit.startsWith('in') || normalizedUnit === '"') return value * 25.4;
+  if (normalizedUnit.startsWith('ft') || normalizedUnit === "'") return value * 304.8;
+  return value;
+};
+
+const parseTileSizeFromProduct = (product, fallback = DEFAULT_CHECKERBOARD_TILE_SIZE_MM) => {
+  const directWidth = Number(product?.tileWidthMm ?? product?.tileWidthMM ?? product?.widthMm ?? product?.widthMM);
+  const directLength = Number(product?.tileLengthMm ?? product?.tileLengthMM ?? product?.lengthMm ?? product?.lengthMM);
+
+  if (Number.isFinite(directWidth) && Number.isFinite(directLength) && directWidth > 0 && directLength > 0) {
+    return { width: directWidth, length: directLength };
+  }
+
+  const sizeText = String(product?.size || '');
+  const matches = [...sizeText.matchAll(/(\d+(?:\.\d+)?)\s*(mm|cm|mtr|meter|meters|m|inch|inches|in|ft|feet|')?/gi)];
+  if (matches.length < 2) return fallback;
+
+  const first = unitToMm(Number(matches[0][1]), matches[0][2] || matches[1][2] || 'mm');
+  const second = unitToMm(Number(matches[1][1]), matches[1][2] || matches[0][2] || 'mm');
+
+  const looksLikeTile = first >= 50 && first <= 2000 && second >= 50 && second <= 2000;
+  if (!looksLikeTile) return fallback;
+  return { width: first, length: second };
+};
+
+
 // ── COMPARE VIEW COMPONENT ──
 const CompareView = ({
   leftImage,
@@ -389,8 +436,8 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
         }),
       });
 
-      const data = await response.json();
-      console.log('Lead save response:', data);
+    const data = await response.json();
+//     console.log('Lead save response:', data);
 
       if (response.ok && data.success) {
         localStorage.setItem('wf_leadInfo', JSON.stringify({
@@ -593,14 +640,16 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
       setSelectedProduct(historyProduct);
       setExpandedProductCategory(historyProduct.accordionCategory);
       setActiveFooterCategory(historyProduct.accordionCategory);
-      setFloorRotation(0);
+      // setting the floor rotation here
+      console.log("calling rotation 580");      
+      // setFloorRotation(floorRotation);
 
       const safeSku = encodeURIComponent(historyProduct.sku);
       const safeRoom = encodeURIComponent(initialImage?.id || 'default');
       navigate(`/visualizer/${safeSku}/${safeRoom}`, { replace: true });
 
       if (visualizerInstance.current && visualizerInstance.current.updateTexture) {
-        visualizerInstance.current.updateTexture(historyProduct.img, 0);
+        visualizerInstance.current.updateTexture(historyProduct.img, floorRotation, updateTextureW_mm, updateTextureL_mm);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -632,7 +681,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
-  const [floorRotation, setFloorRotation] = useState(0);
+  const [floorRotation, setFloorRotation] = useState(defaultFloorRotation);
   const [sortOrder, setSortOrder] = useState('');
 
   // Sidebar states
@@ -811,9 +860,12 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
       setSelectedProduct(firstProduct);
       setExpandedProductCategory(firstProduct.accordionCategory);
       setActiveFooterCategory(firstProduct.accordionCategory);
-      setFloorRotation(0);
+      // setting the floor rotation here
+      console.log("calling rotation 797");      
+      // setFloorRotation(0);
       setIsFloorVisible(true);
-      applyFloorOverlay(firstProduct, 0);
+      // calling from here also for the angle
+      applyFloorOverlay(firstProduct, floorRotation);
 
       const safeSku = encodeURIComponent(firstProduct.sku);
       const safeRoom = encodeURIComponent(initialImage?.id || 'default');
@@ -825,8 +877,8 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
   // 🔍 TEMP DEBUG — issue confirm hone ke baad hata dena
   useEffect(() => {
     if (!isLoadingDbProducts) {
-      // console.log('roomSupportedCollections:', roomSupportedCollections);
-      // console.log('Available accordionCategories:',
+//       console.log('roomSupportedCollections:', roomSupportedCollections);
+//       console.log('Available accordionCategories:',
       //   [...new Set(combinedProducts.map(p => `"${p.accordionCategory}"`))]
       // );
     }
@@ -844,7 +896,8 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
       setSelectedProduct(matchedProduct);
       setExpandedProductCategory(matchedProduct.accordionCategory);
       setActiveFooterCategory(matchedProduct.accordionCategory);
-      applyFloorOverlay(matchedProduct, 0, false);
+      // calling from here for the angle
+      applyFloorOverlay(matchedProduct, -floorRotation, false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoadingDbProducts, combinedProducts, productId]);
@@ -897,7 +950,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
   // When exiting Compare Mode, reset the 3D texture to normal mode's selected product
   useEffect(() => {
     if (!isCompareMode && visualizerInstance.current && selectedProduct && activeBaseImage?.maskUrl) {
-      visualizerInstance.current.updateTexture(selectedProduct.img, floorRotation);
+      visualizerInstance.current.updateTexture(selectedProduct.img, floorRotation, updateTextureW_mm, updateTextureL_mm);
     }
   }, [isCompareMode]);
 
@@ -912,7 +965,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
         if (instance) {
           visualizerInstance.current = instance;
           if (!isLoadingDbProductsRef.current && latestProductRef.current && instance.updateTexture) {
-            instance.updateTexture(latestProductRef.current.img, floorRotation);
+            instance.updateTexture(latestProductRef.current.img, floorRotation, updateTextureW_mm, updateTextureL_mm);
           }
         }
       }
@@ -966,9 +1019,10 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
     if (!firstTile || firstTile.id === selectedProduct?.id) return;
 
     setSelectedProduct(firstTile);
-    setFloorRotation(0);
+    console.log("calling rotation 955");      
+    // setFloorRotation(0);
     setIsFloorVisible(true);
-    applyFloorOverlay(firstTile, 0);
+    applyFloorOverlay(firstTile, floorRotation);
 
     const safeSku = encodeURIComponent(firstTile.sku);
     const safeRoom = encodeURIComponent(initialImage?.id || 'default');
@@ -982,7 +1036,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
 
   const handleTouchEnd = () => { setIsDragging(false); setInitialPinchDist(null); };
 
-  const getRotatedTileBlob = async (imageSrc, angle) => {
+  const getRotatedTileBlob = async (imageSrc, floorRotation) => {
     return new Promise((resolve, reject) => {
       const img = new Image();
 
@@ -991,7 +1045,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
 
       img.onload = () => {
         const canvas = document.createElement('canvas');
-        if (angle % 180 !== 0) {
+        if (floorRotation !== 0) {
           canvas.width = img.height;
           canvas.height = img.width;
         } else {
@@ -1000,7 +1054,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
         }
         const ctx = canvas.getContext('2d');
         ctx.translate(canvas.width / 2, canvas.height / 2);
-        ctx.rotate((angle * Math.PI) / 180);
+        ctx.rotate((floorRotation * Math.PI) / 180);
         ctx.drawImage(img, -img.width / 2, -img.height / 2);
 
         // Ab ye line bina kisi crash ya error ke flawlessly chalegi!
@@ -1023,7 +1077,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
   };
 
   // ── FIX: GENERATE LOCAL 3D COMPOSITE SAFELY ──
-  const generateCompositeImage = async (product, angle = 0) => {
+  const generateCompositeImage = async (product, floorRotation) => {
     if (!activeBaseImage?.maskUrl || !visualizerInstance.current) {
       return null;
     }
@@ -1043,25 +1097,33 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
 
       if (herringboneMode) {
         if (visualizerInstance.current.updateHerringboneTexture && herringboneTile1 && herringboneTile2) {
-          await visualizerInstance.current.updateHerringboneTexture(herringboneTile1.img, herringboneTile2.img, angle);
+          await visualizerInstance.current.updateHerringboneTexture(herringboneTile1.img, herringboneTile2.img, floorRotation, updateHerringboneTextureW_mm, updateHerringboneTextureL_mm);
         }
       } else if (categoryName.includes('monja') || categoryName.includes('monza') || categoryName.includes('stoneland')) {
         if (monzaDualModeRef.current && monzaTile2Ref.current) {
           if (visualizerInstance.current.updateCheckerboardTexture) {
-            await visualizerInstance.current.updateCheckerboardTexture(product.img, monzaTile2Ref.current.img, angle);
+            console.log("Running on 1048 line");
+            const checkerSize = parseTileSizeFromProduct(product, {
+              width: updateCheckerboardTextureW,
+              length: updateCheckerboardTextureL,
+            });
+            await visualizerInstance.current.updateCheckerboardTexture(product.img, monzaTile2Ref.current.img, floorRotation, checkerSize.width, checkerSize.length);
           }
         } else {
           if (visualizerInstance.current.updateMonzaSolidTexture) {
-            await visualizerInstance.current.updateMonzaSolidTexture(product.img, angle);
+            const tileSize = parseTileSizeFromProduct(product);
+            await visualizerInstance.current.updateMonzaSolidTexture(product.img, floorRotation, tileSize.width, tileSize.length);
           }
         }
       } else if (categoryName.includes('timber') || categoryName.includes('grandeure') || categoryName.includes('plank')) {
         if (visualizerInstance.current.updateStaggeredTexture) {
-          await visualizerInstance.current.updateStaggeredTexture(product.img, 0.333, angle);
+          console.log("Calling in the 1040");
+          
+          await visualizerInstance.current.updateStaggeredTexture(product.img, floorRotation, plankW_mm, plankL_mm);
         }
       } else {
         if (visualizerInstance.current.updateTexture) {
-          await visualizerInstance.current.updateTexture(product.img, angle);
+          await visualizerInstance.current.updateTexture(product.img, floorRotation, updateTextureW_mm, updateTextureL_mm);
         }
       }
 
@@ -1258,7 +1320,8 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
       setCompareRightImage(currentSrc);
     }
   };
-  const applyFloorOverlay = async (product, angle, showLoader = true, overrideTile2 = null, overrideDualMode = null) => {
+  const applyFloorOverlay = async (product, floorRotation, showLoader = true, overrideTile2 = null, overrideDualMode = null) => {
+    console.trace("applyFloorOverlay called");
     if (!activeBaseImage) return;
     if (showLoader) setIsProcessing(true);
 
@@ -1273,7 +1336,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
           // 1. Check for Herringbone
           if (categoryName.includes('herringbone') || productName.includes('herringbone')) {
             if (visualizerInstance.current.updateHerringboneTexture && herringboneTile1 && herringboneTile2) {
-              await visualizerInstance.current.updateHerringboneTexture(herringboneTile1.img, herringboneTile2.img, angle);
+              await visualizerInstance.current.updateHerringboneTexture(herringboneTile1.img, herringboneTile2.img, floorRotation, updateHerringboneTextureW_mm, updateHerringboneTextureL_mm);
             }
           }
 
@@ -1285,24 +1348,34 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
 
             if (isDualMode && tile2ToUse) {
               if (visualizerInstance.current.updateCheckerboardTexture) {
-                await visualizerInstance.current.updateCheckerboardTexture(product.img, tile2ToUse.img, angle);
+                console.log("Running on 1228 line");
+                const checkerSize = parseTileSizeFromProduct(product, {
+                  width: updateCheckerboardTextureW,
+                  length: updateCheckerboardTextureL,
+                });
+                await visualizerInstance.current.updateCheckerboardTexture(product.img, tile2ToUse.img, floorRotation, checkerSize.width, checkerSize.length);
               }
             } else {
               if (visualizerInstance.current.updateMonzaSolidTexture) {
-                await visualizerInstance.current.updateMonzaSolidTexture(product.img, angle);
+                const tileSize = parseTileSizeFromProduct(product);
+                await visualizerInstance.current.updateMonzaSolidTexture(product.img, floorRotation, tileSize.width, tileSize.length);
               }
             }
           }
           // NEW: Check for Planks (Timberland, Timberworld, Grandeure) for 1/3 Stagger
           else if (categoryName.includes('timber') || categoryName.includes('grandeure') || categoryName.includes('plank')) {
             if (visualizerInstance.current.updateStaggeredTexture) {
-              await visualizerInstance.current.updateStaggeredTexture(product.img, 0.333, angle);
+              console.log("Calling in 1221");
+              console.log("floorRotation: ", floorRotation);
+              
+              
+              await visualizerInstance.current.updateStaggeredTexture(product.img, floorRotation, plankW_mm, plankL_mm);
             }
           }
           // 4. Default Standard Grid
           else {
             if (visualizerInstance.current.updateTexture) {
-              await visualizerInstance.current.updateTexture(product.img, angle);
+              await visualizerInstance.current.updateTexture(product.img, floorRotation, updateTextureW_mm, updateTextureL_mm);
             }
           }
         }
@@ -1315,7 +1388,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
 
       if (!activeBaseImage?.rawFile) return;
 
-      const tileBlob = await getRotatedTileBlob(product.img, angle);
+      const tileBlob = await getRotatedTileBlob(product.img, floorRotation);
       const formData = new FormData();
       formData.append('roomImage', activeBaseImage.rawFile);
       formData.append('floorImage', tileBlob, `${product.name}_rotated.jpg`);
@@ -1444,9 +1517,11 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
 
     // ── NORMAL MODE BRANCH ──
     setSelectedProduct(product);
-    setFloorRotation(0);
+    // setting the floor rotation here
+    console.log("calling rotation 1381");      
+    // setFloorRotation(0);
     setIsFloorVisible(true);
-    applyFloorOverlay(product, 0);
+    applyFloorOverlay(product, floorRotation);
     setIsSidebarOpen(false);
     setTimeout(() => {
       window.scrollTo(0, 0);
@@ -1466,7 +1541,9 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
     setErrorMsg(null);
     setZoomScale(1);
     setPan({ x: 0, y: 0 });
-    setFloorRotation(0);
+    // setting the floor rotation here
+    console.log("calling rotation 1405");      
+    // setFloorRotation(0);
     setIsFloorVisible(false);
   };
   const handleOpenDetails = (e, product) => {
@@ -1482,7 +1559,14 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
   const handleRotate = () => {
     if (!isFloorVisible) return;
     const nextAngle = (floorRotation + 15) % 180;
+    console.log("floorrotation and next angle: ", floorRotation, nextAngle);
+    
+    // setting the floor rotation here
+    console.log("calling rotation 1423");
+    console.log("next angle: ", nextAngle);
+         
     setFloorRotation(nextAngle);
+    console.log("Floor rotation: ", floorRotation);      
     setIsFloorVisible(true);
     if (herringboneMode) {
       isRotatingRef.current = true; // 1. Raise flag to block incoming loader requests
@@ -1493,6 +1577,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
         isRotatingRef.current = false;
       }, 250);
     } else {
+      // console.log("next angle: ", nextAngle);
       //  FIX: ref se current dualMode/tile2 explicitly pass, rotate pe checkerboard break na ho
       applyFloorOverlay(selectedProduct, -nextAngle, false, monzaTile2Ref.current, monzaDualModeRef.current);
     }
@@ -1633,10 +1718,10 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
   };
   const clearFilters = () => setActiveFilters({});
   // Filter Logic
-  const navProducts = combinedProducts.filter(p => p.navCategory === activeNavCategory);
-  console.log('activeNavCategory:', activeNavCategory);
-  console.log('navProducts count:', navProducts.length);
-  console.log('ALL_PRODUCTS count:', ALL_PRODUCTS.length);
+  // const navProducts = combinedProducts.filter(p => p.navCategory === activeNavCategory);
+//   console.log('activeNavCategory:', activeNavCategory);
+//   console.log('navProducts count:', navProducts.length);
+//   console.log('ALL_PRODUCTS count:', ALL_PRODUCTS.length);
 
 
   // ── FILTER LOGIC SECTION KO IS TARAH UPDATE KAREIN ──
