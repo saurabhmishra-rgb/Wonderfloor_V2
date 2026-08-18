@@ -19,6 +19,50 @@ const NODE_BACKEND_URL = 'https://wonderfloor-dashboard.vercel.app'
 // const BACKEND_URL = 'https://wonderfloor-backend-1.onrender.com';
 const PYTHON_BACKEND_URL = 'https://python-floor-backend.onrender.com';
 
+let plankW_mm = 750;
+let plankL_mm = 2250;
+let updateTextureW_mm = 900;
+let updateTextureL_mm = 900;
+let updateHerringboneTextureW_mm = 101.3;
+let updateHerringboneTextureL_mm = 457.2;
+let updateCheckerboardTextureW = 457.2;
+let updateCheckerboardTextureL = 457.2;
+
+const DEFAULT_CHECKERBOARD_TILE_SIZE_MM = { 
+  width: 457.2,
+  length: 457.2,
+};
+
+const unitToMm = (value, unit = 'mm') => {
+  const normalizedUnit = String(unit || 'mm').toLowerCase();
+  if (normalizedUnit.startsWith('cm')) return value * 10;
+  if (normalizedUnit === 'm' || normalizedUnit.startsWith('mtr') || normalizedUnit.startsWith('meter')) return value * 1000;
+  if (normalizedUnit.startsWith('in') || normalizedUnit === '"') return value * 25.4;
+  if (normalizedUnit.startsWith('ft') || normalizedUnit === "'") return value * 304.8;
+  return value;
+};
+
+const parseTileSizeFromProduct = (product, fallback = DEFAULT_CHECKERBOARD_TILE_SIZE_MM) => {
+  const directWidth = Number(product?.tileWidthMm ?? product?.tileWidthMM ?? product?.widthMm ?? product?.widthMM);
+  const directLength = Number(product?.tileLengthMm ?? product?.tileLengthMM ?? product?.lengthMm ?? product?.lengthMM);
+
+  if (Number.isFinite(directWidth) && Number.isFinite(directLength) && directWidth > 0 && directLength > 0) {
+    return { width: directWidth, length: directLength };
+  }
+
+  const sizeText = String(product?.size || '');
+  const matches = [...sizeText.matchAll(/(\d+(?:\.\d+)?)\s*(mm|cm|mtr|meter|meters|m|inch|inches|in|ft|feet|')?/gi)];
+  if (matches.length < 2) return fallback;
+
+  const first = unitToMm(Number(matches[0][1]), matches[0][2] || matches[1][2] || 'mm');
+  const second = unitToMm(Number(matches[1][1]), matches[1][2] || matches[0][2] || 'mm');
+
+  const looksLikeTile = first >= 50 && first <= 2000 && second >= 50 && second <= 2000;
+  if (!looksLikeTile) return fallback;
+  return { width: first, length: second };
+};
+
+
 // ── COMPARE VIEW COMPONENT ──
 const CompareView = ({
   leftImage,
@@ -279,6 +323,16 @@ const safeSearchMatch = (fieldValue, searchPattern) => {
 };
 
 const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCount = 0, onProductChange, }) => {
+  const defaultFloorRotation = useMemo(() => {
+    const rawRotation =
+      initialImage?.prediction?.floor?.floor_rotation ??
+      initialImage?.prediction?.output?.prediction?.floor?.floor_rotation ??
+      0;
+
+    const parsedRotation = Number(rawRotation);
+    return Number.isFinite(parsedRotation) ? parsedRotation % 180 : 0;
+  }, [initialImage]);
+
   // Browser detector: True if Safari (Mac/iOS), False if Chrome/Edge/Windows
   const isSafari = typeof window !== 'undefined' && /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
   // ── NEW: MONZA CHECKERBOARD STATES 
@@ -636,6 +690,10 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [floorRotation, setFloorRotation] = useState(0);
   const [sortOrder, setSortOrder] = useState('');
+
+  useEffect(() => {
+    setFloorRotation(defaultFloorRotation);
+  }, [defaultFloorRotation]);
 
   // Sidebar states
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
