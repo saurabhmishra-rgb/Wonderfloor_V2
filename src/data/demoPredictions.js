@@ -1,5 +1,5 @@
 export const demoPredictions = {
-  // Industrial Flooring - Office
+  // Office Flooring - Office
 
   "6a4606084ca404204c794cae": {
     camera: {
@@ -15,7 +15,8 @@ export const demoPredictions = {
       plane: {
         distance: 1.9345139799407232,
         normal: [-0.015559538536334691, -0.9850955249388406, -0.17130296992757144]
-      }
+      },
+      floor_rotation: 8
     },
     images: {},
     input: {
@@ -26,7 +27,7 @@ export const demoPredictions = {
 
 
 
-  // Industrial Flooring - 2
+  // Industrial Flooring - Office
   "6a4603c2b7a9facb9cc3fee1": {
     output: {
       prediction: {
@@ -43,7 +44,8 @@ export const demoPredictions = {
           plane: {
             distance: 1.5129698645074483,
             normal: [0.004065696236456458, -0.9988972012104483, -0.046774475176596615]
-          }
+          },
+          floor_rotation: 30
         },
         input: {
           height: 1200,
@@ -69,7 +71,8 @@ export const demoPredictions = {
       plane: {
         distance: 1.9345139799407232,
         normal: [-0.015559538536334691, -0.9850955249388406, -0.17130296992757144]
-      }
+      },
+      floor_rotation: 150
     },
     images: {},
     input: {
@@ -97,7 +100,8 @@ export const demoPredictions = {
           -0.8613987291088183,
           -0.505672602852996
         ]
-      }
+      },
+      floor_rotation: 0
     },
     images: {},
     input: {
@@ -124,7 +128,8 @@ export const demoPredictions = {
           -0.9450310611045352,
           -0.32571855320001053
         ]
-      }
+      },
+      floor_rotation: 7.5
     },
     images: {},
     input: {
@@ -132,7 +137,7 @@ export const demoPredictions = {
       width: 1600
     }
   },
-  // Supermarket
+  // Transport Flooring
   "6a462d6b12f464296f8a98e2": {
     camera: {
       cx: 800,
@@ -151,7 +156,8 @@ export const demoPredictions = {
           -0.989394940145663,
           -0.14388627511074306
         ]
-      }
+      },
+      floor_rotation: 0
     },
     images: {},
     input: {
@@ -178,7 +184,8 @@ export const demoPredictions = {
           -0.97872795663078,
           -0.2018740458850684
         ]
-      }
+      },
+      floor_rotation: 37
     },
     images: {},
     input: {
@@ -205,7 +212,8 @@ export const demoPredictions = {
           -0.9976892753004148,
           -0.06733650253628609
         ]
-      }
+      },
+      floor_rotation: 75
     },
     images: {},
     input: {
@@ -232,7 +240,8 @@ export const demoPredictions = {
           -0.9988950670652053,
           -0.04682198503424773
         ]
-      }
+      },
+      floor_rotation: 30
     },
     images: {},
     input: {
@@ -240,6 +249,8 @@ export const demoPredictions = {
       width: 1600
     }
   },
+
+  // Residential flooring
   "6a4622fad0ce9cfc46e4093b": {
     camera: {
       cx: 800,
@@ -258,7 +269,8 @@ export const demoPredictions = {
           -0.9988950670652053,
           -0.04682198503424773
         ]
-      }
+      },
+      floor_rotation: 54
     },
     images: {},
     input: {

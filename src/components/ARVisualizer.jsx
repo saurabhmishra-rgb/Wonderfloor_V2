@@ -28,9 +28,6 @@ let updateHerringboneTextureL_mm = 457.2;
 let updateCheckerboardTextureW = 457.2;
 let updateCheckerboardTextureL = 457.2;
 
-// here you can set the default angle of the floor
-let defaultFloorRotation = (0)%180;
-
 const DEFAULT_CHECKERBOARD_TILE_SIZE_MM = { 
   width: 457.2,
   length: 457.2,
@@ -326,6 +323,16 @@ const safeSearchMatch = (fieldValue, searchPattern) => {
 };
 
 const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCount = 0, onProductChange, }) => {
+  const defaultFloorRotation = useMemo(() => {
+    const rawRotation =
+      initialImage?.prediction?.floor?.floor_rotation ??
+      initialImage?.prediction?.output?.prediction?.floor?.floor_rotation ??
+      0;
+
+    const parsedRotation = Number(rawRotation);
+    return Number.isFinite(parsedRotation) ? parsedRotation % 180 : 0;
+  }, [initialImage]);
+
   // Browser detector: True if Safari (Mac/iOS), False if Chrome/Edge/Windows
   const isSafari = typeof window !== 'undefined' && /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
   // ── NEW: MONZA CHECKERBOARD STATES 
@@ -683,6 +690,10 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [floorRotation, setFloorRotation] = useState(defaultFloorRotation);
   const [sortOrder, setSortOrder] = useState('');
+
+  useEffect(() => {
+    setFloorRotation(defaultFloorRotation);
+  }, [defaultFloorRotation]);
 
   // Sidebar states
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
