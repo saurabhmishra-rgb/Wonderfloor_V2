@@ -19,14 +19,38 @@ const NODE_BACKEND_URL = 'https://wonderfloor-dashboard.vercel.app'
 // const BACKEND_URL = 'https://wonderfloor-backend-1.onrender.com';
 const PYTHON_BACKEND_URL = 'https://python-floor-backend.onrender.com';
 
-let plankW_mm = 750;
-let plankL_mm = 2250;
-let updateTextureW_mm = 900;
-let updateTextureL_mm = 900;
-let updateHerringboneTextureW_mm = 101.3;
-let updateHerringboneTextureL_mm = 457.2;
-let updateCheckerboardTextureW = 457.2;
-let updateCheckerboardTextureL = 457.2;
+const plankW_mm = 750;
+const plankL_mm = 2250;
+
+const updateTextureW_mm = 900;
+const updateTextureL_mm = 900;
+
+const updateHerringboneTextureW_mm = 101.3;
+const updateHerringboneTextureL_mm = 457.2;
+
+const updateCheckerboardTextureW = 457.2;
+const updateCheckerboardTextureL = 457.2;
+
+const getProductDimensions = (
+  product,
+  defaultWidth,
+  defaultLength
+) => {
+  const dbWidth = Number(product?.widthMM);
+  const dbLength = Number(product?.heightMM);
+
+  return {
+    width:
+      Number.isFinite(dbWidth) && dbWidth > 0
+        ? dbWidth
+        : defaultWidth,
+
+    length:
+      Number.isFinite(dbLength) && dbLength > 0
+        ? dbLength
+        : defaultLength,
+  };
+};
 
 const DEFAULT_CHECKERBOARD_TILE_SIZE_MM = { 
   width: 457.2,
@@ -445,7 +469,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
       });
 
       const data = await response.json();
-      console.log('Lead save response:', data);
+      // console.log('Lead save response:', data);
 
       if (response.ok && data.success) {
         localStorage.setItem('wf_leadInfo', JSON.stringify({
@@ -519,6 +543,11 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
                 sku: (prod.sku || '').trim(),
                 size: prod.size,
                 img: prod.img,
+
+                // Physical dimensions from database
+                widthMM: prod.widthMM,
+                heightMM: prod.heightMM,
+
                 colour: prod.colour,
                 shade: prod.shade,
                 collection: prod.collection || '',
@@ -1102,31 +1131,83 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
 
 
       if (herringboneMode) {
-        if (visualizerInstance.current.updateHerringboneTexture && herringboneTile1 && herringboneTile2) {
-          await visualizerInstance.current.updateHerringboneTexture(herringboneTile1.img, herringboneTile2.img, floorRotation, updateHerringboneTextureW_mm, updateHerringboneTextureL_mm);
+        if (
+          visualizerInstance.current.updateHerringboneTexture &&
+          herringboneTile1 &&
+          herringboneTile2
+        ) {
+          const herringboneSize = getProductDimensions(
+            herringboneTile1 || product,
+            updateHerringboneTextureW_mm,
+            updateHerringboneTextureL_mm,
+          );
+
+          await visualizerInstance.current.updateHerringboneTexture(
+            herringboneTile1.img,
+            herringboneTile2.img,
+            floorRotation,
+            herringboneSize.width,
+            herringboneSize.length,
+          );
         }
       } else if (categoryName.includes('monja') || categoryName.includes('monza') || categoryName.includes('stoneland')) {
         if (monzaDualModeRef.current && monzaTile2Ref.current) {
           if (visualizerInstance.current.updateCheckerboardTexture) {
-            const checkerSize = parseTileSizeFromProduct(product, {
-              width: updateCheckerboardTextureW,
-              length: updateCheckerboardTextureL,
-            });
-            await visualizerInstance.current.updateCheckerboardTexture(product.img, monzaTile2Ref.current.img, floorRotation, checkerSize.width, checkerSize.length);
+            const checkerSize = getProductDimensions(
+              product,
+              updateCheckerboardTextureW,
+              updateCheckerboardTextureL,
+            );
+
+            await visualizerInstance.current.updateCheckerboardTexture(
+              product.img,
+              tile2ToUse.img,
+              floorRotation,
+              checkerSize.width,
+              checkerSize.length,
+            );
           }
         } else {
           if (visualizerInstance.current.updateMonzaSolidTexture) {
-            const tileSize = parseTileSizeFromProduct(product);
-            await visualizerInstance.current.updateMonzaSolidTexture(product.img, floorRotation, tileSize.width, tileSize.length);
+            const tileSize = getProductDimensions(
+              product,
+              updateCheckerboardTextureW,
+              updateCheckerboardTextureL,
+            );
+
+            await visualizerInstance.current.updateMonzaSolidTexture(
+              product.img,
+              floorRotation,
+              tileSize.width,
+              tileSize.length,
+            );
           }
         }
       } else if (categoryName.includes('timber') || categoryName.includes('grandeure') || categoryName.includes('plank')) {
         if (visualizerInstance.current.updateStaggeredTexture) {
-          await visualizerInstance.current.updateStaggeredTexture(product.img, floorRotation, plankW_mm, plankL_mm);
+          const plankSize = getProductDimensions(product, plankW_mm, plankL_mm);
+
+          await visualizerInstance.current.updateStaggeredTexture(
+            product.img,
+            floorRotation,
+            plankSize.width,
+            plankSize.length,
+          );
         }
       } else {
         if (visualizerInstance.current.updateTexture) {
-          await visualizerInstance.current.updateTexture(product.img, floorRotation, updateTextureW_mm, updateTextureL_mm);
+          const tileSize = getProductDimensions(
+            product,
+            updateTextureW_mm,
+            updateTextureL_mm,
+          );
+
+          await visualizerInstance.current.updateTexture(
+            product.img,
+            floorRotation,
+            tileSize.width,
+            tileSize.length,
+          );
         }
       }
 
@@ -1337,8 +1418,24 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
 
           // 1. Check for Herringbone
           if (categoryName.includes('herringbone') || productName.includes('herringbone')) {
-            if (visualizerInstance.current.updateHerringboneTexture && herringboneTile1 && herringboneTile2) {
-              await visualizerInstance.current.updateHerringboneTexture(herringboneTile1.img, herringboneTile2.img, floorRotation, updateHerringboneTextureW_mm, updateHerringboneTextureL_mm);
+            if (
+              visualizerInstance.current.updateHerringboneTexture &&
+              herringboneTile1 &&
+              herringboneTile2
+            ) {
+              const herringboneSize = getProductDimensions(
+                herringboneTile1 || product,
+                updateHerringboneTextureW_mm,
+                updateHerringboneTextureL_mm,
+              );
+
+              await visualizerInstance.current.updateHerringboneTexture(
+                herringboneTile1.img,
+                herringboneTile2.img,
+                floorRotation,
+                herringboneSize.width,
+                herringboneSize.length,
+              );
             }
           }
 
@@ -1350,29 +1447,69 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
 
             if (isDualMode && tile2ToUse) {
               if (visualizerInstance.current.updateCheckerboardTexture) {
-                const checkerSize = parseTileSizeFromProduct(product, {
-                  width: updateCheckerboardTextureW,
-                  length: updateCheckerboardTextureL,
-                });
-                await visualizerInstance.current.updateCheckerboardTexture(product.img, tile2ToUse.img, floorRotation, checkerSize.width, checkerSize.length);
+                const checkerSize = getProductDimensions(
+                  product,
+                  updateCheckerboardTextureW,
+                  updateCheckerboardTextureL,
+                );
+
+                await visualizerInstance.current.updateCheckerboardTexture(
+                  product.img,
+                  tile2ToUse.img,
+                  floorRotation,
+                  checkerSize.width,
+                  checkerSize.length,
+                );
               }
             } else {
               if (visualizerInstance.current.updateMonzaSolidTexture) {
-                const tileSize = parseTileSizeFromProduct(product);
-                await visualizerInstance.current.updateMonzaSolidTexture(product.img, floorRotation, tileSize.width, tileSize.length);
+                const tileSize = getProductDimensions(
+                  product,
+                  updateCheckerboardTextureW,
+                  updateCheckerboardTextureL,
+                );
+
+                await visualizerInstance.current.updateMonzaSolidTexture(
+                  product.img,
+                  floorRotation,
+                  tileSize.width,
+                  tileSize.length,
+                );
               }
             }
           }
           // NEW: Check for Planks (Timberland, Timberworld, Grandeure) for 1/3 Stagger
           else if (categoryName.includes('timber') || categoryName.includes('grandeure') || categoryName.includes('plank')) {
             if (visualizerInstance.current.updateStaggeredTexture) {
-              await visualizerInstance.current.updateStaggeredTexture(product.img, floorRotation, plankW_mm, plankL_mm);
+              const plankSize = getProductDimensions(
+                product,
+                plankW_mm,
+                plankL_mm,
+              );
+
+              await visualizerInstance.current.updateStaggeredTexture(
+                product.img,
+                floorRotation,
+                plankSize.width,
+                plankSize.length,
+              );
             }
           }
           // 4. Default Standard Grid
           else {
             if (visualizerInstance.current.updateTexture) {
-              await visualizerInstance.current.updateTexture(product.img, floorRotation, updateTextureW_mm, updateTextureL_mm);
+              const tileSize = getProductDimensions(
+                product,
+                updateTextureW_mm,
+                updateTextureL_mm,
+              );
+
+              await visualizerInstance.current.updateTexture(
+                product.img,
+                floorRotation,
+                tileSize.width,
+                tileSize.length,
+              );
             }
           }
         }
@@ -1704,9 +1841,9 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
   const clearFilters = () => setActiveFilters({});
   // Filter Logic
   const navProducts = combinedProducts.filter(p => p.navCategory === activeNavCategory);
-  console.log('activeNavCategory:', activeNavCategory);
-  console.log('navProducts count:', navProducts.length);
-  console.log('ALL_PRODUCTS count:', ALL_PRODUCTS.length);
+  // console.log
+  // console.log
+  // console.log
 
 
   // ── FILTER LOGIC SECTION KO IS TARAH UPDATE KAREIN ──

@@ -133,7 +133,7 @@ async function generateHerringboneDataURL(
   tex1Url,
   tex2Url,
   angleInDegrees = 0,
-  plankW_mm = 101.6,
+  plankW_mm = 101.3,
   plankL_mm = 457.2,
 ) {
   const [base64_1, base64_2] = await Promise.all([
@@ -211,14 +211,14 @@ async function generateStaggeredDataURL(
   // staggerRatio,
   angleInDegrees = 0,
   plankW_mm = 750,
-  plankL_mm = 3000,
+  plankL_mm = 2250,
 ) {
   const base64 = await fetchBase64(texUrl);
   // const size = 1024;
   const size = 914.4;
 
-  console.log("Plank width : ", plankW_mm);
-  console.log("Plank length : ", plankL_mm);
+  // console.log
+  // console.log
 
   return new Promise((resolve, reject) => {
     const img = new Image();
@@ -228,8 +228,8 @@ async function generateStaggeredDataURL(
       let plankW = plankW_mm;
       let plankL = plankL_mm;
 
-      console.log("Plank width2 : ", plankW);
-      console.log("Plank length2 : ", plankL);
+      // console.log
+      // console.log
 
       // if (img.width > img.height) {
       //   // Agar image chaudi (horizontal) hai
@@ -673,12 +673,12 @@ export const initVisualizer = (container, predictionData = null) => {
     // 🎯 1. Solid / Standard Single Texture Mapper (Fixed Plank & Tile Scaling)
     const updateTexture = (
       textureUrl,
-      angleInDegrees,
+      angleInDegrees = 0,
       // tileSizeMeters = 0.4572,
-      tileWidth,
-      tileLength,
+      tileWidth = 900,
+      tileLength = 900,
     ) => {
-      console.log("update texture is calling");
+      // console.log
 
       return new Promise((resolve) => {
         loader.load(
@@ -738,7 +738,6 @@ export const initVisualizer = (container, predictionData = null) => {
       plankW_mm,
       plankL_mm,
     ) => {
-      console.log("updateHerringboneTexture is calling");
 
       return generateHerringboneDataURL(
         tex1Url,
@@ -788,11 +787,11 @@ export const initVisualizer = (container, predictionData = null) => {
     const updateStaggeredTexture = (
       texUrl,
       // staggerRatio = 0,
-      angleInDegrees,
-      plankW_mm,
-      plankL_mm,
+      angleInDegrees = 0,
+      plankW_mm = 750,
+      plankL_mm = 2250,
     ) => {
-      console.log("updateStaggeredTexture is calling");
+      // console.log
 
       return generateStaggeredDataURL(
         texUrl,
@@ -824,9 +823,9 @@ export const initVisualizer = (container, predictionData = null) => {
                   tex.repeat.set(repeatX, repeatY);
                   tex.center.set(0.5, 0.5);
                   tex.rotation = (angleInDegrees * Math.PI) / 180;
-                  console.log("angleInDegrees: ", angleInDegrees);
+                  // console.log
 
-                  console.log("tex rotation: ", tex.rotation);
+                  // console.log
 
                   floorMaterial.map = tex;
                   floorMaterial.needsUpdate = true;
@@ -846,10 +845,10 @@ export const initVisualizer = (container, predictionData = null) => {
       tex1Url,
       tex2Url,
       angleInDegrees = 0,
-      tileW,
-      tileL,
+      tileW = 457.2,
+      tileL = 457.2,
     ) => {
-      console.log("updateCheckerboardTexture is calling");
+      // console.log
 
       return generateCheckerboardDataURL(
         tex1Url,
@@ -899,10 +898,10 @@ export const initVisualizer = (container, predictionData = null) => {
     const updateMonzaSolidTexture = (
       textureUrl,
       angleInDegrees = 0,
-      tileW,
-      tileL,
+      tileW = 457.2,
+      tileL = 457.2,
     ) => {
-      console.log("updateMonzaSolidTexture is calling");
+      // console.log
 
       return updateTexture(textureUrl, angleInDegrees, tileW, tileL);
     };
