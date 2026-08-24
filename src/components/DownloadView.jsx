@@ -137,16 +137,16 @@ const formatDisplayValue = (val, isThickness = false) => {
 // ── Build "Image + Product Details" on canvas ──────────────────────────────
 const buildDetailsImage = async (baseDataUrl, product) => {
   const specs = [
-    { label: 'SKU',              value: product.sku || product.name },
-    { label: 'Collection',       value: product.collection || product.accordionCategory },
-    { label: 'Colour',           value: formatDisplayValue(product.colour) },
-    { label: 'Shade',            value: formatDisplayValue(product.shade) },
-    { label: 'Thickness',        value: formatDisplayValue(product.thickness, true) },
-    { label: 'Style',            value: formatDisplayValue(product.style) },
+    { label: 'SKU', value: product.sku || product.name },
+    { label: 'Type Of Flooring', value: formatDisplayValue(product.style) },
+    { label: 'Collection', value: product.collection || product.accordionCategory },
+    { label: 'Colour', value: formatDisplayValue(product.colour) },
+    { label: 'Shade', value: formatDisplayValue(product.shade) },
+    { label: 'Thickness', value: formatDisplayValue(product.thickness, true) },
     { label: 'Pattern / Layout', value: formatDisplayValue(product.pattern) },
-    { label: 'User Industry',    value: formatDisplayValue(product.userIndustry) },
+    { label: 'User Industry', value: formatDisplayValue(product.userIndustry) },
     { label: 'Application Area', value: formatDisplayValue(product.applicationArea) },
-    { label: 'Size',             value: product.size },
+    { label: 'Size', value: product.size },
   ].filter(row => row.value && row.value !== '-');
 
   const [bg, logo, tile] = await Promise.all([
