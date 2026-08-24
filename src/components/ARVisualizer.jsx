@@ -204,7 +204,7 @@ const currentRotation = activeSide === 'left' ? leftRotation : rightRotation;
           <button onClick={onRotate} className="flex -ml-[10%] items-center gap-1.5 px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 2v6h-6"></path><path d="M3 12a9 9 0 0 1 15-6.7L21 8"></path></svg>
             <span className="hidden lg:inline">Rotate</span>
-            <span className="font-bold ml-1">{currentRotation}°</span>
+            {/* <span className="font-bold ml-1">{currentRotation}°</span> */}
           </button>
           <button onClick={onReset} className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><polyline points="3 3 3 8 8 8"></polyline></svg>
@@ -3003,12 +3003,6 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
                     >
                       <span className="hidden sm:inline">Rotate</span>
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="md:w-4 md:h-4"><path d="M21 2v6h-6"></path><path d="M3 12a9 9 0 0 1 15-6.7L21 8"></path><path d="M3 22v-6h6"></path><path d="M21 12a9 9 0 0 1-15 6.7L3 16"></path></svg>
-
-                      {floorRotation !== 0 && (
-                        <span className="ml-1 px-1.5 py-0.5 text-[10px] md:text-xs font-bold text-[#0b5e5e] bg-[#0b5e5e]/10 rounded-full group-hover:bg-[#0b5e5e]/20 transition-colors">
-                          {floorRotation}&deg;
-                        </span>
-                      )}
                     </button>
 
                     {/* Monza Checkerboard Dynamic Footer Slots */}
