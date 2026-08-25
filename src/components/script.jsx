@@ -143,9 +143,19 @@ async function generateHerringboneDataURL(
   // const size = 1024;
   const size = 914.4;
   const nx = 4;
+  const safeWidthMM =
+    Number.isFinite(Number(plankW_mm)) && Number(plankW_mm) > 0
+      ? Number(plankW_mm)
+      : 101.3;
+
+  const safeLengthMM =
+    Number.isFinite(Number(plankL_mm)) && Number(plankL_mm) > 0
+      ? Number(plankL_mm)
+      : 457.2;
+
   const l = size / (nx * Math.SQRT2);
-  // Hardcoded values replaced with dynamic function parameters
-  const w = l / (plankL_mm / plankW_mm);
+
+  const w = l * (safeWidthMM / safeLengthMM);
   const groutWidth = 0;
   const groutColor = "#020202";
   const g = groutWidth / 2;
@@ -194,10 +204,15 @@ async function generateHerringboneDataURL(
       URL.revokeObjectURL(url);
 
       // ✅ FIX: Resolve an Object matching what the .then() block expects
+      const mmPerPixel = safeLengthMM / l;
+
+      const blockSizeMeters = (size * mmPerPixel) / 1000;
+
       resolve({
         dataUrl: canvas.toDataURL("image/jpeg", 1.0),
-        blockWidthMeters: 1.0,
-        blockHeightMeters: 1.0,
+
+        blockWidthMeters: blockSizeMeters,
+        blockHeightMeters: blockSizeMeters,
       });
     };
     img.onerror = reject;
@@ -738,7 +753,6 @@ export const initVisualizer = (container, predictionData = null) => {
       plankW_mm,
       plankL_mm,
     ) => {
-
       return generateHerringboneDataURL(
         tex1Url,
         tex2Url,
@@ -758,7 +772,7 @@ export const initVisualizer = (container, predictionData = null) => {
 
                   // Visual multiplier (3.2x expansion) fixes tiny chevron bug
                   // const visualScale = 3.2;
-                  const visualScale = 4;
+                  const visualScale = 1;
                   const repeatX = prediction?.camera
                     ? 1 / (blockWidthMeters * visualScale)
                     : 10;
