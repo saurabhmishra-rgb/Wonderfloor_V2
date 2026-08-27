@@ -722,6 +722,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
 
   useEffect(() => {
     setFloorRotation(defaultFloorRotation);
+    console.log("Floor Rotation: ", floorRotation)
   }, [defaultFloorRotation]);
 
   // Sidebar states
