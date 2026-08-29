@@ -228,8 +228,8 @@ function App() {
   }, [dbProducts]);
 
   // ── when we refresh it comes to reset ───────────────────────────────────────────────
-const [selectedIndustry, setSelectedIndustry] = useState('ALL INDUSTRY');
-const [selectedProduct, setSelectedProduct] = useState('Product Collections');
+  const [selectedIndustry, setSelectedIndustry] = useState('ALL INDUSTRY');
+  const [selectedProduct, setSelectedProduct] = useState('Product Collections');
 
   // ── THEME CONTROL STATE ──
   const [isDarkMode, setIsDarkMode] = useState(() =>
@@ -276,7 +276,7 @@ const [selectedProduct, setSelectedProduct] = useState('Product Collections');
               product: room.supportedCollections || [],
               position: room.position || 0,
               categoryOrder: room.categoryOrder || 0,
-              createdAt: room.createdAt, 
+              createdAt: room.createdAt,
             }));
           setDbRooms(formattedDbRooms);
           setDbRoomsLoaded(true); // ← mark DB as ready
@@ -1295,13 +1295,11 @@ const [selectedProduct, setSelectedProduct] = useState('Product Collections');
                 <div
                   key={`cat-${cat.id}`}
                   className="bg-white dark:bg-slate-900 rounded-xl overflow-hidden shadow-sm hover:shadow-xl border border-slate-200/60 dark:border-slate-800 hover:border-[#f05c3f] group transition-all duration-300 flex flex-col cursor-pointer"
-                   <button
                   onClick={() => {
-                    setSelectedIndustry('ALL INDUSTRY');
+                    setSelectedIndustry(cat.category);
                     setSelectedProduct('Product Collections');
                     demoSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                   }}
-                  className="group flex items-center gap-1.5 text-[11px] font-bold text-gray-500 dark:text-slate-400 hover:text-[#f05c3f] dark:hover:text-[#f05c3f] transition-all duration-200 cursor-pointer bg-white dark:bg-slate-900 px-3 py-1.5 rounded-full border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow hover:border-orange-200 dark:hover:border-orange-900/50 uppercase tracking-wide w-max"
                 >
                   <div className="h-[230px] w-full overflow-hidden bg-slate-100 dark:bg-slate-800 relative">
                     <img
@@ -1343,6 +1341,7 @@ const [selectedProduct, setSelectedProduct] = useState('Product Collections');
                   onClick={() => {
                     setSelectedIndustry('ALL INDUSTRY');
                     setSelectedProduct('Product Collections');
+                    demoSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                   }}
                   className="group flex items-center gap-1.5 text-[11px] font-bold text-gray-500 dark:text-slate-400 hover:text-[#f05c3f] dark:hover:text-[#f05c3f] transition-all duration-200 cursor-pointer bg-white dark:bg-slate-900 px-3 py-1.5 rounded-full border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow hover:border-orange-200 dark:hover:border-orange-900/50 uppercase tracking-wide w-max"
                 >
@@ -1351,14 +1350,14 @@ const [selectedProduct, setSelectedProduct] = useState('Product Collections');
                   </svg>
                   Go Back
                 </button>
-              </div>
+                 </div>
 
               {displayedRooms.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 gap-6 relative z-10 animate-fade-in">
                   {displayedRooms.map((room, index) => (
                     <div
                       key={`${room.id}-${index}`}
-                     className="bg-white dark:bg-slate-900 rounded-xl overflow-hidden shadow-sm hover:shadow-xl border border-slate-200/60 dark:border-slate-800 hover:border-[#f05c3f] group transition-all duration-300 flex flex-col cursor-pointer"
+                      className="bg-white dark:bg-slate-900 rounded-xl overflow-hidden shadow-sm hover:shadow-xl border border-slate-200/60 dark:border-slate-800 hover:border-[#f05c3f] group transition-all duration-300 flex flex-col cursor-pointer"
                       onClick={() => navigate(`/visualizer/${room.id}`)}
                     >
                       <div className="h-[230px] w-full overflow-hidden bg-slate-100 dark:bg-slate-800 relative">
@@ -1373,7 +1372,7 @@ const [selectedProduct, setSelectedProduct] = useState('Product Collections');
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
                           </span>
                         </div>
-                        {console.log('DEBUG New Tag:', room.name, '| createdAt:', room.createdAt, '| hasCloudinary:', room.img?.includes('cloudinary'), '| diffHours:', room.createdAt ? (Date.now() - new Date(room.createdAt).getTime())/3600000 : 'N/A')}
+                        {console.log('DEBUG New Tag:', room.name, '| createdAt:', room.createdAt, '| hasCloudinary:', room.img?.includes('cloudinary'), '| diffHours:', room.createdAt ? (Date.now() - new Date(room.createdAt).getTime()) / 3600000 : 'N/A')}
                         {room.img?.includes('cloudinary') && room.createdAt && (Date.now() - new Date(room.createdAt).getTime()) < 2 * 24 * 60 * 60 * 1000 && (
                           <div className="absolute top-3 right-3 bg-[#f05c3f] text-white text-[9px] font-black tracking-widest px-2 py-1 rounded shadow uppercase">
                             New
