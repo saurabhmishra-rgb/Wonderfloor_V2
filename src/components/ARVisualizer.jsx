@@ -1652,7 +1652,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
 
     // ── NORMAL MODE BRANCH ──
     setSelectedProduct(product);
-    // setFloorRotation(0);
+    setFloorRotation(defaultFloorRotation);
     setIsFloorVisible(true);
     applyFloorOverlay(product, floorRotation);
     setIsSidebarOpen(false);
