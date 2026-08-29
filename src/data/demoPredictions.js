@@ -16,7 +16,7 @@ export const demoPredictions = {
         distance: 1.9345139799407232,
         normal: [-0.015559538536334691, -0.9850955249388406, -0.17130296992757144]
       },
-      floor_rotation: 8
+      floor_rotation: 90
     },
     images: {},
     input: {
@@ -45,7 +45,7 @@ export const demoPredictions = {
             distance: 1.5129698645074483,
             normal: [0.004065696236456458, -0.9988972012104483, -0.046774475176596615]
           },
-          floor_rotation: 30
+          floor_rotation: 120
         },
         input: {
           height: 1200,
@@ -129,7 +129,7 @@ export const demoPredictions = {
           -0.32571855320001053
         ]
       },
-      floor_rotation: 7.5
+      floor_rotation: 190
     },
     images: {},
     input: {
@@ -157,7 +157,7 @@ export const demoPredictions = {
           -0.14388627511074306
         ]
       },
-      floor_rotation: 0
+      floor_rotation: 90
     },
     images: {},
     input: {
@@ -241,7 +241,7 @@ export const demoPredictions = {
           -0.04682198503424773
         ]
       },
-      floor_rotation: 30
+      floor_rotation: 120
     },
     images: {},
     input: {
