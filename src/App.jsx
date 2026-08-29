@@ -1295,10 +1295,13 @@ const [selectedProduct, setSelectedProduct] = useState('Product Collections');
                 <div
                   key={`cat-${cat.id}`}
                   className="bg-white dark:bg-slate-900 rounded-xl overflow-hidden shadow-sm hover:shadow-xl border border-slate-200/60 dark:border-slate-800 hover:border-[#f05c3f] group transition-all duration-300 flex flex-col cursor-pointer"
+                   <button
                   onClick={() => {
-                    setSelectedIndustry(cat.category);
+                    setSelectedIndustry('ALL INDUSTRY');
                     setSelectedProduct('Product Collections');
+                    demoSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                   }}
+                  className="group flex items-center gap-1.5 text-[11px] font-bold text-gray-500 dark:text-slate-400 hover:text-[#f05c3f] dark:hover:text-[#f05c3f] transition-all duration-200 cursor-pointer bg-white dark:bg-slate-900 px-3 py-1.5 rounded-full border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow hover:border-orange-200 dark:hover:border-orange-900/50 uppercase tracking-wide w-max"
                 >
                   <div className="h-[230px] w-full overflow-hidden bg-slate-100 dark:bg-slate-800 relative">
                     <img
