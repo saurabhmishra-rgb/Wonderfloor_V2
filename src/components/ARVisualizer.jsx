@@ -618,7 +618,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
     // Priority 4: Fallback
     // const savedProduct = localStorage.getItem('savedSelectedProduct');
     // return savedProduct ? JSON.parse(savedProduct) : combinedProducts[0];
-    return combinedProducts[0] || ALL_PRODUCTS[0] || {
+    return combinedProducts[1] || ALL_PRODUCTS[1] || {
       id: 'placeholder',
       name: 'Loading...',
       accordionCategory: '',
