@@ -2460,7 +2460,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
                   {/* Change filteredProducts.length to currentTabFilteredProducts.length */ }
                   {
                     currentTabFilteredProducts.length === 0 && (
-                      <div className="text-center text-gray-500 py-8 text-sm">No products match your search or filters.</div>
+                      <div className="text-center text-gray-500 py-8 text-sm">No related product found at the moment</div>
                     )
                   }
                   // NEW ACCORDION LOGIC
@@ -2655,7 +2655,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
                   );
                 })}
                 {filteredProducts.length === 0 && (
-                  <div className="text-center text-gray-500 py-8 text-sm">No products match your search or filters.</div>
+                  <div className="text-center text-gray-500 py-8 text-sm">no related product found at the moment</div>
                 )}
               </div>
 
