@@ -16,7 +16,7 @@ export const demoPredictions = {
         distance: 1.9345139799407232,
         normal: [-0.015559538536334691, -0.9850955249388406, -0.17130296992757144]
       },
-      floor_rotation: 8
+      floor_rotation: 90
     },
     images: {},
     input: {
@@ -129,7 +129,7 @@ export const demoPredictions = {
           -0.32571855320001053
         ]
       },
-      floor_rotation: 7.5
+      floor_rotation: 100
     },
     images: {},
     input: {
@@ -157,7 +157,7 @@ export const demoPredictions = {
           -0.14388627511074306
         ]
       },
-      floor_rotation: 0
+      floor_rotation: 90
     },
     images: {},
     input: {
