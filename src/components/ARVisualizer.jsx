@@ -2972,9 +2972,15 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
                   className={`flex items-center gap-2 md:gap-3 w-full md:w-auto cursor-pointer p-1.5 -ml-1.5 rounded-md transition-colors group
     ${isDarkMode ? 'hover:bg-[#2d4059]' : 'hover:bg-gray-50'}`}
                 >
-                  <img src={footerDisplayProduct.img} alt="Selected"
-                    className={`w-8 h-8 md:w-10 md:h-10 object-cover rounded border ${isDarkMode ? 'border-[#3d5068]' : 'border-gray-200'}`}
-                  />
+                  {footerDisplayProduct?.img ? (
+                    <img 
+                      src={footerDisplayProduct.img} 
+                      alt="Selected"
+                      className={`w-8 h-8 md:w-10 md:h-10 object-cover rounded border ${isDarkMode ? 'border-[#3d5068]' : 'border-gray-200'}`}
+                    />
+                  ) : (
+                    <div className={`w-8 h-8 md:w-10 md:h-10 rounded animate-pulse ${isDarkMode ? 'bg-[#334155]' : 'bg-gray-200'}`} />
+                  )}
                   <div className="flex flex-col mr-auto md:mr-0">
                     <span className={`font-bold text-sm md:text-base leading-tight transition-colors
       ${isDarkMode ? 'text-white group-hover:text-teal-400' : 'text-gray-900 group-hover:text-[#0b5e5e]'}`}>
