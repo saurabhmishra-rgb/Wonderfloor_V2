@@ -5,7 +5,7 @@ export const demoPredictions = {
     camera: {
       cx: 800,
       cy: 599.9999389648438,
-      fx: 3364.81103515625,
+      fx: 1364.81103515625,
       fy: 3364.810791015625,
       height_meters: 1.9345139799407232,
       pitch_degrees: -9.123054646082059,
@@ -45,7 +45,7 @@ export const demoPredictions = {
             distance: 1.5129698645074483,
             normal: [0.004065696236456458, -0.9988972012104483, -0.046774475176596615]
           },
-          floor_rotation: 120
+          floor_rotation: 210
         },
         input: {
           height: 1200,
@@ -197,9 +197,9 @@ export const demoPredictions = {
   "6a3bc82089199742512b7e05": {
     camera: {
       cx: 800,
-      cy: 599.9999389648438,
-      fx: 5622.7958984375,
-      fy: 5622.7958984375,
+      cy: 600,
+      fx: 4011.7958984375,
+      fy: 15022.7958984375,
       height_meters: 1.405296044133009,
       pitch_degrees: -4.163045976012846,
       roll_degrees: 0.5149687825797227
