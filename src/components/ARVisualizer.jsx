@@ -354,7 +354,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
       0;
 
     const parsedRotation = Number(rawRotation);
-    return Number.isFinite(parsedRotation) ? parsedRotation % 180 : 0;
+    return Number.isFinite(parsedRotation) ? parsedRotation % 360 : 0;
   }, [initialImage]);
 
   // Browser detector: True if Safari (Mac/iOS), False if Chrome/Edge/Windows
@@ -1090,7 +1090,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
         }
         const ctx = canvas.getContext('2d');
         ctx.translate(canvas.width / 2, canvas.height / 2);
-        ctx.rotate((floorRotation * Math.PI) / 180);
+        ctx.rotate((floorRotation * Math.PI) / 360);
         ctx.drawImage(img, -img.width / 2, -img.height / 2);
 
         // Ab ye line bina kisi crash ya error ke flawlessly chalegi!
@@ -1290,7 +1290,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
     if (!product || product.id === 'original_floor') return;
 
     // Increment angle by 15 degrees
-    const nextAngle = isLeft ? (compareLeftRotation + 15) % 180 : (compareRightRotation + 15) % 180;
+    const nextAngle = isLeft ? (compareLeftRotation + 15) % 360 : (compareRightRotation + 15) % 360;
 
     if (isLeft) setCompareLeftRotation(nextAngle);
     else setCompareRightRotation(nextAngle);
@@ -1689,7 +1689,7 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
 
   const handleRotate = () => {
     if (!isFloorVisible) return;
-    const nextAngle = (floorRotation + 15) % 180;
+    const nextAngle = (floorRotation + 15) % 360;
     setFloorRotation(nextAngle);
     setIsFloorVisible(true);
     if (herringboneMode) {
