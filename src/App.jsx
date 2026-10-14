@@ -11,35 +11,9 @@ import { useLocation, useParams, useNavigate } from 'react-router-dom';
 import { matchIndustryCategory } from './utils/categoryMatcher';
 import { demoPredictions } from './data/demoPredictions';
 // --- Import all local images ---
-// import Industrial from './assets/Industrial-Flooring_02.jpg';
-// import Hospital from './assets/Hospital_02.jpg';
-// import office02 from './assets/Office-Flooring_02.jpg';
-// import residential03 from './assets/Residential-Flooring_02.jpg';
-// import school03 from './assets/School-Flooring_02.jpg';
-// import superMarket01 from './assets/Super-Market-Flooring_01.jpg';
-// import HeroImage from './assets/hero.png';
-// import Sport from './assets/Sports-Flooring_01.jpg';
-// import Transport from './assets/Transport-Flooring_03.jpg';
-// import Auditorial from './assets/Auditorium-Flooring_01.jpg';
-// import Hotel from './assets/Hotel_Hospitality-Flooring_01.jpg';
 
-// import DefaultImage from './assets/Default.jpg';
 import Logo from './assets/logo.png';
-// import room1 from './assets/room1.jpg';
-// import room2 from './assets/room2.jpg';
-// import room1copy from './assets/room1copy.png';
-// import room2copy from './assets/room2copy.png';
-// import schoolcopy1 from './assets/School-Flooring_02 copy.png';
-// import schoolcopy2 from './assets/School-Flooring_03 copy.png';
-// import schoolcopy3 from './assets/School-Flooring_04 copy.png';
-// import schoolcopy4 from './assets/School-Flooring_05 copy.png';
-// import schoolcopy5 from './assets/School-Flooring_06 copy.png';
-// import schoolcopy6 from './assets/School-Flooring_07.png';
-// import school01 from './assets/school1.jpg';
-// import school02 from './assets/school2.jpg';
-// import school04 from './assets/school3.jpg';
-// import school05 from './assets/school4.jpg';
-// import school06 from './assets/school6.jpg';
+
 import visualizerDemo from './assets/visualizer-demo.mp4';
 
 // ── Socket ───────────────────────────────────────────────────────────────────
@@ -187,6 +161,7 @@ function App() {
   const [sessionId, setSessionId] = useState('');
   const [isProductDropdownOpen, setIsProductDropdownOpen] = useState(false);
   const [isAnalyzingRoom, setIsAnalyzingRoom] = useState(false); // for ANALYZING ROOM(RUNPOD)
+  const [showCollections, setShowCollections] = useState(false);
 
   // ── NEW: Database Fetched Rooms State ─────────────────────────────────────
   const [dbRooms, setDbRooms] = useState([]);
@@ -880,7 +855,7 @@ function App() {
 `}</style>
 
       {/* ── HERO SECTION ── */}
-      <section className="relative w-full pt-28 pb-20 lg:pt-32 lg:pb-28 overflow-hidden">
+      <section className="relative w-full pt-28 pb-8 lg:pt-32 lg:pb-12 overflow-hidden">
         {/* Subtle Dot Grid Background matching the design */}
         <div className="absolute inset-0 z-0 bg-[radial-gradient(#e5e7eb_1.5px,transparent_1.5px)] [background-size:24px_24px] dark:bg-[radial-gradient(#334155_1.5px,transparent_1.5px)] opacity-60"></div>
 
@@ -929,13 +904,14 @@ function App() {
 
               {/* Upload Photo Button */}
               <button
-                onClick={handleUploadClick}
+                onClick={scrollSmoothToDemo}
                 className="bg-[#f05c3f]/99 hover:bg-[#e04b2f] text-white font-bold py-2.5 px-5 rounded-lg text-[15px] transition-all duration-300 w-full sm:w-auto flex items-center justify-center gap-2.5 shadow-[0_8px_20px_rgba(240,92,63,0.25)] hover:shadow-[0_10px_25px_rgba(240,92,63,0.4)] hover:-translate-y-1 cursor-pointer"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                Upload Photo
+                Try Demo Scene
               </button>
 
               {/* Scan to Upload Button */}
@@ -951,14 +927,13 @@ function App() {
 
               {/* Try Demo Scene Button */}
               <button
-                onClick={scrollSmoothToDemo}
+                onClick={handleUploadClick}
                 className="bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 hover:border-gray-300 hover:bg-slate-50 dark:hover:bg-slate-750 font-bold py-2.5 px-5 rounded-lg text-[15px] transition-all duration-300 w-full sm:w-auto flex items-center justify-center gap-2.5 shadow-sm hover:shadow hover:-translate-y-1 cursor-pointer"
               >
-                <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                 </svg>
-                Try Demo Scene
+                Upload Photo
               </button>
             </div>
 
@@ -1078,7 +1053,7 @@ function App() {
         </div>
       </section>
       {/* ══ TICKER — sits between Hero and Demo Scenes ══ */}
-      <div className="relative z-10 w-full overflow-hidden border-y border-black/[0.07] dark:border-white/10 bg-[#F8FAFC] dark:bg-slate-900 py-3.5">
+      {/* <div className="relative z-10 w-full overflow-hidden border-y border-black/[0.07] dark:border-white/10 bg-[#F8FAFC] dark:bg-slate-900 py-3.5">
         <style>{`
     @keyframes tick { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
   `}</style>
@@ -1096,9 +1071,9 @@ function App() {
             </div>
           ))}
         </div>
-      </div>
+      </div> */}
       {/* ── EXPLORE FLOORING IDEAS (DEMO SCENES) ── */}
-      < section ref={demoSectionRef} className={`w-full py-16 sm:py-24 border-t ${isDarkMode ? 'bg-slate-950/40 border-slate-800' : 'bg-slate-50 border-slate-200'}`
+      < section ref={demoSectionRef} className={`w-full pt-8 pb-16 sm:pt-12 sm:pb-24 border-t ${isDarkMode ? 'bg-slate-950/40 border-slate-800' : 'bg-slate-50 border-slate-200'}`
       }>
         <div className="max-w-[1300px] mx-auto px-4 sm:px-6">
 
@@ -1145,6 +1120,17 @@ function App() {
           {/* Inline Navigation & Control Matrix Layout */}
           <div className="flex flex-col gap-4 md:gap-3 mb-10 w-full select-none">
 
+            {/* // Button for the hide the Collection below the industry  */}
+            <div className="flex justify-end w-full">
+              <button
+                type="button"
+                onClick={() => setShowCollections(prev => !prev)}
+                className="text-xs text-[#f05c3f] font-semibold underline cursor-pointer hover:opacity-80 transition-opacity"
+              >
+                {showCollections ? 'Hide Collections' : 'Filter by Collection'}
+              </button>
+            </div>
+
             {/* Industry Row Filter Matrix */}
             <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4 w-full">
               <span className="text-[11px] font-extrabold tracking-wider text-gray-400 uppercase w-24 shrink-0 md:pt-0">
@@ -1172,94 +1158,97 @@ function App() {
                 })}
               </div>
             </div>
+            {showCollections && (
+              <>
+                <div className="h-[1px] bg-slate-100 dark:bg-slate-800 w-full my-1" />
 
-            <div className="h-[1px] bg-slate-100 dark:bg-slate-800 w-full my-1" />
-
-            {/* Collection Row Filter Matrix */}
-            <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4 relative z-30">
-              <span className="text-[11px] font-extrabold tracking-wider text-gray-400 uppercase w-24 shrink-0 md:pt-0">
-                Collection:
-              </span>
+                {/* Collection Row Filter Matrix */}
+                <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4 relative z-30">
+                  <span className="text-[11px] font-extrabold tracking-wider text-gray-400 uppercase w-24 shrink-0 md:pt-0">
+                    Collection:
+                  </span>
 
 
-              <div
-                className={`flex overflow-x-auto md:overflow-visible md:flex-wrap items-center gap-2 w-full scroll-smooth snap-x [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] md:pb-0 md:mb-0 ${isProductDropdownOpen ? 'pb-[290px] -mb-[290px]' : 'pb-0 -mb-0'
-                  }`}
-              >
+                  <div
+                    className={`flex overflow-x-auto md:overflow-visible md:flex-wrap items-center gap-2 w-full scroll-smooth snap-x [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] md:pb-0 md:mb-0 ${isProductDropdownOpen ? 'pb-[290px] -mb-[290px]' : 'pb-0 -mb-0'
+                      }`}
+                  >
 
-                <button
-                  onClick={() => setSelectedProduct('Product Collections')}
-                  className={`px-3.5 py-1.5 rounded-full text-[11px] font-bold tracking-wide border cursor-pointer transition-all shrink-0 snap-start ${selectedProduct === 'Product Collections'
-                    ? 'bg-[#f05c3f] text-white border-[#f05c3f] shadow-sm'
-                    : 'bg-slate-50 dark:bg-slate-800 text-gray-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-[#f05c3f]'
-                    }`}
-                >
-                  All Collections
-                </button>
-
-                {flooringProducts.slice(0, 10).map((product) => {
-                  if (product === 'Product Collections') return null;
-                  const isSelected = selectedProduct === product;
-                  return (
                     <button
-                      key={product}
-                      onClick={() => setSelectedProduct(product)}
-                      className={`px-3.5 py-1.5 rounded-full text-[11.5px] font-bold tracking-wide border cursor-pointer transition-all shrink-0 snap-start ${isSelected
+                      onClick={() => setSelectedProduct('Product Collections')}
+                      className={`px-3.5 py-1.5 rounded-full text-[11px] font-bold tracking-wide border cursor-pointer transition-all shrink-0 snap-start ${selectedProduct === 'Product Collections'
                         ? 'bg-[#f05c3f] text-white border-[#f05c3f] shadow-sm'
                         : 'bg-slate-50 dark:bg-slate-800 text-gray-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-[#f05c3f]'
                         }`}
                     >
-                      {product}
-                    </button>
-                  );
-                })}
-
-
-                {flooringProducts.length > 10 && (
-                  <div className="relative inline-block shrink-0 snap-start" ref={productDropdownRef}>
-                    <button
-                      onClick={() => setIsProductDropdownOpen(!isProductDropdownOpen)}
-                      className="px-3.5 py-1.5 rounded-full text-[12px] font-bold tracking-wide border bg-slate-50 dark:bg-slate-800 text-gray-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-[#f05c3f] cursor-pointer transition-all flex items-center gap-1"
-                    >
-                      More
-                      <svg
-                        className={`w-3 h-3 transition-transform duration-200 ${isProductDropdownOpen ? 'rotate-180' : ''}`}
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" />
-                      </svg>
+                      All Collections
                     </button>
 
-                    {isProductDropdownOpen && (
-                      <div
-                        onWheel={(e) => e.stopPropagation()}
-                        onTouchMove={(e) => e.stopPropagation()}
-                        className="absolute left-0 md:left-auto md:right-0 top-full mt-2 w-52 bg-white dark:bg-slate-900 shadow-[0_10px_30px_rgba(0,0,0,0.15)] border border-slate-100 dark:border-slate-800 py-1.5 z-50 rounded-xl max-h-[280px] overflow-y-auto overscroll-contain"
-                      >
-                        {flooringProducts.slice(10).map((product, index) => (
-                          <button
-                            key={index}
-                            onClick={() => {
-                              setSelectedProduct(product);
-                              setIsProductDropdownOpen(false);
-                            }}
-                            className={`cursor-pointer w-full text-left px-4 py-2 text-[12.5px] transition-colors ${selectedProduct === product
-                              ? 'text-[#f05c3f] bg-orange-50/60 dark:bg-slate-800 font-bold'
-                              : 'text-gray-600 dark:text-slate-300 hover:text-[#f05c3f] hover:bg-slate-50 dark:hover:bg-slate-800/50'
-                              }`}
+                    {flooringProducts.slice(0, 10).map((product) => {
+                      if (product === 'Product Collections') return null;
+                      const isSelected = selectedProduct === product;
+                      return (
+                        <button
+                          key={product}
+                          onClick={() => setSelectedProduct(product)}
+                          className={`px-3.5 py-1.5 rounded-full text-[11.5px] font-bold tracking-wide border cursor-pointer transition-all shrink-0 snap-start ${isSelected
+                            ? 'bg-[#f05c3f] text-white border-[#f05c3f] shadow-sm'
+                            : 'bg-slate-50 dark:bg-slate-800 text-gray-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-[#f05c3f]'
+                            }`}
+                        >
+                          {product}
+                        </button>
+                      );
+                    })}
+
+
+                    {flooringProducts.length > 10 && (
+                      <div className="relative inline-block shrink-0 snap-start" ref={productDropdownRef}>
+                        <button
+                          onClick={() => setIsProductDropdownOpen(!isProductDropdownOpen)}
+                          className="px-3.5 py-1.5 rounded-full text-[12px] font-bold tracking-wide border bg-slate-50 dark:bg-slate-800 text-gray-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-[#f05c3f] cursor-pointer transition-all flex items-center gap-1"
+                        >
+                          More
+                          <svg
+                            className={`w-3 h-3 transition-transform duration-200 ${isProductDropdownOpen ? 'rotate-180' : ''}`}
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
                           >
-                            {product}
-                          </button>
-                        ))}
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" />
+                          </svg>
+                        </button>
+
+                        {isProductDropdownOpen && (
+                          <div
+                            onWheel={(e) => e.stopPropagation()}
+                            onTouchMove={(e) => e.stopPropagation()}
+                            className="absolute left-0 md:left-auto md:right-0 top-full mt-2 w-52 bg-white dark:bg-slate-900 shadow-[0_10px_30px_rgba(0,0,0,0.15)] border border-slate-100 dark:border-slate-800 py-1.5 z-50 rounded-xl max-h-[280px] overflow-y-auto overscroll-contain"
+                          >
+                            {flooringProducts.slice(10).map((product, index) => (
+                              <button
+                                key={index}
+                                onClick={() => {
+                                  setSelectedProduct(product);
+                                  setIsProductDropdownOpen(false);
+                                }}
+                                className={`cursor-pointer w-full text-left px-4 py-2 text-[12.5px] transition-colors ${selectedProduct === product
+                                  ? 'text-[#f05c3f] bg-orange-50/60 dark:bg-slate-800 font-bold'
+                                  : 'text-gray-600 dark:text-slate-300 hover:text-[#f05c3f] hover:bg-slate-50 dark:hover:bg-slate-800/50'
+                                  }`}
+                              >
+                                {product}
+                              </button>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     )}
-                  </div>
-                )}
 
-              </div>
-            </div>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
 
           {/* ── Demo Rooms Grid Core Presentation (YOUR EXACT LOGIC `isDefaultView`) ── */}
@@ -1350,7 +1339,7 @@ function App() {
                   </svg>
                   Go Back
                 </button>
-                 </div>
+              </div>
 
               {displayedRooms.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 gap-6 relative z-10 animate-fade-in">
@@ -1429,11 +1418,12 @@ function App() {
 
           <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
             <button
-              onClick={handleUploadClick}
+              onClick={scrollSmoothToDemo}
+
               className="flex items-center justify-center gap-2 bg-white hover:bg-orange-50 text-[#D54303] font-bold py-2.5 px-5 rounded-[11px] text-[15px] transition duration-200 w-full sm:w-auto shadow-md cursor-pointer"
             >
-              <Upload className="w-[18px] h-[18px]" strokeWidth={2.5} />
-              Upload Photo
+              <Play className="w-[18px] h-[18px]" strokeWidth={2.5} />
+              Try Demo Scene
             </button>
 
             <button
@@ -1445,11 +1435,12 @@ function App() {
             </button>
 
             <button
-              onClick={scrollSmoothToDemo}
+              onClick={handleUploadClick}
               className="flex items-center justify-center gap-2 bg-transparent hover:bg-white/10 text-white border-1 border-white/50 hover:border-white/50 font-bold py-2.5 px-5 rounded-[11px] text-[14.5px] transition duration-200 w-full sm:w-auto cursor-pointer"
             >
-              <Play className="w-[18px] h-[18px]" strokeWidth={2.5} />
-              Try Demo Scene
+
+              <Upload className="w-[18px] h-[18px]" strokeWidth={2.5} />
+              Upload Photo
             </button>
           </div>
         </div>
