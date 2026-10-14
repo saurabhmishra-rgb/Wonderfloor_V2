@@ -500,34 +500,47 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
 
 
   // ── 2. NEW: FETCH PRODUCTS FROM MONGODB ──
+ // ── 2. UPDATED: FETCH PRODUCTS FROM MONGODB & SYNC VISIBILITY ──
   useEffect(() => {
     async function fetchDatabaseProducts() {
       try {
         const response = await fetch(`${NODE_BACKEND_URL}/products`);
         if (response.ok) {
           const data = await response.json();
-
-
-
-
           const savedProductOrder = JSON.parse(localStorage.getItem('pm_productOrder')) || [];
 
+          // 1. Track hidden SKUs & hidden Collections from DB
+          const hiddenSkus = new Set(
+            data
+              .filter(prod => prod.isVisible === false)
+              .map(prod => (prod.sku || '').trim().toLowerCase())
+          );
 
+          // Check if an entire collection is marked hidden in DB
+          const collectionVisibilityMap = {};
+          data.forEach(prod => {
+            const col = (prod.accordionCategory || '').trim().toLowerCase();
+            if (!col) return;
+            if (collectionVisibilityMap[col] === undefined) {
+              collectionVisibilityMap[col] = false;
+            }
+            if (prod.isVisible !== false) {
+              collectionVisibilityMap[col] = true; // At least one product is visible
+            }
+          });
+
+          // 2. Filter & Format DB Products
           const formattedProducts = data
             .filter(prod => prod.isVisible !== false)
             .sort((a, b) => {
-              // Priority 1: Admin's instant local drag-and-drop memory
               const idxA = savedProductOrder.indexOf(a._id);
               const idxB = savedProductOrder.indexOf(b._id);
               if (idxA !== -1 && idxB !== -1) return idxA - idxB;
               if (idxA !== -1) return -1;
               if (idxB !== -1) return 1;
-
-
               return (a.order ?? 99999) - (b.order ?? 99999);
             })
             .map(prod => {
-
               let translatedNav = prod.navCategory || '';
               if (translatedNav === 'Flooring Products') {
                 translatedNav = 'flooring-products';
@@ -543,11 +556,8 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
                 sku: (prod.sku || '').trim(),
                 size: prod.size,
                 img: prod.img,
-
-                // Physical dimensions from database
                 widthMM: prod.widthMM,
                 heightMM: prod.heightMM,
-
                 colour: prod.colour,
                 shade: prod.shade,
                 collection: prod.collection || '',
@@ -566,8 +576,29 @@ const ARVisualizer = ({ closeModal, initialImage, onOpenRecentRooms, historyCoun
               };
             });
 
+          // 3. Track visible DB SKUs to avoid duplicates with ALL_PRODUCTS
+          const visibleDbSkus = new Set(
+            formattedProducts.map(p => p.sku.toLowerCase())
+          );
 
-          setCombinedProducts([...ALL_PRODUCTS, ...formattedProducts]);
+          // 4. Filter static ALL_PRODUCTS so hidden DB items/collections don't leak through
+          const filteredStaticProducts = ALL_PRODUCTS.filter(staticProd => {
+            const sku = (staticProd.sku || '').trim().toLowerCase();
+            const col = (staticProd.accordionCategory || '').trim().toLowerCase();
+
+            // Agar DB me ye SKU explicitly hidden hai, toh mat dikhao
+            if (hiddenSkus.has(sku)) return false;
+
+            // Agar DB me poora collection hidden kar diya gaya hai, toh static wala bhi mat dikhao
+            if (collectionVisibilityMap[col] === false) return false;
+
+            // Agar DB me ye product already visible list me hai, toh duplicate mat banao
+            if (visibleDbSkus.has(sku)) return false;
+
+            return staticProd.isVisible !== false;
+          });
+
+          setCombinedProducts([...filteredStaticProducts, ...formattedProducts]);
           setIsLoadingDbProducts(false);
         }
       } catch (error) {
