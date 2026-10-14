@@ -165,6 +165,35 @@ export const demoPredictions = {
       width: 1600
     }
   },
+
+  
+  "6a478a77125096412ecb252b": {
+     camera: {
+      cx: 800,
+      cy: 599.9999389648438,
+      fx: 4127.2392578125,
+      fy: 4127.2392578125,
+      height_meters: 1.2146296932666043,
+      pitch_degrees: -9.028500922306987,
+      roll_degrees: 0.5490831228847034
+    },
+    floor: {
+      plane: {
+        distance: 1.2146296932666043,
+        normal: [
+          0.019859311390768526,
+          -0.989394940145663,
+          -0.14388627511074306
+        ]
+      },
+      floor_rotation: 0
+    },
+    images: {},
+    input: {
+      height: 1200,
+      width: 1600
+    }
+  },
   //Hospital
   "6a4602dcb7a9facb9cc3fee0": {
     camera: {
