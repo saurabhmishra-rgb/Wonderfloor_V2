@@ -7513,7 +7513,7 @@ export const demoPredictions = {
   },
   "status": "COMPLETED",
   "workerId": "rnhic1ngizavgh"
-}
+},
 //Sport- fitness-Area
 "6a47881a125096412ecb2519":{
   "delayTime": 9895,
@@ -12667,6 +12667,7 @@ export const demoPredictions = {
   "status": "COMPLETED",
   "workerId": "ql97bncg8cq7qo"
 },
+
 //Hospital-waiting-Launges
 "6a478b58125096412ecb2531":{
   "delayTime": 14336,
