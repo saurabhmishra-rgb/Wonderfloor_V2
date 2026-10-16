@@ -3358,29 +3358,29 @@ export const demoPredictions = {
 },
   // School
   // 1. School Room
-  "6a46243bac0c56bac243c30f": {
-    camera: {
-      cx: 800,
-      cy: 599.9999389648438,
-      fx: 3364.81103515625,
-      fy: 3364.810791015625,
-      height_meters: 1.9345139799407232,
-      pitch_degrees: -9.123054646082059,
-      roll_degrees: 2.1500398172219946
-    },
-    floor: {
-      plane: {
-        distance: 1.9345139799407232,
-        normal: [-0.015559538536334691, -0.9850955249388406, -0.17130296992757144]
-      },
-      floor_rotation: 150
-    },
-    images: {},
-    input: {
-      height: 1200,
-      width: 1600
-    }
-  },
+  // "6a46243bac0c56bac243c30f": {
+  //   camera: {
+  //     cx: 800,
+  //     cy: 599.9999389648438,
+  //     fx: 3364.81103515625,
+  //     fy: 3364.810791015625,
+  //     height_meters: 1.9345139799407232,
+  //     pitch_degrees: -9.123054646082059,
+  //     roll_degrees: 2.1500398172219946
+  //   },
+  //   floor: {
+  //     plane: {
+  //       distance: 1.9345139799407232,
+  //       normal: [-0.015559538536334691, -0.9850955249388406, -0.17130296992757144]
+  //     },
+  //     floor_rotation: 150
+  //   },
+  //   images: {},
+  //   input: {
+  //     height: 1200,
+  //     width: 1600
+  //   }
+  // },
 
 
   //Industrial-image-7
@@ -3629,89 +3629,89 @@ export const demoPredictions = {
     }
   },
   // Transport Flooring
-  "6a462d6b12f464296f8a98e2": {
-    camera: {
-      cx: 800,
-      cy: 599.9999389648438,
-      fx: 4127.2392578125,
-      fy: 4127.2392578125,
-      height_meters: 1.2146296932666043,
-      pitch_degrees: -9.028500922306987,
-      roll_degrees: 0.5490831228847034
-    },
-    floor: {
-      plane: {
-        distance: 1.2146296932666043,
-        normal: [
-          0.019859311390768526,
-          -0.989394940145663,
-          -0.14388627511074306
-        ]
-      },
-      floor_rotation: 0
-    },
-    images: {},
-    input: {
-      height: 1200,
-      width: 1600
-    }
-  },
+  // "6a462d6b12f464296f8a98e2": {
+  //   camera: {
+  //     cx: 800,
+  //     cy: 599.9999389648438,
+  //     fx: 4127.2392578125,
+  //     fy: 4127.2392578125,
+  //     height_meters: 1.2146296932666043,
+  //     pitch_degrees: -9.028500922306987,
+  //     roll_degrees: 0.5490831228847034
+  //   },
+  //   floor: {
+  //     plane: {
+  //       distance: 1.2146296932666043,
+  //       normal: [
+  //         0.019859311390768526,
+  //         -0.989394940145663,
+  //         -0.14388627511074306
+  //       ]
+  //     },
+  //     floor_rotation: 0
+  //   },
+  //   images: {},
+  //   input: {
+  //     height: 1200,
+  //     width: 1600
+  //   }
+  // },
 
-  "6a478a77125096412ecb252b": {
-     camera: {
-      cx: 800,
-      cy: 599.9999389648438,
-      fx: 4127.2392578125,
-      fy: 4127.2392578125,
-      height_meters: 1.2146296932666043,
-      pitch_degrees: -9.028500922306987,
-      roll_degrees: 0.5490831228847034
-    },
-    floor: {
-      plane: {
-        distance: 1.2146296932666043,
-        normal: [
-          0.019859311390768526,
-          -0.989394940145663,
-          -0.14388627511074306
-        ]
-      },
-      floor_rotation: 0
-    },
-    images: {},
-    input: {
-      height: 1200,
-      width: 1600
-    }
-  },
+  // "6a478a77125096412ecb252b": {
+  //    camera: {
+  //     cx: 800,
+  //     cy: 599.9999389648438,
+  //     fx: 4127.2392578125,
+  //     fy: 4127.2392578125,
+  //     height_meters: 1.2146296932666043,
+  //     pitch_degrees: -9.028500922306987,
+  //     roll_degrees: 0.5490831228847034
+  //   },
+  //   floor: {
+  //     plane: {
+  //       distance: 1.2146296932666043,
+  //       normal: [
+  //         0.019859311390768526,
+  //         -0.989394940145663,
+  //         -0.14388627511074306
+  //       ]
+  //     },
+  //     floor_rotation: 0
+  //   },
+  //   images: {},
+  //   input: {
+  //     height: 1200,
+  //     width: 1600
+  //   }
+  // },
   //Hospital
-  "6a4602dcb7a9facb9cc3fee0": {
-    camera: {
-      cx: 800,
-      cy: 599.9999389648438,
-      fx: 1563.1451416015625,
-      fy: 1563.1453857421875,
-      height_meters: 1.547279667290866,
-      pitch_degrees: -9.982066193653406,
-      roll_degrees: 2.1812437498886093
-    },
-    floor: {
-      plane: {
-        distance: 1.547279667290866,
-        normal: [
-          -0.03658492185766121,
-          -0.97872795663078,
-          -0.2018740458850684
-        ]
-      },
-      floor_rotation: 37
-    },
-    images: {},
-    input: {
-      height: 1200,
-      width: 1600
-    }
-  },
+  // "6a4602dcb7a9facb9cc3fee0": {
+  //   camera: {
+  //     cx: 800,
+  //     cy: 599.9999389648438,
+  //     fx: 1563.1451416015625,
+  //     fy: 1563.1453857421875,
+  //     height_meters: 1.547279667290866,
+  //     pitch_degrees: -9.982066193653406,
+  //     roll_degrees: 2.1812437498886093
+  //   },
+  //   floor: {
+  //     plane: {
+  //       distance: 1.547279667290866,
+  //       normal: [
+  //         -0.03658492185766121,
+  //         -0.97872795663078,
+  //         -0.2018740458850684
+  //       ]
+  //     },
+  //     floor_rotation: 37
+  //   },
+  //   images: {},
+  //   input: {
+  //     height: 1200,
+  //     width: 1600
+  //   }
+  // },
   //Hotel and Hospitality
   "6a3bc82089199742512b7e05": {
     camera: {
@@ -3770,232 +3770,232 @@ export const demoPredictions = {
   },
 
   // Residential flooring
-  "6a4622fad0ce9cfc46e4093b": {
-    camera: {
-      cx: 800,
-      cy: 599.9999389648438,
-      fx: 782.8927612304688,
-      fy: 782.8927001953125,
-      height_meters: 1.5130481542925371,
-      pitch_degrees: -0.934124418534447,
-      roll_degrees: 0.17171737237668067
-    },
-    floor: {
-      plane: {
-        distance: 1.5130481542925371,
-        normal: [
-          0.004043106510082151,
-          -0.9988950670652053,
-          -0.04682198503424773
-        ]
-      },
-      floor_rotation: 54
-    },
-    images: {},
-    input: {
-      height: 1200,
-      width: 1600
-    }
-  },
-  "6a478554125096412ecb2509":{
-  "delayTime": 9376,
-  "executionTime": 19188,
-  "id": "sync-763c249b-8666-4063-812e-12c44658337a-e1",
-  "output": {
-    "prediction": {
-      "camera": {
-        "camera_model": "pinhole",
-        "confidence": 0.6910891761030034,
-        "cx": 800,
-        "cy": 599.9999389648438,
-        "fx": 4323.875,
-        "fy": 4323.8740234375,
-        "gravity": [
-          0.0012477622367441654,
-          -0.9976474642753601,
-          -0.068541519343853
-        ],
-        "height_meters": 0.9081589359439719,
-        "horizontal_fov_degrees": 20.964565562964214,
-        "intrinsic_matrix": [
-          [
-            4323.875,
-            0,
-            800
-          ],
-          [
-            0,
-            4323.8740234375,
-            599.9999389648438
-          ],
-          [
-            0,
-            0,
-            1
-          ]
-        ],
-        "pitch_degrees": -3.9302210489063905,
-        "roll_degrees": -0.07165286655027907,
-        "uncertainty": {
-          "focal_pixels": 2221.47314453125,
-          "pitch_degrees": 4.324295643259446,
-          "roll_degrees": 0.7837469717034795,
-          "vertical_fov_degrees": 11.335240220127885
-        },
-        "vertical_fov_degrees": 15.800334663598441
-      },
-      "confidence": {
-        "camera_calibration": 0.6910891761030034,
-        "camera_height": 0.9026720699321801,
-        "depth": 0.9636674523353577,
-        "dimensions": 0.9906663894104418,
-        "floor_plane": 0.9766659735261046,
-        "floor_rotation": 0.9954,
-        "overall": 0.8975695212130252,
-        "segmentation": 0.7628255871840887
-      },
-      "floor": {
-        "alternate_floor_rotation": 11.34,
-        "floor_rotation": 101.34,
-        "median_scene_depth_meters": 11.508942604064941,
-        "plane": {
-          "confidence": 0.9766659735261046,
-          "distance": 0.9081589359439719,
-          "gravity_alignment": 0.9999820981816313,
-          "inlier_ratio": 0.9986666666666667,
-          "median_residual_meters": 0.0033995669165332587,
-          "normal": [
-            -0.0006143754199182616,
-            -0.9980217016384643,
-            -0.06286736515480483
-          ]
-        },
-        "visible_area_ratio": 0.48392447916666664,
-        "visible_dimensions_meters": {
-          "confidence": 0.9906663894104418,
-          "depth_meters": 21.32409784328835,
-          "measurement_type": "visible_floor_extent",
-          "projected_area_square_meters": 43.79289768503011,
-          "valid_polygon_vertex_ratio": 1,
-          "width_meters": 5.389579438360531
-        },
-        "visible_polygon_pixels": [
-          [
-            1599,
-            552
-          ],
-          [
-            1553,
-            522
-          ],
-          [
-            1540,
-            572
-          ],
-          [
-            1490,
-            521
-          ],
-          [
-            1445,
-            559
-          ],
-          [
-            1447,
-            504
-          ],
-          [
-            1066,
-            480
-          ],
-          [
-            1092,
-            567
-          ],
-          [
-            778,
-            712
-          ],
-          [
-            197,
-            621
-          ],
-          [
-            272,
-            682
-          ],
-          [
-            0,
-            727
-          ],
-          [
-            0,
-            1199
-          ],
-          [
-            1599,
-            1199
-          ]
-        ]
-      },
-      "input": {
-        "height": 1200,
-        "width": 1600
-      },
-      "scene": [
-        {
-          "confidence": 0.38917696475982666,
-          "scene": "bedroom"
-        },
-        {
-          "confidence": 0.1945631504058838,
-          "scene": "bedchamber"
-        },
-        {
-          "confidence": 0.08943535387516022,
-          "scene": "living_room"
-        },
-        {
-          "confidence": 0.0740097239613533,
-          "scene": "artists_loft"
-        },
-        {
-          "confidence": 0.03936617448925972,
-          "scene": "bow_window/indoor"
-        }
-      ],
-      "selected_detection": {
-        "bbox_xyxy": {
-          "x1": 7,
-          "x2": 1594,
-          "y1": 467,
-          "y2": 1193
-        },
-        "detection_confidence": 0.31509172916412354,
-        "label": "indoor floor",
-        "mask_quality": {
-          "area_plausibility_score": 1,
-          "area_ratio": 0.48114114583333334,
-          "bottom_contact_score": 1,
-          "detection_confidence": 0.31509172916412354,
-          "final_score": 0.7628255871840887,
-          "fragmentation_score": 0.5,
-          "largest_component_ratio": 0.9999902575366073,
-          "lower_half_score": 0.9476093618578229,
-          "sam_score": 0.99609375
-        },
-        "sam_score": 0.99609375
-      },
-      "warnings": [
-        "dimensions_are_single_image_estimates",
-        "complete_room_dimensions_not_returned"
-      ]
-    },
-    "success": true
-  },
-  "status": "COMPLETED",
-  "workerId": "rnhic1ngizavgh"
-},
+//   "6a4622fad0ce9cfc46e4093b": {
+//     camera: {
+//       cx: 800,
+//       cy: 599.9999389648438,
+//       fx: 782.8927612304688,
+//       fy: 782.8927001953125,
+//       height_meters: 1.5130481542925371,
+//       pitch_degrees: -0.934124418534447,
+//       roll_degrees: 0.17171737237668067
+//     },
+//     floor: {
+//       plane: {
+//         distance: 1.5130481542925371,
+//         normal: [
+//           0.004043106510082151,
+//           -0.9988950670652053,
+//           -0.04682198503424773
+//         ]
+//       },
+//       floor_rotation: 54
+//     },
+//     images: {},
+//     input: {
+//       height: 1200,
+//       width: 1600
+//     }
+//   },
+//   "6a478554125096412ecb2509":{
+//   "delayTime": 9376,
+//   "executionTime": 19188,
+//   "id": "sync-763c249b-8666-4063-812e-12c44658337a-e1",
+//   "output": {
+//     "prediction": {
+//       "camera": {
+//         "camera_model": "pinhole",
+//         "confidence": 0.6910891761030034,
+//         "cx": 800,
+//         "cy": 599.9999389648438,
+//         "fx": 4323.875,
+//         "fy": 4323.8740234375,
+//         "gravity": [
+//           0.0012477622367441654,
+//           -0.9976474642753601,
+//           -0.068541519343853
+//         ],
+//         "height_meters": 0.9081589359439719,
+//         "horizontal_fov_degrees": 20.964565562964214,
+//         "intrinsic_matrix": [
+//           [
+//             4323.875,
+//             0,
+//             800
+//           ],
+//           [
+//             0,
+//             4323.8740234375,
+//             599.9999389648438
+//           ],
+//           [
+//             0,
+//             0,
+//             1
+//           ]
+//         ],
+//         "pitch_degrees": -3.9302210489063905,
+//         "roll_degrees": -0.07165286655027907,
+//         "uncertainty": {
+//           "focal_pixels": 2221.47314453125,
+//           "pitch_degrees": 4.324295643259446,
+//           "roll_degrees": 0.7837469717034795,
+//           "vertical_fov_degrees": 11.335240220127885
+//         },
+//         "vertical_fov_degrees": 15.800334663598441
+//       },
+//       "confidence": {
+//         "camera_calibration": 0.6910891761030034,
+//         "camera_height": 0.9026720699321801,
+//         "depth": 0.9636674523353577,
+//         "dimensions": 0.9906663894104418,
+//         "floor_plane": 0.9766659735261046,
+//         "floor_rotation": 0.9954,
+//         "overall": 0.8975695212130252,
+//         "segmentation": 0.7628255871840887
+//       },
+//       "floor": {
+//         "alternate_floor_rotation": 11.34,
+//         "floor_rotation": 101.34,
+//         "median_scene_depth_meters": 11.508942604064941,
+//         "plane": {
+//           "confidence": 0.9766659735261046,
+//           "distance": 0.9081589359439719,
+//           "gravity_alignment": 0.9999820981816313,
+//           "inlier_ratio": 0.9986666666666667,
+//           "median_residual_meters": 0.0033995669165332587,
+//           "normal": [
+//             -0.0006143754199182616,
+//             -0.9980217016384643,
+//             -0.06286736515480483
+//           ]
+//         },
+//         "visible_area_ratio": 0.48392447916666664,
+//         "visible_dimensions_meters": {
+//           "confidence": 0.9906663894104418,
+//           "depth_meters": 21.32409784328835,
+//           "measurement_type": "visible_floor_extent",
+//           "projected_area_square_meters": 43.79289768503011,
+//           "valid_polygon_vertex_ratio": 1,
+//           "width_meters": 5.389579438360531
+//         },
+//         "visible_polygon_pixels": [
+//           [
+//             1599,
+//             552
+//           ],
+//           [
+//             1553,
+//             522
+//           ],
+//           [
+//             1540,
+//             572
+//           ],
+//           [
+//             1490,
+//             521
+//           ],
+//           [
+//             1445,
+//             559
+//           ],
+//           [
+//             1447,
+//             504
+//           ],
+//           [
+//             1066,
+//             480
+//           ],
+//           [
+//             1092,
+//             567
+//           ],
+//           [
+//             778,
+//             712
+//           ],
+//           [
+//             197,
+//             621
+//           ],
+//           [
+//             272,
+//             682
+//           ],
+//           [
+//             0,
+//             727
+//           ],
+//           [
+//             0,
+//             1199
+//           ],
+//           [
+//             1599,
+//             1199
+//           ]
+//         ]
+//       },
+//       "input": {
+//         "height": 1200,
+//         "width": 1600
+//       },
+//       "scene": [
+//         {
+//           "confidence": 0.38917696475982666,
+//           "scene": "bedroom"
+//         },
+//         {
+//           "confidence": 0.1945631504058838,
+//           "scene": "bedchamber"
+//         },
+//         {
+//           "confidence": 0.08943535387516022,
+//           "scene": "living_room"
+//         },
+//         {
+//           "confidence": 0.0740097239613533,
+//           "scene": "artists_loft"
+//         },
+//         {
+//           "confidence": 0.03936617448925972,
+//           "scene": "bow_window/indoor"
+//         }
+//       ],
+//       "selected_detection": {
+//         "bbox_xyxy": {
+//           "x1": 7,
+//           "x2": 1594,
+//           "y1": 467,
+//           "y2": 1193
+//         },
+//         "detection_confidence": 0.31509172916412354,
+//         "label": "indoor floor",
+//         "mask_quality": {
+//           "area_plausibility_score": 1,
+//           "area_ratio": 0.48114114583333334,
+//           "bottom_contact_score": 1,
+//           "detection_confidence": 0.31509172916412354,
+//           "final_score": 0.7628255871840887,
+//           "fragmentation_score": 0.5,
+//           "largest_component_ratio": 0.9999902575366073,
+//           "lower_half_score": 0.9476093618578229,
+//           "sam_score": 0.99609375
+//         },
+//         "sam_score": 0.99609375
+//       },
+//       "warnings": [
+//         "dimensions_are_single_image_estimates",
+//         "complete_room_dimensions_not_returned"
+//       ]
+//     },
+//     "success": true
+//   },
+//   "status": "COMPLETED",
+//   "workerId": "rnhic1ngizavgh"
+// },
 //Recidential- Drawing Room
 "6a4622fad0ce9cfc46e4093b":{
   "delayTime": 15926,
@@ -12669,7 +12669,7 @@ export const demoPredictions = {
 },
 
 //Hospital-waiting-Launges
-"6a478b58125096412ecb2531":{
+"6a478ad8125096412ecb252e":{
   "delayTime": 14336,
   "executionTime": 15617,
   "id": "sync-049274ee-dcb4-48b4-b1d5-307c1cd04b6f-e2",
