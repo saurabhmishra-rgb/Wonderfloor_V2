@@ -3548,7 +3548,7 @@ export const demoPredictions = {
     },
     floor: {
       plane: {
-        distance: 1.4654849378099148,
+        distance: 5.4654849378099148,
         normal: [
           -0.028700481684608817,
           -0.9450310611045352,
