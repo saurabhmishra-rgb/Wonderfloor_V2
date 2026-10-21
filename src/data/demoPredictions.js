@@ -3555,7 +3555,203 @@ export const demoPredictions = {
           -0.32571855320001053
         ]
       },
-      floor_rotation: 7.5
+      floor_rotation: 45
+    },
+    images: {},
+    input: {
+      height: 1200,
+      width: 1600
+    }
+  },
+  //Supermarket-Groserry section
+    "6a478963125096412ecb2523": {
+    camera: {
+      cx: 800,
+      cy: 599.9999389648438,
+      fx: 1143.2479248046875,
+      fy: 1143.248046875,
+      height_meters: 1.4654849378099148,
+      pitch_degrees: -19.269657535520135,
+      roll_degrees: 1.877650805904828
+    },
+    floor: {
+      plane: {
+        distance: 5.4654849378099148,
+        normal: [
+          -0.028700481684608817,
+          -0.9450310611045352,
+          -0.32571855320001053
+        ]
+      },
+      floor_rotation: 190
+    },
+    images: {},
+    input: {
+      height: 1200,
+      width: 1600
+    }
+  },
+    //Supermarket-Loading & Unloading Area
+    "6a4789c2125096412ecb2525": {
+    camera: {
+      cx: 800,
+      cy: 599.9999389648438,
+      fx: 1143.2479248046875,
+      fy: 1143.248046875,
+      height_meters: 1.4654849378099148,
+      pitch_degrees: -19.269657535520135,
+      roll_degrees: 1.877650805904828
+    },
+    floor: {
+      plane: {
+        distance: 5.4654849378099148,
+        normal: [
+          -0.028700481684608817,
+          -0.9450310611045352,
+          -0.32571855320001053
+        ]
+      },
+      floor_rotation: 195
+    },
+    images: {},
+    input: {
+      height: 1200,
+      width: 1600
+    }
+  },
+      //Supermarket- Stock Room 
+    "6a47897d125096412ecb2524": {
+    camera: {
+      cx: 800,
+      cy: 599.9999389648438,
+      fx: 1143.2479248046875,
+      fy: 1143.248046875,
+      height_meters: 1.4654849378099148,
+      pitch_degrees: -19.269657535520135,
+      roll_degrees: 1.877650805904828
+    },
+    floor: {
+      plane: {
+        distance: 5.4654849378099148,
+        normal: [
+          -0.028700481684608817,
+          -0.9450310611045352,
+          -0.32571855320001053
+        ]
+      },
+      floor_rotation: 190
+    },
+    images: {},
+    input: {
+      height: 1200,
+      width: 1600
+    }
+  },
+  //Supermarket-Customer Service Desk
+      "6a47891b125096412ecb2522": {
+    camera: {
+      cx: 800,
+      cy: 599.9999389648438,
+      fx: 1243.2479248046875,
+      fy: 1243.248046875,
+      height_meters: 1.4654849378099148,
+      pitch_degrees: -19.269657535520135,
+      roll_degrees: 1.877650805904828
+    },
+    floor: {
+      plane: {
+        distance: 6.4654849378099148,
+        normal: [
+          -0.028700481684608817,
+          -0.9450310611045352,
+          -0.32571855320001053
+        ]
+      },
+      floor_rotation: 185
+    },
+    images: {},
+    input: {
+      height: 1200,
+      width: 1600
+    }
+  },
+    //Supermarket-Billing-Area
+      "6a478900125096412ecb2521": {
+    camera: {
+      cx: 800,
+      cy: 599.9999389648438,
+      fx: 1243.2479248046875,
+      fy: 1243.248046875,
+      height_meters: 1.4654849378099148,
+      pitch_degrees: -19.269657535520135,
+      roll_degrees: 1.877650805904828
+    },
+    floor: {
+      plane: {
+        distance: 6.4654849378099148,
+        normal: [
+          -0.028700481684608817,
+          -0.9450310611045352,
+          -0.32571855320001053
+        ]
+      },
+      floor_rotation: 210
+    },
+    images: {},
+    input: {
+      height: 1200,
+      width: 1600
+    }
+  },
+      //Supermarket-Mordern-Turkish-Supermarket
+      "6a4788de125096412ecb2520": {
+    camera: {
+      cx: 800,
+      cy: 599.9999389648438,
+      fx: 1243.2479248046875,
+      fy: 1243.248046875,
+      height_meters: 1.4654849378099148,
+      pitch_degrees: -19.269657535520135,
+      roll_degrees: 1.877650805904828
+    },
+    floor: {
+      plane: {
+        distance: 6.4654849378099148,
+        normal: [
+          -0.028700481684608817,
+          -0.9450310611045352,
+          -0.32571855320001053
+        ]
+      },
+      floor_rotation: 210
+    },
+    images: {},
+    input: {
+      height: 1200,
+      width: 1600
+    }
+  },
+        //Supermarket-Mordern-Turkish-Supermarket
+      "6a4788ad125096412ecb251f": {
+    camera: {
+      cx: 800,
+      cy: 599.9999389648438,
+      fx: 1243.2479248046875,
+      fy: 1243.248046875,
+      height_meters: 1.4654849378099148,
+      pitch_degrees: -19.269657535520135,
+      roll_degrees: 1.877650805904828
+    },
+    floor: {
+      plane: {
+        distance: 6.4654849378099148,
+        normal: [
+          -0.028700481684608817,
+          -0.9450310611045352,
+          -0.32571855320001053
+        ]
+      },
+      floor_rotation: 165
     },
     images: {},
     input: {
@@ -5085,11 +5281,11 @@ export const demoPredictions = {
         },
         "floor": {
           "alternate_floor_rotation": 0.41,
-          "floor_rotation": 90.41,
+          "floor_rotation": 180.41,
           "median_scene_depth_meters": 4.0506486892700195,
           "plane": {
             "confidence": 0.9589563736220623,
-            "distance": 0.849447311036408,
+            "distance": 1.849447311036408,
             "gravity_alignment": 0.9998827383507807,
             "inlier_ratio": 1,
             "median_residual_meters": 0.006153026107214077,
