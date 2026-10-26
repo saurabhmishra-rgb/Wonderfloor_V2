@@ -3872,7 +3872,7 @@ export const demoPredictions = {
     }
   },
   //Prefab
-  "6a461b34d0ce9cfc46e4093a": {
+  "6a478f2b125096412ecb2543": {
     camera: {
       cx: 800,
       cy: 599.9999389648438,
